@@ -1,0 +1,6 @@
+POST http://localhost:8080/auth/verify
+Content-Type: application/json
+
+{
+  "jwtToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiMDZjMTQwNzMtNDZlOS00Mjk0LTllOTgtNDU3ZWQ1MmY2MDAzIn0sImlhdCI6MTY4MjQ0NDIxNSwiZXhwIjoxNjgyNDQ3ODE1fQ.PY93OWwlitDxUSoL82EcfN5W82dCRbeqxyVL_vOM4K4"
+}
