@@ -13,7 +13,7 @@ const storageEngine = multer.diskStorage({
 //initializing multer
 const upload = multer({
 	storage: storageEngine,
-	limits: { fileSize: 10000000 },
+	limits: { fileSize: +process.env.MAX_FILE_SIZE },
 	fileFilter: (req, file, cb) => {
 		checkFileType(file, cb);
 	},
@@ -37,7 +37,7 @@ const checkFileType = function (file, cb) {
 };
 
 function uploadSingleImage(req, res) {
-	// console.log(req.file);
+	console.log(req.file);
 	if (!req.file || !Object.keys(req.file).length) {
 		return res.status(400).send("No file was uploaded.");
 	}
@@ -45,6 +45,7 @@ function uploadSingleImage(req, res) {
 		res.send("Single file uploaded successfully");
 	} else {
 		res.status(400).send("Please upload a valid image");
+		// res.json({ message: "Please upload a valid image" });
 	}
 }
 
@@ -52,10 +53,10 @@ function uploadMultipleImages(req, res) {
 	if (!req.files || Object.keys(req.files).length === 0) {
 		return res.status(400).send("No files were uploaded.");
 	}
-	if (req.files) {
+	if (Object.keys(req.files).length <= 5) {
 		res.send("Muliple files uploaded successfully");
 	} else {
-		res.status(400).send("Please upload a valid images");
+		res.json({ message: "Please upload a valid images" });
 	}
 }
 

@@ -1,5 +1,7 @@
 const multer = require("multer");
 const path = require("path");
+const dotenv = require("dotenv");
+dotenv.config();
 
 //Setting storage engine
 const storageEngine = multer.diskStorage({
@@ -31,8 +33,58 @@ const checkFileType = function (file, cb) {
 	if (mimeType && extName) {
 		return cb(null, true);
 	} else {
-		cb("Error: You can Only Upload Images!!");
+		return cb({
+			message: "You can Only Upload Images!!",
+		});
 	}
 };
 
-module.exports = upload;
+const uploadSingleImageUtil = (req, res, next) => {
+	upload.single("image")(req, res, err => {
+		if (err) {
+			// Handle error thrown by multer when number of images > 1
+			if (
+				err instanceof multer.MulterError &&
+				err.code === "LIMIT_UNEXPECTED_FILE"
+			) {
+				res.status(400).json({
+					message: "Too many files uploaded. Maximum allowed is 1.",
+				});
+			} else {
+				res.status(400)
+					.header("Content-Type", "application/json")
+					.send(JSON.stringify(err));
+			}
+		} else {
+			next(); // No errors, proceed to route handler
+		}
+	});
+};
+
+const uploadMultipleImagesUtil = (req, res, next) => {
+	// console.log(process.env.MAX_IMAGE_UPLOAD);
+	upload.array("image", +process.env.MAX_IMAGE_UPLOAD)(req, res, err => {
+		if (err) {
+			// Handle error thrown by multer when number of images > 5
+			if (
+				err instanceof multer.MulterError &&
+				err.code === "LIMIT_UNEXPECTED_FILE"
+			) {
+				res.status(400).json({
+					message: "Too many files uploaded. Maximum allowed is 5.",
+				});
+			} else {
+				res.status(400)
+					.header("Content-Type", "application/json")
+					.send(JSON.stringify(err));
+			}
+		} else {
+			next(); // No errors, proceed to route handler
+		}
+	});
+};
+
+module.exports = {
+	uploadSingleImageUtil,
+	uploadMultipleImagesUtil,
+};

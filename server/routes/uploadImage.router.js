@@ -1,17 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const uploadController = require("../controllers/upload.controller");
-const upload = require("../utils/multer");
+const uploadController = require("../controllers/uploadImage.controller");
+const {uploadSingleImageUtil, uploadMultipleImagesUtil} = require("../utils/multer");
 
 router.post(
 	"/single",
-	upload.single("image"),
+	uploadSingleImageUtil,
 	uploadController.uploadSingleImage
 );
 
 router.post(
 	"/multiple",
-	upload.array("image", uploadController.maxNumFiles),
+	uploadMultipleImagesUtil,
 	uploadController.uploadMultipleImages
 );
 
