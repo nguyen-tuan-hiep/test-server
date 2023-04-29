@@ -1,18 +1,21 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const uploadController = require("../controllers/uploadImage.controller");
-const {uploadSingleImageUtil, uploadMultipleImagesUtil} = require("../utils/multer");
+const uploadController = require('../controllers/uploadImage.controller');
+const {
+  uploadSingleImageUtil,
+  uploadMultipleImagesUtil,
+} = require('../utils/multer');
 
 router.post(
-	"/single",
-	uploadSingleImageUtil,
-	uploadController.uploadSingleImage
+  '/single',
+  uploadSingleImageUtil,
+  uploadController.uploadSingleImage
 );
 
 router.post(
-	"/multiple",
-	uploadMultipleImagesUtil,
-	uploadController.uploadMultipleImages
+  '/multiple',
+  uploadMultipleImagesUtil,
+  uploadController.uploadMultipleImages
 );
 
 module.exports = router;
