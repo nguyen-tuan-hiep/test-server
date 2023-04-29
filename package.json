@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "dev": "nodemon server/index.js"
+    "dev": "nodemon server/app.js"
   },
   "keywords": [],
   "author": "",
