@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
+import bcrypt from 'bcrypt';
+import pool from '../models/config.js';
+import validInfo from '../middleware/validInfo.js';
+import jwtGenerator from '../utils/jwtGenerator.js';
+import authorization from '../middleware/authorization.js';
+
 const router = express.Router();
-const bcrypt = require('bcrypt');
-const pool = require('../models/config');
-const validInfo = require('../middleware/validInfo');
-const jwtGenerator = require('../utils/jwtGenerator');
-const authorization = require('../middleware/authorization');
 
 // authorization middleware
 router.post('/register', validInfo, async (req, res) => {
@@ -68,4 +69,4 @@ router.get('/verify', authorization, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

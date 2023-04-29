@@ -1,4 +1,4 @@
-const pool = require('../models/config');
+import pool from '../models/config.js';
 
 async function getStudent(req, res) {
   try {
@@ -11,6 +11,4 @@ async function getStudent(req, res) {
   }
 }
 
-module.exports = {
-  getStudent,
-};
+export default { getStudent };

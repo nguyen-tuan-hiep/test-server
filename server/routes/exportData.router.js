@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import exportDataController from '../controllers/exportData.controller.js';
+
 const router = express.Router();
-const exportData = require('../controllers/exportData.controller');
 
-router.get('/', exportData);
+router.get('/', exportDataController.exportData);
 
-module.exports = router;
+export default router;

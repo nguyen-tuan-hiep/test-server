@@ -1,7 +1,8 @@
-const chai = require('chai');
+import chai from 'chai';
+import request from 'supertest';
+import app from '../server/app.js';
+
 const expect = chai.expect;
-const request = require('supertest');
-const app = require('../server/app');
 
 describe('API Controller Tests', () => {
   describe('GET /customers', () => {
@@ -84,7 +85,7 @@ describe('API Controller Tests', () => {
   describe('GET /customers/:id', () => {
     it('should return a single customer', (done) => {
       request(app)
-        .get('/customers/5')
+        .get('/customers/1')
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body).to.be.an('object');
@@ -106,7 +107,7 @@ describe('API Controller Tests', () => {
   describe('DELETE /customers/:id', () => {
     it('should delete an existing customer', (done) => {
       request(app)
-        .delete('/customers/4')
+        .delete('/customers/2')
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.message).to.equal('Customer was deleted!');

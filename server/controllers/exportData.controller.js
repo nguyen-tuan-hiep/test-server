@@ -1,5 +1,5 @@
-const pool = require('../models/config');
-const ExcelJS = require('exceljs');
+import pool from '../models/config.js';
+import ExcelJS from 'exceljs';
 
 function exportData(req, res) {
   const workbook = new ExcelJS.Workbook();
@@ -56,4 +56,4 @@ function exportData(req, res) {
   );
 }
 
-module.exports = exportData;
+export default { exportData };

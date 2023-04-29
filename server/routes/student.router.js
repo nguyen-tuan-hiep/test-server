@@ -1,9 +1,9 @@
-const express = require('express');
-const { getStudent } = require('../controllers/student.controller');
+import express from 'express';
+import studentController from '../controllers/student.controller.js';
 
 const router = express.Router();
 
 // get all customers
-router.get('/', getStudent);
+router.get('/', studentController.getStudent);
 
-module.exports = router;
+export default router;

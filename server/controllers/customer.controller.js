@@ -1,4 +1,4 @@
-const pool = require('../models/config');
+import pool from '../models/config.js';
 
 async function getAllCustomers(req, res) {
   try {
@@ -79,7 +79,8 @@ async function deleteCustomer(req, res) {
     console.log(error.message);
   }
 }
-module.exports = {
+
+export default {
   getAllCustomers,
   createCustomer,
   updateCustomer,
