@@ -1,10 +1,13 @@
 const button = document.getElementById('get-customers');
 const customerList = document.getElementById('customer-list');
 
-button.addEventListener('click', () => {
-  getAllCustomers();
-  console.log('button clicked');
-});
+function displayCustomers(customers) {
+  customers.forEach((customer) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${customer.id}</td><td>${customer.name}</td>`;
+    customerList.appendChild(row);
+  });
+}
 
 function getAllCustomers() {
   fetch('http://localhost:8080/customers')
@@ -12,11 +15,7 @@ function getAllCustomers() {
     .then((data) => displayCustomers(data));
 }
 
-function displayCustomers(customers) {
-  customers.forEach((customer) => {
-    const row = document.createElement('tr');
-    row.innerHTML =
-      '<td>' + customer.id + '</td><td>' + customer.name + '</td>';
-    customerList.appendChild(row);
-  });
-}
+button.addEventListener('click', () => {
+  getAllCustomers();
+  console.log('button clicked');
+});

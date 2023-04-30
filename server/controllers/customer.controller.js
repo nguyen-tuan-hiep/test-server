@@ -11,15 +11,15 @@ async function getAllCustomers(req, res) {
 
 async function createCustomer(req, res) {
   try {
-    const name = req.body.name;
+    const { name, gender, phone, address, point, memType } = req.body;
     if (!name) {
       return res.status(400).json({ message: 'Name is required' });
     }
     const customer = await pool.query(
-      'INSERT INTO customers (name) VALUES ($1) RETURNING *',
-      [name]
+      'INSERT INTO customers (name, gender, phone, address, point, mem_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [name, gender, phone, address, point, memType],
     );
-    res.json({ message: 'Customer was created!' });
+    res.json({ message: 'Customer was created!', customer: customer.rows[0] });
   } catch (error) {
     console.log(error.message);
     res.status(400).json({ message: error.message });
@@ -28,31 +28,32 @@ async function createCustomer(req, res) {
 
 async function updateCustomer(req, res) {
   try {
-    const id = req.params.id;
-    const name = req.body.name;
+    const { id } = req.params;
+    const { name } = req.body;
     if (!name) {
       return res.status(400).json({ message: 'Name is required' });
     }
-    const { rows } = await pool.query(
-      'UPDATE customers SET name = $1 WHERE id = $2 RETURNING *',
-      [name, id]
+    const customer = await pool.query(
+      'UPDATE customers SET name = $1 WHERE customer_id = $2 RETURNING *',
+      [name, id],
     );
-    if (rows.length === 0) {
+    if (!customer.rows.length) {
       return res.status(404).json({ message: 'Customer not found' });
     }
-    res.json({ message: 'Customer was updated!', customer: rows[0] });
+    res.json({ message: 'Customer was updated!', customer: customer.rows[0] });
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ message: 'Unexpected error occurred' });
+    return res.status(500).json({ message: 'Unexpected error occurred' });
   }
 }
 
 async function getOneCustomer(req, res) {
   try {
-    const id = req.params.id;
-    const customer = await pool.query('SELECT * FROM customers WHERE id = $1', [
-      id,
-    ]);
+    const { id } = req.params;
+    const customer = await pool.query(
+      'SELECT * FROM customers WHERE customer_id = $1',
+      [id],
+    );
     if (customer.rows.length === 0) {
       return res.status(404).json({ message: 'Customer not found' });
     }
@@ -64,16 +65,17 @@ async function getOneCustomer(req, res) {
 
 async function deleteCustomer(req, res) {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
     // Check if customer exists
-    const customer = await pool.query('SELECT * FROM customers WHERE id = $1', [
-      id,
-    ]);
-    if (customer.rows.length === 0) {
+    const customer = await pool.query(
+      'SELECT * FROM customers WHERE customer_id = $1',
+      [id],
+    );
+    if (!customer.rows.length) {
       return res.status(404).json({ message: 'Customer not found' });
     }
-    // Delete customer if it exists
-    await pool.query('DELETE FROM customers WHERE id = $1', [id]);
+    // Delete customer if it exists (ON DELETE CASCADE will delete all orders associated with the customer)
+    await pool.query('DELETE FROM customers WHERE customer_id = $1', [id]);
     res.json({ message: 'Customer was deleted!' });
   } catch (error) {
     console.log(error.message);

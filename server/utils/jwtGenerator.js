@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
-function jwtGenerator(user_id) {
+function jwtGenerator(userId) {
   const payload = {
     user: {
-      id: user_id,
+      id: userId,
     },
   };
   return jwt.sign(payload, process.env.JWT_SECRET, {

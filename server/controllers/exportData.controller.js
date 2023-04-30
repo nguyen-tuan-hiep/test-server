@@ -1,5 +1,5 @@
-import pool from '../models/config.js';
 import ExcelJS from 'exceljs';
+import pool from '../models/config.js';
 
 function exportData(req, res) {
   const workbook = new ExcelJS.Workbook();
@@ -20,14 +20,15 @@ function exportData(req, res) {
         { header: 'Class Name', key: 'class_name' },
       ];
       worksheet.columns = columns;
-      for (let row of results.rows) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const row of results.rows) {
         worksheet.addRow(row);
       }
 
       // Auto-fit columns
-      worksheet.columns.forEach(function (column, i) {
+      worksheet.columns.forEach((column) => {
         let maxLength = 0;
-        column['eachCell']({ includeEmpty: true }, function (cell) {
+        column.eachCell({ includeEmpty: true }, (cell) => {
           const columnLength = cell.value ? cell.value.toString().length : 10;
           if (columnLength > maxLength) {
             maxLength = columnLength;
@@ -39,7 +40,7 @@ function exportData(req, res) {
       // Set response headers and send the workbook as a response
       res.setHeader(
         'Content-Disposition',
-        'attachment; filename=students.xlsx'
+        'attachment; filename=students.xlsx',
       );
       workbook.xlsx
         .write(res)
@@ -47,12 +48,12 @@ function exportData(req, res) {
           res.end();
           // pool.end();
         })
-        .catch((err) => {
+        .catch(() => {
           console.error(err);
           res.status(500).send('Server error!');
           // pool.end();
         });
-    }
+    },
   );
 }
 

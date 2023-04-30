@@ -7,13 +7,13 @@ const router = express.Router();
 router.post(
   '/single',
   uploadImageUtil.uploadSingleImageUtil,
-  uploadController.uploadSingleImage
+  uploadController.uploadSingleImage,
 );
 
 router.post(
   '/multiple',
   uploadImageUtil.uploadMultipleImagesUtil,
-  uploadController.uploadMultipleImages
+  uploadController.uploadMultipleImages,
 );
 
 export default router;

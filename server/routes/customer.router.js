@@ -6,10 +6,10 @@ const router = express.Router();
 // get all customers
 router.get('/', customerController.getAllCustomers);
 
-// get one customer
+// get a customer
 router.get('/:id', customerController.getOneCustomer);
 
-// insert a customer
+// create a new customer
 router.post('/', customerController.createCustomer);
 
 // update a customer

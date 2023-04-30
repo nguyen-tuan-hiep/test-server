@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-//Setting storage engine
+// Setting storage engine
 const storageEngine = multer.diskStorage({
   destination: './images',
   filename: (req, file, cb) => {
@@ -12,18 +12,9 @@ const storageEngine = multer.diskStorage({
   },
 });
 
-//initializing multer
-const upload = multer({
-  storage: storageEngine,
-  limits: { fileSize: +process.env.MAX_FILE_SIZE },
-  fileFilter: (req, file, cb) => {
-    checkFileType(file, cb);
-  },
-});
-
-const checkFileType = function (file, cb, err) {
-  //Allowed file extensions
-  const fileTypes = /jpeg|jpg|png|gif|svg/; //check extension names
+const checkFileType = (file, cb) => {
+  // Allowed file extensions
+  const fileTypes = /jpeg|jpg|png|gif|svg/; // check extension names
 
   const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
 
@@ -31,12 +22,20 @@ const checkFileType = function (file, cb, err) {
 
   if (mimeType && extName) {
     return cb(null, true);
-  } else {
-    return cb({
-      message: 'You can only upload images!!',
-    });
   }
+  return cb({
+    message: 'You can only upload images!!',
+  });
 };
+
+// initializing multer
+const upload = multer({
+  storage: storageEngine,
+  limits: { fileSize: +process.env.MAX_FILE_SIZE },
+  fileFilter: (req, file, cb) => {
+    checkFileType(file, cb);
+  },
+});
 
 const uploadSingleImageUtil = (req, res, next) => {
   upload.single('image')(req, res, (err) => {
@@ -73,7 +72,7 @@ const uploadMultipleImagesUtil = (req, res, next) => {
           message: 'Too many files uploaded. Maximum allowed is 5.',
         });
       } else {
-        // Handle other Multer errors
+        // handle other Multer errors
         res.status(400).json({
           message: `${err.message}`,
         });
