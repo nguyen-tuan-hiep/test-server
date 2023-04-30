@@ -2,7 +2,7 @@ import pool from '../models/config.js';
 
 async function getAllCustomers(req, res) {
   try {
-    const allCustomers = await pool.query('SELECT * FROM customers');
+    const allCustomers = await pool.query('SELECT * FROM customers ORDER BY customer_id ASC');
     res.json(allCustomers.rows);
   } catch (error) {
     console.log(error.message);
@@ -54,7 +54,7 @@ async function getOneCustomer(req, res) {
       'SELECT * FROM customers WHERE customer_id = $1',
       [id],
     );
-    if (customer.rows.length === 0) {
+    if (!customer.rows.length) {
       return res.status(404).json({ message: 'Customer not found' });
     }
     res.json(customer.rows[0]);
@@ -82,10 +82,28 @@ async function deleteCustomer(req, res) {
   }
 }
 
+async function searchCustomerByName(req, res) {
+  try {
+    const { name } = req.body;
+    const customers = await pool.query(
+      'SELECT * FROM customers WHERE name LIKE $1 ORDER BY customer_id ASC',
+      [`%${name}%`],
+    );
+    // console.log(customers.rows);
+    if (!customers.rows.length) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+    return res.json(customers.rows);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 export default {
   getAllCustomers,
   createCustomer,
   updateCustomer,
   getOneCustomer,
   deleteCustomer,
+  searchCustomerByName,
 };
