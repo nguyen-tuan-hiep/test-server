@@ -86,7 +86,7 @@ async function searchCustomerByName(req, res) {
   try {
     const { name } = req.body;
     const customers = await pool.query(
-      'SELECT * FROM customers WHERE name LIKE $1 ORDER BY customer_id ASC',
+      `SELECT * FROM customers WHERE REPLACE(name, ' ','') ILIKE $1 ORDER BY customer_id ASC`,
       [`%${name}%`],
     );
     // console.log(customers.rows);
