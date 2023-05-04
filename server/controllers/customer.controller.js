@@ -31,14 +31,37 @@ async function createCustomer(req, res) {
 async function updateCustomer(req, res) {
   try {
     const { id } = req.params;
-    const { name } = req.body;
-    if (!name) {
-      return res.status(400).json({ message: 'Name is required' });
+    const keysToUpdate = Object.keys(req.body);
+    if (!keysToUpdate.length || !id) {
+      return res.status(400).json({ message: 'Invalid request' });
     }
-    const customer = await pool.query(
-      'UPDATE customers SET name = $1 WHERE customer_id = $2 RETURNING *',
-      [name, id],
-    );
+    let queryString = 'UPDATE customers SET';
+    const queryParams = [];
+    keysToUpdate.forEach((key, index) => {
+      queryString += ` ${key} = $${index + 1},`;
+      queryParams.push(req.body[key]);
+      if (key === 'point') {
+        if (req.body[key] < 1000) {
+          queryString += ` mem_type = $${index + 2},`;
+          queryParams.push('Bronze');
+        } else if (req.body[key] < 3000) {
+          queryString += ` mem_type = $${index + 2},`;
+          queryParams.push('Silver');
+        } else if (req.body[key] < 5000) {
+          queryString += ` mem_type = $${index + 2},`;
+          queryParams.push('Gold');
+        } else {
+          queryString += ` mem_type = $${index + 2},`;
+          queryParams.push('Diamond');
+        }
+      }
+    });
+
+    queryString = `${queryString.slice(0, -1)} WHERE customer_id = $${
+      keysToUpdate.length + 2
+    } RETURNING *`;
+    queryParams.push(id);
+    const customer = await pool.query(queryString, queryParams);
     if (!customer.rows.length) {
       return res.status(404).json({ message: 'Customer not found' });
     }
@@ -88,10 +111,9 @@ async function searchCustomerByName(req, res) {
   try {
     const { name } = req.body;
     const customers = await pool.query(
-      'SELECT * FROM customers WHERE name LIKE $1 ORDER BY customer_id ASC',
+      `SELECT * FROM customers WHERE REPLACE(name, ' ', '') ILIKE $1 ORDER BY customer_id ASC`,
       [`%${name}%`],
     );
-    // console.log(customers.rows);
     if (!customers.rows.length) {
       return res.status(404).json({ message: 'Customer not found' });
     }
