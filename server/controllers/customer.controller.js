@@ -2,7 +2,9 @@ import pool from '../models/config.js';
 
 async function getAllCustomers(req, res) {
   try {
-    const allCustomers = await pool.query('SELECT * FROM customers ORDER BY customer_id ASC');
+    const allCustomers = await pool.query(
+      'SELECT * FROM customers ORDER BY customer_id ASC',
+    );
     res.json(allCustomers.rows);
   } catch (error) {
     console.log(error.message);
