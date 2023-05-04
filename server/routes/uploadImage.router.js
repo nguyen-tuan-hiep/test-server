@@ -4,11 +4,7 @@ import uploadImageUtil from '../utils/multer.js';
 
 const router = express.Router();
 
-router.post(
-  '/single',
-  uploadImageUtil.uploadSingleImageUtil,
-  uploadController.uploadSingleImage,
-);
+router.post('/single', uploadImageUtil.uploadSingleImageUtil, uploadController.uploadSingleImage);
 
 router.post(
   '/multiple',

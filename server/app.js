@@ -8,8 +8,8 @@ import dashboardRouter from './routes/dashboard.router.js';
 import uploadRouter from './routes/uploadImage.router.js';
 import exportDataRouter from './routes/exportData.router.js';
 import studentRouter from './routes/student.router.js';
-import categoryRouter from "./routes/category.router.js";
-import dishRouter from "./routes/dish.router.js";
+import categoryRouter from './routes/category.router.js';
+import dishRouter from './routes/dish.router.js';
 
 dotenv.config();
 const app = express();
@@ -30,7 +30,7 @@ app.use('/export', exportDataRouter);
 app.use('/students', studentRouter);
 
 app.use('/category', categoryRouter);
-app.use("/dish", dishRouter);
+app.use('/dish', dishRouter);
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);

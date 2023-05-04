@@ -26,6 +26,7 @@ async function createCustomer(req, res) {
   }
 }
 
+// To-do: put => patch
 async function updateCustomer(req, res) {
   try {
     const { id } = req.params;
@@ -50,10 +51,7 @@ async function updateCustomer(req, res) {
 async function getOneCustomer(req, res) {
   try {
     const { id } = req.params;
-    const customer = await pool.query(
-      'SELECT * FROM customers WHERE customer_id = $1',
-      [id],
-    );
+    const customer = await pool.query('SELECT * FROM customers WHERE customer_id = $1', [id]);
     if (!customer.rows.length) {
       return res.status(404).json({ message: 'Customer not found' });
     }
@@ -67,14 +65,12 @@ async function deleteCustomer(req, res) {
   try {
     const { id } = req.params;
     // Check if customer exists
-    const customer = await pool.query(
-      'SELECT * FROM customers WHERE customer_id = $1',
-      [id],
-    );
+    const customer = await pool.query('SELECT * FROM customers WHERE customer_id = $1', [id]);
     if (!customer.rows.length) {
       return res.status(404).json({ message: 'Customer not found' });
     }
-    // Delete customer if it exists (ON DELETE CASCADE will delete all orders associated with the customer)
+    // Delete customer if it exists (ON DELETE CASCADE will delete all orders
+    // associated with the customer)
     await pool.query('DELETE FROM customers WHERE customer_id = $1', [id]);
     res.json({ message: 'Customer was deleted!' });
   } catch (error) {

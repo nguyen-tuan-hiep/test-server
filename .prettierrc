@@ -4,5 +4,6 @@
   "singleQuote": true,
   "plugins": ["prettier-plugin-sql"],
   "endOfLine": "lf",
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "printWidth": 100
 }

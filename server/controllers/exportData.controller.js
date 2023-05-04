@@ -38,10 +38,7 @@ function exportData(req, res) {
       });
 
       // Set response headers and send the workbook as a response
-      res.setHeader(
-        'Content-Disposition',
-        'attachment; filename=students.xlsx',
-      );
+      res.setHeader('Content-Disposition', 'attachment; filename=students.xlsx');
       workbook.xlsx
         .write(res)
         .then(() => {
