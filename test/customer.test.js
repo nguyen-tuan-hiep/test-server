@@ -132,4 +132,18 @@ describe('API Controller Tests', () => {
         });
     });
   });
+
+  describe('GET /customers/search', () => {
+    it('should return customers matching the input name', (done) => {
+      const searchQuery = { name: 'Michel' };
+      request(app)
+        .get('/customers/search')
+        .send(searchQuery)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body).to.be.an('array');
+          done();
+        });
+    });
+  });
 });
