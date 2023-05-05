@@ -7,7 +7,8 @@
   "scripts": {
     "test": "mocha",
     "dev": "nodemon server/app.js",
-    "lint": "eslint . --ext .js"
+    "lint": "eslint . --ext .js",
+    "prettier": "npx prettier --write ."
   },
   "keywords": [],
   "author": "nguyen-tuan-hiep",
@@ -27,10 +28,11 @@
     "chai-http": "^4.3.0",
     "eslint": "^8.39.0",
     "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-prettier": "^4.2.1",
     "mocha": "^10.2.0",
     "nodemon": "^2.0.22",
-    "prettier": "^2.8.8",
     "prettier-plugin-sql": "^0.14.0",
     "supertest": "^6.3.3"
   }
