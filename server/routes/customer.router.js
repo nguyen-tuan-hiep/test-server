@@ -6,6 +6,12 @@ const router = express.Router();
 // get all customers
 router.get('/', customerController.getAllCustomers);
 
+// search for a customer by name
+router.post('/search', customerController.searchCustomerByName);
+
+// search for a customer by attributes
+router.get('/search', customerController.searchCustomerByAttributes);
+
 // get customer by id
 router.get('/:id', customerController.getOneCustomer);
 
@@ -17,8 +23,5 @@ router.patch('/:id', customerController.updateCustomer);
 
 // delete a customer by id
 router.delete('/:id', customerController.deleteCustomer);
-
-// search for a customer by name
-router.post('/search', customerController.searchCustomerByName);
 
 export default router;

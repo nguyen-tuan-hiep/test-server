@@ -5,6 +5,7 @@ async function getAllCustomers(req, res) {
     const allCustomers = await pool.query(
       'SELECT * FROM customers ORDER BY customer_id ASC',
     );
+    // console.log(allCustomers.rows);
     res.json(allCustomers.rows);
   } catch (error) {
     console.log(error.message);
@@ -123,6 +124,38 @@ async function searchCustomerByName(req, res) {
   }
 }
 
+async function searchCustomerByAttributes(req, res) {
+  try {
+    const allCustomersRows = await pool.query(
+      'SELECT * FROM customers ORDER BY customer_id ASC',
+    );
+    const allCustomers = allCustomersRows.rows;
+    const filters = req.query;
+
+    // Create an array of filters to apply
+    const filterKeys = Object.keys(filters);
+    const customerFilters = [];
+    filterKeys.forEach((key) => {
+      const value = filters[key];
+      if (Array.isArray(value)) {
+        // Add an OR filter for arrays of values
+        customerFilters.push((customer) => value.includes(customer[key]));
+      } else {
+        // Add a simple equality filter otherwise
+        customerFilters.push((customer) => customer[key] == value);
+      }
+    });
+
+    const filteredCustomers = allCustomers.filter((customer) => {
+      return customerFilters.every((filterFunc) => filterFunc(customer));
+    });
+
+    res.send(filteredCustomers);
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 export default {
   getAllCustomers,
   createCustomer,
@@ -130,4 +163,5 @@ export default {
   getOneCustomer,
   deleteCustomer,
   searchCustomerByName,
+  searchCustomerByAttributes,
 };
