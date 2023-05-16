@@ -11,9 +11,10 @@ async function deleteEvent(req, res) {
     if (!event.rows.length) {
       return res.status(404).json({ message: 'Event not found' });
     }
-    res.json({ message: 'Event was deleted!', event: event.rows[0] });
+    res.json({ message: 'Event was deleted!', data: event.rows[0] });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
   }
 }
 
@@ -33,43 +34,43 @@ async function updateEvent(req, res) {
       return res.status(404).json({ message: 'Event not found' });
     }
     // Update event if it exists
-    res.json({ message: 'Event was updated!', event: event.rows[0] });
+    return res.json({ message: 'Event was updated!', data: event.rows[0] });
   } catch (error) {
-    console.log(error.message);
-    return res.status(500).json({ message: 'Unexpected error occurred' });
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
   }
 }
 
 async function createEvent(req, res) {
   try {
     const { name } = req.body;
-    if ( !name ) {
-      res.status(400).json({ message: 'All fields are required' });
+    if (!name) {
+      return res.status(400).json({ message: 'All fields are required' });
     }
     const event = await pool.query(
       'INSERT INTO events (event_name) VALUES ($1) RETURNING *',
       [name],
     );
-    res.json({ message: 'Event was created!', event: event.rows[0] });
+    return res.json({ message: 'Event was created!', data: event.rows[0] });
   } catch (error) {
-    console.log(error.message);
-    return res.status(500).json({ message: 'Unexpected error occurred' });
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
   }
 }
 
 async function getEventById(req, res) {
   try {
     const { id } = req.params;
-    const event = await pool.query(
-      'SELECT * FROM events WHERE event_id = $1',
-      [id],
-    );
+    const event = await pool.query('SELECT * FROM events WHERE event_id = $1', [
+      id,
+    ]);
     if (!event.rows.length) {
       return res.status(404).json({ message: 'Event not found' });
     }
-    res.json(event.rows[0]);
+    return res.json({ message: 'Found!' }, { data: event.rows[0] });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
   }
 }
 
@@ -80,9 +81,12 @@ async function searchEventByName(req, res) {
       `SELECT * FROM events WHERE REPLACE(event_name, ' ','') ILIKE $1 ORDER BY event_id ASC`,
       [`%${name}%`],
     );
-    return res.json(events.rows);
+    if (!events.rows.length)
+      return res.status(404).json({ message: 'Event not found' });
+    return res.json({ message: 'Found', data: events.rows });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
   }
 }
 

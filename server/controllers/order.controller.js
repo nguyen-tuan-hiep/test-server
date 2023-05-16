@@ -32,14 +32,7 @@ async function createOrder(req, res) {
     }
     const order = await pool.query(
       'INSERT INTO orders (phone, order_date, order_time, order_status, total_price, has_children) VALUES ($1, $2, $3,$4, $5, $6) RETURNING *',
-      [
-        phone,
-        order_date,
-        order_time,
-        order_status,
-        total_price,
-        has_children,
-      ],
+      [phone, order_date, order_time, order_status, total_price, has_children],
     );
     res.json({ message: 'Order was created!', order: order.rows[0] });
   } catch (error) {
@@ -50,11 +43,10 @@ async function createOrder(req, res) {
 
 async function deleteByOrderId(req, res) {
   try {
-    const { id:order_id } = req.params;
-    const order = await pool.query(
-      'SELECT * FROM orders WHERE order_id = $1',
-      [order_id],
-    );
+    const { id: order_id } = req.params;
+    const order = await pool.query('SELECT * FROM orders WHERE order_id = $1', [
+      order_id,
+    ]);
     if (!order.rows.length) {
       return res.status(404).json({ message: 'Order not found' });
     }
@@ -66,9 +58,17 @@ async function deleteByOrderId(req, res) {
 }
 
 async function updateOrderById(req, res) {
-  try{
+  try {
     const { id } = req.params;
-    let { customer_id, phone, order_date, order_time, order_status, total_price, has_children } = req.body;
+    let {
+      customer_id,
+      phone,
+      order_date,
+      order_time,
+      order_status,
+      total_price,
+      has_children,
+    } = req.body;
 
     const order1 = await pool.query(
       'SELECT * FROM orders WHERE order_id = $1',
@@ -77,7 +77,15 @@ async function updateOrderById(req, res) {
     if (!order1.rows.length) {
       return res.status(404).json({ message: 'Order not found' });
     }
-    if (customer_id == null && phone == null && order_date == null && order_time == null && order_status == null && total_price == null && has_children == null) {
+    if (
+      customer_id == null &&
+      phone == null &&
+      order_date == null &&
+      order_time == null &&
+      order_status == null &&
+      total_price == null &&
+      has_children == null
+    ) {
       return res.status(400).json({ message: 'At least 1 field is required' });
     }
     if (customer_id == null) {
@@ -103,7 +111,16 @@ async function updateOrderById(req, res) {
     }
     const order2 = await pool.query(
       'UPDATE orders SET customer_id = $1, phone = $2, order_date = $3, order_time = $4, order_status = $5, total_price = $6, has_children = $7 WHERE order_id = $8 RETURNING *',
-      [customer_id, phone, order_date, order_time, order_status, total_price, has_children, id],
+      [
+        customer_id,
+        phone,
+        order_date,
+        order_time,
+        order_status,
+        total_price,
+        has_children,
+        id,
+      ],
     );
     res.json({ message: 'Order was updated!', order: order2.rows[0] });
   } catch (error) {
