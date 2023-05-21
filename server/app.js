@@ -10,6 +10,7 @@ import exportDataRouter from './routes/exportData.router.js';
 import studentRouter from './routes/student.router.js';
 import categoryRouter from './routes/category.router.js';
 import dishRouter from './routes/dish.router.js';
+import membershipLevelRouter from './routes/membershipLevel.router.js';
 
 dotenv.config();
 const app = express();
@@ -31,6 +32,7 @@ app.use('/students', studentRouter);
 
 app.use('/category', categoryRouter);
 app.use('/dish', dishRouter);
+app.use('/membership', membershipLevelRouter);
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
