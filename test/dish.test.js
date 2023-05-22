@@ -5,23 +5,22 @@ import app from '../server/app.js';
 const { expect } = chai;
 
 describe('API Controller Tests', () => {
-  // describe('GET /dish/search/', () => {
-  //   it('should return all dishes', (done) => {
-  //     request(app)
-  //       .get('/dish/search')
-  //       .end((err, res) => {
-  //         expect(res.status).to.equal(200);
-  //         expect(res.body.data).to.be.an('array');
-  //         done();
-  //       });
-  //   });
-  // });
-
-  describe('GET /dish/search/:id', () => {
-    it('should return a single dish with given id', (done) => {
-      // const id = 1;
+  describe('GET /dish/', () => {
+    it('should return all dishes', (done) => {
       request(app)
-        .get('/dish/search/1')
+        .get('/dish')
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.data).to.be.an('array');
+          done();
+        });
+    });
+  });
+
+  describe('GET /dish/:id', () => {
+    it('should return a single dish with given id', (done) => {
+      request(app)
+        .get('/dish/3')
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.data).to.be.an('object');
@@ -30,28 +29,23 @@ describe('API Controller Tests', () => {
     });
     it('should return an error if dish does not exist', (done) => {
       request(app)
-        .get('/dish/search/99999999')
+        .get('/dish/99999999')
         .end((err, res) => {
-          expect(res.status).to.equal(404);
+          expect(res.status).to.equal(500);
           expect(res.body.message).to.equal('Dish not found');
           done();
         });
     });
   });
 
-  describe('GET /dish/search/', () => {
-    it('should return all data if there is no path parameter name', (done) => {
+  describe('POST /dish/search/', () => {
+    it('should return one or more dishes whose name defined in the body request', (done) => {
+      const body = {
+        name: 'chocolate',
+      };
       request(app)
-        .get('/dish/search')
-        .end((err, res) => {
-          expect(res.status).to.equal(200);
-          expect(res.body.data).to.be.an('array');
-          done();
-        });
-    });
-    it('should return one or more dishes whose name includes the specified string defined in parameter', (done) => {
-      request(app)
-        .get('/dish/search?name=chip')
+        .post('/dish/search')
+        .send(body)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.data).to.be.an('array');
@@ -98,7 +92,7 @@ describe('API Controller Tests', () => {
     it('should update an existing dish', (done) => {
       const body = {
         dish_name: 'Chicken Sandwich 2023',
-        discription: 'Lemon pepper fried chicken sandwich, honey mustard mayo',
+        description: 'Lemon pepper fried chicken sandwich, honey mustard mayo',
         price: 165.0,
         dish_status: 0,
         category_id: 1,
@@ -116,12 +110,12 @@ describe('API Controller Tests', () => {
   });
 
   describe('DELETE /dish/:id', () => {
-    it('should delete an existing dish', (done) => {
+    it('should soft delete an existing dish', (done) => {
       request(app)
-        .delete('/dish/41')
+        .delete('/dish/45')
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          expect(res.body.message).to.equal('Dish was deleted!');
+          expect(res.body.message).to.equal('Dish status is changed successfully!');
           done();
         });
     });
@@ -130,7 +124,7 @@ describe('API Controller Tests', () => {
       request(app)
         .delete('/dish/99999999')
         .end((err, res) => {
-          expect(res.status).to.equal(404);
+          expect(res.status).to.equal(500);
           expect(res.body.message).to.equal('Dish not found');
           done();
         });
