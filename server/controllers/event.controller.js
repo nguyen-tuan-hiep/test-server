@@ -11,7 +11,7 @@ async function deleteEvent(req, res) {
     if (!event.rows.length) {
       return res.status(404).json({ message: 'Event not found' });
     }
-    res.json({ message: 'Event was deleted!', data: event.rows[0] });
+    return res.json({ message: 'Event was deleted!', data: event.rows[0] });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: error.message });

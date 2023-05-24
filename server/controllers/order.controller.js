@@ -34,10 +34,10 @@ async function createOrder(req, res) {
       'INSERT INTO orders (phone, order_date, order_time, order_status, total_price, has_children) VALUES ($1, $2, $3,$4, $5, $6) RETURNING *',
       [phone, order_date, order_time, order_status, total_price, has_children],
     );
-    res.json({ message: 'Order was created!', order: order.rows[0] });
+    return res.json({ message: 'Order was created!', data: order.rows[0] });
   } catch (error) {
-    console.log(error.message);
-    return res.status(500).json({ message: 'Unexpected error occurred' });
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
   }
 }
 
@@ -51,9 +51,10 @@ async function deleteByOrderId(req, res) {
       return res.status(404).json({ message: 'Order not found' });
     }
     await pool.query('DELETE FROM orders WHERE order_id = $1', [order_id]);
-    res.json({ message: 'Order was deleted!', order: order.rows[0] });
+    return res.json({ message: 'Order was deleted!', data: order.rows[0] });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
   }
 }
 
@@ -122,9 +123,10 @@ async function updateOrderById(req, res) {
         id,
       ],
     );
-    res.json({ message: 'Order was updated!', order: order2.rows[0] });
+    return res.json({ message: 'Order was updated!', data: order2.rows[0] });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
   }
 }
 // async function updateCost
@@ -138,12 +140,14 @@ async function getOrderByOrderId(req, res) {
     if (!order.rows.length) {
       return res.status(404).json({ message: 'Order not found' });
     }
-    res.json(order.rows[0]);
+    return res.json({ message: 'Order found!' }, { data: order.rows[0]});
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
   }
 }
 
+/*
 async function search(req, res) {
   try {
     const { name, date } = req.body;
@@ -156,7 +160,7 @@ async function search(req, res) {
     }
     res.json(order.rows);
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
   }
 }
 
@@ -175,15 +179,17 @@ async function getOrdersBetweenDate(req, res) {
     }
     res.json(order.rows);
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
   }
 }
+*/
+
 
 export default {
   createOrder,
   deleteByOrderId,
   getOrderByOrderId,
-  search,
   updateOrderById,
-  getOrdersBetweenDate,
+  /*search,
+  getOrdersBetweenDate,*/
 };
