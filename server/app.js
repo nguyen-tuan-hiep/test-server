@@ -12,6 +12,7 @@ import studentRouter from './routes/student.router.js';
 import eventRouter from './routes/event.router.js';
 import orderRouter from './routes/order.router.js';
 import tableRouter from './routes/table.router.js';
+import statisticRouter from './routes/statistic.router.js';
 
 dotenv.config();
 const app = express();
@@ -34,6 +35,7 @@ app.use('/students', studentRouter);
 app.use('/events', eventRouter);
 app.use('/orders', orderRouter);
 app.use('/tables', tableRouter);
+app.use('/statistic', statisticRouter);
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);

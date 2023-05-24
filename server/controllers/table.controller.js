@@ -17,10 +17,10 @@ async function createTable(req, res) {
             'INSERT INTO tables (capacity, table_status) VALUES ($1, $2) RETURNING *',
             [capacity, table_status],
         );
-        res.json({ message: 'Table was created!', table: table.rows[0] });
+        return res.json({ message: 'Table was created!', data: table.rows[0] });
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({ message: 'Unexpected error occurred' });
+        console.error(error.message);
+        return res.status(500).json({ message: error.message });
     }
 }
 
@@ -49,9 +49,9 @@ async function updateTable(req, res) {
             return res.status(404).json({ message: 'Table not found' });
         }
         // Update table if it exists
-        res.json({ message: 'Table was updated!', table: table2.rows[0] });
+        return res.json({ message: 'Table was updated!', data: table2.rows[0] });
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
         return res.status(500).json({ message: 'Unexpected error occurred' });
     }
 }
@@ -67,18 +67,20 @@ async function getTableById(req, res) {
         if (!table.rows.length) {
             return res.status(404).json({ message: 'Table not found' });
         }
-        res.json({ table: table.rows[0] });
+        return res.json({message: 'Table found!', data: table.rows[0] });
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
+        return res.status(500).json({ message: 'Unexpected error occurred' });
     }
 }
 
 async function getTableList(req, res) {
     try {
         const tables = await pool.query('SELECT * FROM tables');
-        res.json({ tables: tables.rows });
+        return res.json({message: 'List found', data: tables.rows });
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
+        return res.status(500).json({ message: 'Unexpected error occurred' });
     }
 }
 
@@ -93,9 +95,10 @@ async function deleteTableById(req, res) {
         if (!table.rows.length) {
             return res.status(404).json({ message: 'Table not found' });
         }
-        res.json({ message: 'Table was deleted!', table: table.rows[0] });
+        return res.json({ message: 'Table was deleted!', data: table.rows[0] });
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
+        return res.status(500).json({ message: 'Unexpected error occurred' });
     }
 }
 

@@ -19,14 +19,10 @@ router.delete('/:id', orderController.deleteByOrderId);
 
 router.put('/:id', orderController.updateOrderById);
 
-// router.patch('/cost/:id', orderController.updateCostByOrderId);
-
 router.get('/:id', orderController.getOrderByOrderId);
 
-router.post('/search', orderController.search);
-
-// router.get('/statistic', orderController.getStatistic);
-
-router.get('/orderBetweenDate', orderController.getOrdersBetweenDate);
+// router.post('/search', orderController.search);
+// router.patch('/cost/:id', orderController.updateCostByOrderId);
+// router.get('/orderBetweenDate', orderController.getOrdersBetweenDate);
 
 export default router;
