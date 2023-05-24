@@ -22,6 +22,6 @@ router.patch('/:id', dishController.updateDish);
 router.delete('/:id', dishController.deleteDishById);
 
 // getTop5DishesBetweenDate
-router.post('/top5DishesBetweenDate', dishController.getTop5DishesBetweenDate);
+// router.post('/top5DishesBetweenDate', dishController.getTop5DishesBetweenDate);
 
 export default router;

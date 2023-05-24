@@ -7,7 +7,8 @@
   "scripts": {
     "test": "mocha --timeout 10000",
     "dev": "nodemon server/app.js",
-    "lint": "eslint . --ext .js .jsx"
+    "lint": "eslint . --ext .js .jsx",
+    "prettier": "npx prettier --write ."
   },
   "keywords": [],
   "author": "nguyen-tuan-hiep",
