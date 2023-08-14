@@ -15,7 +15,7 @@ export default function TableFull({ rows, cols, setLoading, fetchData }) {
                 gridColumn: "1/-1",
                 display: { xs: "none", sm: "grid" },
                 gridTemplateColumns:
-                    "minmax(140px, 1fr) minmax(115px, 1fr) minmax(75px, 1fr) minmax(100px, 1fr) 75px",
+                    "minmax(140px, 1fr) minmax(115px, 1fr) minmax(115px, 1fr) minmax(115px, 1fr) minmax(75px, 1fr) minmax(100px, 1fr) 75px",
                 "& > *": {
                     p: 2,
                     [`&:nth-of-type(n)`]: {
@@ -27,7 +27,7 @@ export default function TableFull({ rows, cols, setLoading, fetchData }) {
         >
             {cols.map((col, i) => (
                 <React.Fragment key={i}>
-                    <Typography level="body3" fontWeight="md">
+                    <Typography level="body2" fontWeight="md">
                         {col.headerName}
                     </Typography>
                 </React.Fragment>

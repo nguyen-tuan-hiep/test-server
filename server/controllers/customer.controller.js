@@ -5,71 +5,61 @@ async function getAllCustomers(req, res) {
     const allCustomers = await pool.query(
       'SELECT * FROM customers ORDER BY customer_id ASC',
     );
-    // console.log(allCustomers.rows);
-    res.json(allCustomers.rows);
+    return res.status(200).json(allCustomers.rows);
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    return res.status(400).json({ message: error.message });
   }
 }
 
 async function createCustomer(req, res) {
   try {
-    const { name, gender, phone, address, point, memType } = req.body;
-    if (!name) {
-      return res.status(400).json({ message: 'Name is required' });
-    }
+    const { name, gender, phone, address, point } = req.body;
     const customer = await pool.query(
-      'INSERT INTO customers (name, gender, phone, address, point, mem_type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [name, gender, phone, address, point, memType],
+      'INSERT INTO customers (name, gender, phone, address, point) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [name, gender, phone, address, point],
     );
-    res.json({ message: 'Customer was created!', customer: customer.rows[0] });
+    return res
+      .status(200)
+      .json({ message: 'Customer was created!', customer: customer.rows[0] });
   } catch (error) {
     console.log(error.message);
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 }
 
 async function updateCustomer(req, res) {
   try {
-    const { id } = req.params;
-    const keysToUpdate = Object.keys(req.body);
-    if (!keysToUpdate.length || !id) {
-      return res.status(400).json({ message: 'Invalid request' });
-    }
-    let queryString = 'UPDATE customers SET';
-    const queryParams = [];
-    keysToUpdate.forEach((key, index) => {
-      queryString += ` ${key} = $${index + 1},`;
-      queryParams.push(req.body[key]);
-      if (key === 'point') {
-        if (req.body[key] < 1000) {
-          queryString += ` mem_type = $${index + 2},`;
-          queryParams.push('Bronze');
-        } else if (req.body[key] < 3000) {
-          queryString += ` mem_type = $${index + 2},`;
-          queryParams.push('Silver');
-        } else if (req.body[key] < 5000) {
-          queryString += ` mem_type = $${index + 2},`;
-          queryParams.push('Gold');
-        } else {
-          queryString += ` mem_type = $${index + 2},`;
-          queryParams.push('Diamond');
-        }
-      }
-    });
+    const { name, gender, phone, address, point } = req.body;
+    const customerId = req.params.id;
 
-    queryString = `${queryString.slice(0, -1)} WHERE customer_id = $${
-      keysToUpdate.length + 2
-    } RETURNING *`;
-    queryParams.push(id);
-    const customer = await pool.query(queryString, queryParams);
-    if (!customer.rows.length) {
+    if (!name) {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+    if (!phone) {
+      return res.status(400).json({ message: 'Phone is required' });
+    }
+
+    if (!point) {
+      return res.status(400).json({ message: 'Point is required' });
+    }
+
+    const updatedCustomer = await pool.query(
+      'UPDATE customers SET name = $1, phone = $2, point = $3, gender = $4, address = $5 WHERE customer_id = $6 RETURNING *',
+      [name, phone, point, gender, address, customerId],
+    );
+
+    if (updatedCustomer.rows.length === 0) {
       return res.status(404).json({ message: 'Customer not found' });
     }
-    res.json({ message: 'Customer was updated!', customer: customer.rows[0] });
+
+    return res.status(200).json({
+      message: 'Customer was updated!',
+      customer: updatedCustomer.rows[0],
+    });
   } catch (error) {
-    console.log(error.message);
-    return res.status(500).json({ message: 'Unexpected error occurred' });
+    console.error(error.message);
+    return res.status(400).json({ message: error.message });
   }
 }
 
@@ -83,28 +73,21 @@ async function getOneCustomer(req, res) {
     if (!customer.rows.length) {
       return res.status(404).json({ message: 'Customer not found' });
     }
-    res.json(customer.rows[0]);
+    return res.status(200).json(customer.rows[0]);
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    return res.status(400).json({ message: error.message });
   }
 }
 
 async function deleteCustomer(req, res) {
   try {
     const { id } = req.params;
-    // Check if customer exists
-    const customer = await pool.query(
-      'SELECT * FROM customers WHERE customer_id = $1',
-      [id],
-    );
-    if (!customer.rows.length) {
-      return res.status(404).json({ message: 'Customer not found' });
-    }
-    // Delete customer if it exists (ON DELETE CASCADE will delete all orders associated with the customer)
     await pool.query('DELETE FROM customers WHERE customer_id = $1', [id]);
-    res.json({ message: 'Customer was deleted!' });
+    return res.status(200).json({ message: 'Customer was deleted!' });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    return res.status(400).json({ message: error.message });
   }
 }
 
@@ -124,35 +107,42 @@ async function searchCustomerByName(req, res) {
   }
 }
 
-async function searchCustomerByAttributes(req, res) {
+async function searchCustomerByNameAndMembership(req, res) {
   try {
-    const allCustomersRows = await pool.query(
-      'SELECT * FROM customers ORDER BY customer_id ASC',
-    );
-    const allCustomers = allCustomersRows.rows;
-    const filters = req.query;
+    const { name, rank } = req.query;
+    let queryText = `SELECT * FROM customers`;
 
-    // Create an array of filters to apply
-    const filterKeys = Object.keys(filters);
-    const customerFilters = [];
-    filterKeys.forEach((key) => {
-      const value = filters[key];
-      if (Array.isArray(value)) {
-        // Add an OR filter for arrays of values
-        customerFilters.push((customer) => value.includes(customer[key]));
-      } else {
-        // Add a simple equality filter otherwise
-        customerFilters.push((customer) => customer[key] == value);
+    const queryParams = [];
+
+    if (name || rank) {
+      queryText += ' WHERE';
+
+      if (name) {
+        queryText += ` REPLACE(name, ' ', '') ILIKE $1`;
+        queryParams.push(`%${name}%`);
       }
-    });
 
-    const filteredCustomers = allCustomers.filter((customer) => {
-      return customerFilters.every((filterFunc) => filterFunc(customer));
-    });
+      if (rank) {
+        if (name) {
+          queryText += ' AND';
+        }
+        queryText += ` mem_type = $${queryParams.length + 1}`;
+        queryParams.push(rank);
+      }
+    }
 
-    res.send(filteredCustomers);
+    queryText += ' ORDER BY customer_id ASC';
+
+    const customers = await pool.query(queryText, queryParams);
+
+    if (customers.rows.length === 0) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+
+    return res.json(customers.rows);
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }
 
@@ -163,5 +153,5 @@ export default {
   getOneCustomer,
   deleteCustomer,
   searchCustomerByName,
-  searchCustomerByAttributes,
+  searchCustomerByNameAndMembership,
 };

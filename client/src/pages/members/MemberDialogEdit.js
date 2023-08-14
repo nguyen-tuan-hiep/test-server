@@ -1,34 +1,35 @@
-import Box from "@mui/joy/Box";
-import Button from "@mui/joy/Button";
-import FormControl from "@mui/joy/FormControl";
-import FormLabel from "@mui/joy/FormLabel";
-import Input from "@mui/joy/Input";
-import Modal from "@mui/joy/Modal";
-import ModalClose from "@mui/joy/ModalClose";
-import ModalDialog from "@mui/joy/ModalDialog";
-import Option from "@mui/joy/Option";
-import Select from "@mui/joy/Select";
-import Stack from "@mui/joy/Stack";
-import Typography from "@mui/joy/Typography";
+import Box from '@mui/joy/Box';
+import Button from '@mui/joy/Button';
+import FormControl from '@mui/joy/FormControl';
+import FormLabel from '@mui/joy/FormLabel';
+import Input from '@mui/joy/Input';
+import Modal from '@mui/joy/Modal';
+import ModalClose from '@mui/joy/ModalClose';
+import ModalDialog from '@mui/joy/ModalDialog';
+import Option from '@mui/joy/Option';
+import Select from '@mui/joy/Select';
+import Stack from '@mui/joy/Stack';
+import Typography from '@mui/joy/Typography';
 
 // Icons
-import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
-import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
 
 // Custom
-import { useState } from "react";
-import { filterOpts } from ".";
-import { useSnackbar } from "notistack";
-import customerApi from "../../api/customerApi";
-import status from "../../constants/status";
+import { useState } from 'react';
+import { filterOpts } from '.';
+import { useSnackbar } from 'notistack';
+import customerApi from '../../api/customerApi';
+import status from '../../constants/status';
+import { MenuItem } from '@mui/material';
 
 export default function MemberDialogEdit(props) {
   const { id, open, setOpen, setLoading, fetchData } = props;
   const [name, setName] = useState(props.name);
-  const [email, setEmail] = useState(props.email);
   const [phone, setPhone] = useState(props.phone);
+  const [gender, setGender] = useState(props.gender);
+  const [address, setAdress] = useState(props.address);
   const [point, setPoint] = useState(props.point);
-  const [rank, setRank] = useState(props.rank);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleDelete = (e, id) => {
@@ -36,16 +37,15 @@ export default function MemberDialogEdit(props) {
     const remove = async () => {
       try {
         const response = await customerApi.deleteCustomerById(id);
-
-        if (response?.data?.type === status.success) {
+        if (response?.status === 200) {
           fetchData();
           enqueueSnackbar(response.data.message, {
-            variant: "success",
+            variant: 'success',
           });
         }
       } catch (err) {
         enqueueSnackbar(err.response.data?.message, {
-          variant: "error",
+          variant: 'error',
         });
       }
     };
@@ -60,21 +60,21 @@ export default function MemberDialogEdit(props) {
         const data = {
           name,
           phone,
-          email,
+          gender,
+          address,
           point,
-          rankId: filterOpts.findIndex((item) => item === rank) + 1,
         };
         const response = await customerApi.updateCustomerById(id, data);
-        if (response?.data?.type === status.success) {
+        if (response?.status === 200) {
           fetchData();
           enqueueSnackbar(response?.data?.message, {
-            variant: "success",
+            variant: 'success',
           });
         }
       } catch (err) {
         setLoading(false);
         enqueueSnackbar(err.response?.data?.message, {
-          variant: "error",
+          variant: 'error',
         });
       }
     };
@@ -87,9 +87,9 @@ export default function MemberDialogEdit(props) {
       <ModalDialog
         sx={{
           width: 350,
-          borderRadius: "md",
+          borderRadius: 'md',
           p: 3,
-          boxShadow: "lg",
+          boxShadow: 'lg',
         }}
       >
         <ModalClose />
@@ -99,7 +99,7 @@ export default function MemberDialogEdit(props) {
           fontSize="1.25em"
           mb="0.25em"
         >
-          Add new member
+          Edit member
         </Typography>
         <Stack component="form">
           <Stack spacing={2}>
@@ -113,14 +113,21 @@ export default function MemberDialogEdit(props) {
               />
             </FormControl>
             <FormControl>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Gender</FormLabel>
               <Input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="gender"
+                placeholder="Gender"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
               />
+              {/* <Select
+                value={gender}
+                defaultValue="Male"
+                onChange={(e) => setGender(e.target.value)}
+              >
+                <Option value="Male">Male</Option>
+                <Option value="Female">Female</Option>
+              </Select> */}
             </FormControl>
             <FormControl required>
               <FormLabel>Phone</FormLabel>
@@ -129,6 +136,15 @@ export default function MemberDialogEdit(props) {
                 placeholder="Phone"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Address</FormLabel>
+              <Input
+                name="address"
+                placeholder="Address"
+                value={address}
+                onChange={(e) => setAdress(e.target.value)}
               />
             </FormControl>
             <FormControl required>
@@ -140,24 +156,9 @@ export default function MemberDialogEdit(props) {
                 onChange={(e) => setPoint(e.target.value)}
               />
             </FormControl>
-            <FormControl>
-              <FormLabel>Status</FormLabel>
-              <Select
-                value={rank}
-                onChange={(e, newRank) => {
-                  setRank(newRank);
-                }}
-              >
-                {filterOpts.map((filterOpt) => (
-                  <Option key={filterOpt} value={filterOpt}>
-                    {filterOpt}
-                  </Option>
-                ))}
-              </Select>
-            </FormControl>
           </Stack>
 
-          <Box mt={3} display="flex" gap={2} sx={{ width: "100%" }}>
+          <Box mt={3} display="flex" gap={2} sx={{ width: '100%' }}>
             <Button
               type="button"
               onClick={(e) => handleSave(e)}
@@ -174,8 +175,8 @@ export default function MemberDialogEdit(props) {
               sx={{
                 flex: 1,
                 display: {
-                  xs: "none",
-                  sm: "flex",
+                  xs: 'none',
+                  sm: 'flex',
                 },
               }}
             >
@@ -190,8 +191,8 @@ export default function MemberDialogEdit(props) {
               sx={{
                 flex: 1,
                 display: {
-                  xs: "flex",
-                  sm: "none",
+                  xs: 'flex',
+                  sm: 'none',
                 },
               }}
             >

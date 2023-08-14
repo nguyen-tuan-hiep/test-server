@@ -21,7 +21,7 @@ import { useDebounce } from "../../hooks";
 import MemberDialogAdd from "./MemberDialogAdd";
 import TableView from "./TableView";
 
-export const filterOpts = ["Bronze", "Silver", "Gold", "Platinum", "Diamond"];
+export const filterOpts = ["Bronze", "Gold", "Diamond"];
 
 export default function Members() {
   const { drawerOpen } = useContext(SideDrawerContext);
@@ -37,11 +37,12 @@ export default function Members() {
       const rankIndex = filterOpts.findIndex((item) => item === currentOpt);
       const response = await customerApi.searchByNameOrRank({
         name: debounceValue,
-        rank: rankIndex !== -1 ? rankIndex + 1 : "",
+        // rank: rankIndex !== -1 ? rankIndex + 1 : "",
+        rank: currentOpt,
       });
 
-      if (response?.data?.type === status.success) {
-        setData(response?.data?.customers);
+      if (response?.status === 200) {
+        setData(response.data);
       }
     } catch (err) {
       setData([]);

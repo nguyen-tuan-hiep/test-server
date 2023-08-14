@@ -1,6 +1,6 @@
 import httpRequest from "./httpRequest";
 
-const PREFIX = "customer";
+const PREFIX = "customers";
 
 const customerApi = {
     create(data) {

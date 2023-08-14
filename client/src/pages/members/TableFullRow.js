@@ -42,9 +42,9 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
     setProgressIcon(true);
     const remove = async () => {
       try {
-        const response = await customerApi.deleteCustomerById(data.id);
+        const response = await customerApi.deleteCustomerById(data.customer_id);
 
-        if (response?.data?.type === status.success) {
+        if (response?.status === 200) {
           setProgressIcon(false);
           fetchData();
           enqueueSnackbar(response.data.message, {
@@ -67,7 +67,13 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
         <Typography level="body2">{data.name}</Typography>
       </Stack>
       <Stack justifyContent="center">
+        <Typography level="body2">{data.gender}</Typography>
+      </Stack>
+      <Stack justifyContent="center">
         <Typography level="body2">{data.phone}</Typography>
+      </Stack>
+      <Stack justifyContent="center">
+        <Typography level="body2">{data.address}</Typography>
       </Stack>
       <Stack justifyContent="center">
         <Typography level="body2">{data.point}</Typography>
@@ -75,9 +81,9 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
       <Stack justifyContent="center">
         <Typography
           level="body2"
-          color={rankColors.find((item) => item.id === data.rank_id).color}
+          color={rankColors.find((item) => item.mem_type === data.mem_type).color}
         >
-          {data.rank}
+          {data.mem_type}
         </Typography>
       </Stack>
       <Box>
@@ -121,12 +127,12 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
           </MenuItem>
         </Menu>
         <MemberDialogEdit
-          id={data.id}
+          id={data.customer_id}
           name={data.name}
-          email={data.email}
           phone={data.phone}
+          gender={data.gender}
           point={data.point}
-          rank={data.rank}
+          address={data.address}
           open={openEdit}
           setOpen={setOpenEdit}
           setLoading={setLoading}

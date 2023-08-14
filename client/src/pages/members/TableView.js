@@ -3,18 +3,18 @@ import TableMini from "./TableMini";
 
 const cols = [
   { field: "name", headerName: "NAME" },
+  { field: "gender", headerName: "GENDER" },
   { field: "phone", headerName: "PHONE" },
+  { field: "address", headerName: "ADDRESS"},
   { field: "point", headerName: "POINT" },
-  { field: "rank", headerName: "RANK" },
+  { field: "memtype", headerName: "MEMBERSHIP" },
   { field: "action", headerName: "" },
 ];
 
 export const rankColors = [
-  { id: 1, color: "danger" },
-  { id: 2, color: "neutral" },
-  { id: 3, color: "warning" },
-  { id: 4, color: "primary" },
-  { id: 5, color: "info" },
+  { mem_type: 'Bronze', color: "primary" },
+  { mem_type: 'Gold', color: "warning" },
+  { mem_type: 'Diamond', color: "danger" },
 ];
 
 export default function TableView({ data, setLoading, fetchData }) {

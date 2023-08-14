@@ -26,9 +26,9 @@ export default function MemberDialogAdd({
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [address, setAdress] = useState("");
+  const [gender, setGender] = useState("");
   const [point, setPoint] = useState("");
-  const [rank, setRank] = useState(filterOpts[0]);
   const { enqueueSnackbar } = useSnackbar();
 
   const handleSubmit = (e) => {
@@ -39,13 +39,13 @@ export default function MemberDialogAdd({
         const data = {
           name,
           phone,
-          email,
+          address,
           point,
-          rankId: filterOpts.findIndex((item) => item === rank) + 1,
+          gender
         };
 
         const response = await customerApi.create(data);
-        if (response?.data?.type === status.success) {
+        if (response?.status === 200) {
           fetchData();
           enqueueSnackbar(response?.data?.message, {
             variant: "success",
@@ -61,10 +61,11 @@ export default function MemberDialogAdd({
     submit();
     setOpen(false);
     setName("");
-    setEmail("");
     setPhone("");
+    setAdress("");
+    setGender("");
     setPoint("");
-    setRank(filterOpts[0]);
+    // setRank(filterOpts[0]);
   };
 
   return (
@@ -84,7 +85,7 @@ export default function MemberDialogAdd({
           fontSize="1.25em"
           mb="0.25em"
         >
-          Add new member
+          Add new customer
         </Typography>
         <form onSubmit={handleSubmit}>
           <Stack>
@@ -98,16 +99,6 @@ export default function MemberDialogAdd({
                   onChange={(e) => setName(e.target.value)}
                 />
               </FormControl>
-              <FormControl>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </FormControl>
               <FormControl required>
                 <FormLabel>Phone</FormLabel>
                 <Input
@@ -115,6 +106,24 @@ export default function MemberDialogAdd({
                   placeholder="Phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Gender</FormLabel>
+                <Input
+                  name="gander"
+                  placeholder="Gender"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Address</FormLabel>
+                <Input
+                  name="address"
+                  placeholder="Address"
+                  value={address}
+                  onChange={(e) => setAdress(e.target.value)}
                 />
               </FormControl>
               <FormControl required>
@@ -125,21 +134,6 @@ export default function MemberDialogAdd({
                   value={point}
                   onChange={(e) => setPoint(e.target.value)}
                 />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Rank</FormLabel>
-                <Select
-                  value={rank}
-                  onChange={(e, newRank) => {
-                    setRank(newRank);
-                  }}
-                >
-                  {filterOpts.map((filterOpt) => (
-                    <Option key={filterOpt} value={filterOpt}>
-                      {filterOpt}
-                    </Option>
-                  ))}
-                </Select>
               </FormControl>
             </Stack>
             <Box mt={3} display="flex" gap={2} sx={{ width: "100%" }}>

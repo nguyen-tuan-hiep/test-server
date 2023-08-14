@@ -39,7 +39,7 @@ export default function Router() {
       element: <Events />,
     },
     {
-      path: "Members",
+      path: "members",
       element: <Members />,
     },
     {

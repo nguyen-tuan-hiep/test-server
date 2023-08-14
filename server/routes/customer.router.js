@@ -9,8 +9,8 @@ router.get('/', customerController.getAllCustomers);
 // search for a customer by name
 router.post('/search', customerController.searchCustomerByName);
 
-// search for a customer by attributes
-router.get('/search', customerController.searchCustomerByAttributes);
+// search for a customer by name and membership type
+router.get('/search', customerController.searchCustomerByNameAndMembership);
 
 // get customer by id
 router.get('/:id', customerController.getOneCustomer);
