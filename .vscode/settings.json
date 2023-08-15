@@ -1,6 +1,5 @@
 {
   "files.eol": "\n",
-  "editor.formatOnSave": true,
   "files.trimFinalNewlines": true,
   "files.insertFinalNewline": true,
   "editor.bracketPairColorization.enabled": true,
@@ -8,8 +7,6 @@
   "editor.inlineSuggest.enabled": true,
   "editor.lineNumbers": "relative",
   "editor.renderWhitespace": "none",
-  "sqltools.highlightQuery": false,
-  "sqltools.results.reuseTabs": "connection",
   "emmet.includeLanguages": {
     "javascript": "javascriptreact",
     "typescript": "typescriptreact",
