@@ -67,7 +67,7 @@ async function getEventById(req, res) {
     if (!event.rows.length) {
       return res.status(404).json({ message: 'Event not found' });
     }
-    return res.json({ message: 'Found!' }, { data: event.rows[0] });
+    return res.json({ message: 'Found!', data: event.rows[0] });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: error.message });
