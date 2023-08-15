@@ -29,14 +29,14 @@ export default function EventDialogEdit(props) {
   const [description, setDescription] = useState(props.description);
   const [eventStatus, setEventStatus] = useState(props.status);
   const [poster, setPoster] = useState(props.poster);
-  const [minCost, setMinCost] = useState(props.minCost);
-  const [discount, setDiscount] = useState(props.discount);
-  const [beginTime, setBeginTime] = useState(
-    new Date(props.beginTime).toISOString().replace(/:\d{2}.\d{3}Z$/, "")
-  );
-  const [endTime, setEndTime] = useState(
-    new Date(props.endTime).toISOString().replace(/:\d{2}.\d{3}Z$/, "")
-  );
+  // const [beginTime, setBeginTime] = useState(
+  //   new Date(props.beginTime).toISOString().replace(/:\d{2}.\d{3}Z$/, ""),
+  // );
+  // const [endTime, setEndTime] = useState(
+  //   new Date(props.endTime).toISOString().replace(/:\d{2}.\d{3}Z$/, ""),
+  // );
+  const [beginTime, setBeginTime] = useState(props.beginTime);
+  const [endTime, setEndTime] = useState(props.endTime);
   const [posterChanged, setPosterChanged] = useState(false);
   const [preview, setPreview] = useState();
   const { enqueueSnackbar } = useSnackbar();
@@ -67,8 +67,6 @@ export default function EventDialogEdit(props) {
               name,
               description,
               status: eventStatus,
-              discount,
-              minCost,
               beginTime,
               endTime,
               image: poster,
@@ -77,8 +75,6 @@ export default function EventDialogEdit(props) {
               name,
               description,
               status: eventStatus,
-              discount,
-              minCost,
               beginTime,
               endTime,
             };
@@ -155,26 +151,6 @@ export default function EventDialogEdit(props) {
                     placeholder="Status"
                     value={eventStatus}
                     onChange={(e) => setEventStatus(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl required>
-                  <FormLabel>Discount</FormLabel>
-                  <Input
-                    type="number"
-                    name="discount"
-                    placeholder="50000"
-                    value={discount}
-                    onChange={(e) => setDiscount(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl required>
-                  <FormLabel>Min price</FormLabel>
-                  <Input
-                    type="number"
-                    name="Min price"
-                    placeholder="50000"
-                    value={minCost}
-                    onChange={(e) => setMinCost(e.target.value)}
                   />
                 </FormControl>
                 <TextField

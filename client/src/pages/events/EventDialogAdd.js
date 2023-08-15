@@ -29,18 +29,16 @@ export default function EventDialogAdd({
   fetchData,
   setLoading,
 }) {
-  let today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  today = today.toISOString().replace(/:\d{2}.\d{3}Z$/, "");
+  // let today = new Date();
+  // today.setUTCHours(0, 0, 0, 0);
+  // today = today.toISOString().replace(/:\d{2}.\d{3}Z$/, "");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [eventStatus, setEventStatus] = useState("");
   const [poster, setPoster] = useState("");
   const [preview, setPreview] = useState(undefined);
-  const [discount, setDiscount] = useState(0);
-  const [minCost, setMinCost] = useState(0);
-  const [beginTime, setBeginTime] = useState(today);
-  const [endTime, setEndTime] = useState(today);
+  const [beginTime, setBeginTime] = useState("");
+  const [closeTime, setEndTime] = useState("");
   const { enqueueSnackbar } = useSnackbar();
 
   // create a preview as a side effect, whenever selected file is changed
@@ -74,10 +72,8 @@ export default function EventDialogAdd({
           name,
           description,
           status: eventStatus,
-          discount,
-          minCost,
           beginTime,
-          endTime,
+          closeTime,
           image: poster,
         };
         const response = await eventApi.create(data);
@@ -99,10 +95,8 @@ export default function EventDialogAdd({
     setName("");
     setDescription("");
     setEventStatus("");
-    setDiscount("");
-    setMinCost("");
-    setBeginTime(today);
-    setEndTime(today);
+    setBeginTime("");
+    setEndTime("");
     setPoster("");
   };
 
@@ -169,26 +163,6 @@ export default function EventDialogAdd({
                     onChange={(e) => setEventStatus(e.target.value)}
                   />
                 </FormControl>
-                <FormControl required>
-                  <FormLabel>Discount</FormLabel>
-                  <Input
-                    type="number"
-                    name="discount"
-                    placeholder="50000"
-                    value={discount}
-                    onChange={(e) => setDiscount(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl required>
-                  <FormLabel>Min price{"(đ)"}</FormLabel>
-                  <Input
-                    type="number"
-                    name="Min price"
-                    placeholder="50000"
-                    value={minCost}
-                    onChange={(e) => setMinCost(e.target.value)}
-                  />
-                </FormControl>
                 <TextField
                   required
                   label="Begin Time"
@@ -201,14 +175,11 @@ export default function EventDialogAdd({
                   required
                   label="Close Time"
                   type="datetime-local"
-                  value={endTime}
+                  value={closeTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   sx={{ display: { xs: "flex", sm: "none" } }}
                 />
-                <FormControl
-                  required
-                  sx={{ display: { xs: "flex", sm: "none" } }}
-                >
+                <FormControl sx={{ display: { xs: "flex", sm: "none" } }}>
                   <FormLabel>Poster</FormLabel>
                   <IconButton component="label">
                     <AddPhotoAlternateRoundedIcon />
@@ -246,14 +217,11 @@ export default function EventDialogAdd({
                 required
                 label="Close Time"
                 type="datetime-local"
-                value={endTime}
+                value={closeTime}
                 onChange={(e) => setEndTime(e.target.value)}
                 sx={{ display: { sx: "none", sm: "flex" } }}
               />
-              <FormControl
-                required
-                sx={{ display: { sx: "none", sm: "flex" } }}
-              >
+              <FormControl sx={{ display: { sx: "none", sm: "flex" } }}>
                 <FormLabel>Poster</FormLabel>
                 <IconButton component="label">
                   <AddPhotoAlternateRoundedIcon />
