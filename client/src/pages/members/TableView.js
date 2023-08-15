@@ -13,6 +13,7 @@ const cols = [
 
 export const rankColors = [
   { mem_type: 'Bronze', color: "primary" },
+  { mem_type: 'Silver', color: "info" },
   { mem_type: 'Gold', color: "warning" },
   { mem_type: 'Diamond', color: "danger" },
 ];
