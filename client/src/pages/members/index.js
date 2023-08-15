@@ -21,7 +21,7 @@ import { useDebounce } from "../../hooks";
 import MemberDialogAdd from "./MemberDialogAdd";
 import TableView from "./TableView";
 
-export const filterOpts = ["Bronze", "Gold", "Diamond"];
+export const filterOpts = ["Bronze", "Silver", "Gold", "Diamond"];
 
 export default function Members() {
   const { drawerOpen } = useContext(SideDrawerContext);

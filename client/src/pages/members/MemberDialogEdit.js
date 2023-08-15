@@ -6,10 +6,9 @@ import Input from '@mui/joy/Input';
 import Modal from '@mui/joy/Modal';
 import ModalClose from '@mui/joy/ModalClose';
 import ModalDialog from '@mui/joy/ModalDialog';
-import Option from '@mui/joy/Option';
-import Select from '@mui/joy/Select';
 import Stack from '@mui/joy/Stack';
 import Typography from '@mui/joy/Typography';
+import SelectFilter from "../../components/SelectFilter";
 
 // Icons
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
@@ -31,6 +30,8 @@ export default function MemberDialogEdit(props) {
   const [address, setAdress] = useState(props.address);
   const [point, setPoint] = useState(props.point);
   const { enqueueSnackbar } = useSnackbar();
+
+  const filterOpts = ["Female", "Male"];
 
   const handleDelete = (e, id) => {
     e.preventDefault();
@@ -114,20 +115,11 @@ export default function MemberDialogEdit(props) {
             </FormControl>
             <FormControl>
               <FormLabel>Gender</FormLabel>
-              <Input
-                name="gender"
-                placeholder="Gender"
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-              />
-              {/* <Select
-                value={gender}
-                defaultValue="Male"
-                onChange={(e) => setGender(e.target.value)}
-              >
-                <Option value="Male">Male</Option>
-                <Option value="Female">Female</Option>
-              </Select> */}
+              <SelectFilter
+                  filterOpt={gender}
+                  setFilterOpt={setGender}
+                  filterOpts={filterOpts}
+                />
             </FormControl>
             <FormControl required>
               <FormLabel>Phone</FormLabel>

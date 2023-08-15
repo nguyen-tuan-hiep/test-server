@@ -6,8 +6,7 @@ import Input from "@mui/joy/Input";
 import Modal from "@mui/joy/Modal";
 import ModalClose from "@mui/joy/ModalClose";
 import ModalDialog from "@mui/joy/ModalDialog";
-import Option from "@mui/joy/Option";
-import Select from "@mui/joy/Select";
+import SelectFilter from "../../components/SelectFilter";
 import Stack from "@mui/joy/Stack";
 import Typography from "@mui/joy/Typography";
 import { useSnackbar } from "notistack";
@@ -30,6 +29,8 @@ export default function MemberDialogAdd({
   const [gender, setGender] = useState("");
   const [point, setPoint] = useState("");
   const { enqueueSnackbar } = useSnackbar();
+
+  const filterOpts = ["Female", "Male"];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -110,11 +111,10 @@ export default function MemberDialogAdd({
               </FormControl>
               <FormControl>
                 <FormLabel>Gender</FormLabel>
-                <Input
-                  name="gander"
-                  placeholder="Gender"
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
+                <SelectFilter
+                  filterOpt={gender}
+                  setFilterOpt={setGender}
+                  filterOpts={filterOpts}
                 />
               </FormControl>
               <FormControl>
