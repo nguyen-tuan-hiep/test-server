@@ -22,7 +22,7 @@ import OrderList from "./OrderList";
 import OrderListSelected from "./OrderListSelected";
 import { SelectCustomer } from "./SelectCustomer";
 import { SelectEvent } from "./SelectEvent";
-import diskApi from "../../api/diskApi";
+import dishApi from "../../api/dishApi";
 import comboApi from "../../api/comboApi";
 import status from "../../constants/status";
 import customerApi from "../../api/customerApi";
@@ -71,7 +71,7 @@ export default function OrderDialogAdd({
         const fetch = async () => {
             setDiskProgress(true);
             try {
-                const response = await diskApi.search(diskSearch);
+                const response = await dishApi.search(diskSearch);
                 if (response.data?.type === status.success) {
                     const disks = response.data.disks.map((item) => ({
                         id: item.disk_id,

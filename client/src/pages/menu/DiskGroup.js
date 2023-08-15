@@ -36,13 +36,13 @@ export default function DiskGroup({ category, disks, fetchData, setLoading }) {
                 {disks.map((disk) => {
                     if (disk.category_name === category)
                         return (
-                            <React.Fragment key={disk.disk_id}>
+                            <React.Fragment key={disk.dish_id}>
                                 <Disk
-                                    id={disk.disk_id}
-                                    name={disk.disk_name}
+                                    id={disk.dish_id}
+                                    name={disk.dish_name}
                                     description={disk.description}
                                     price={disk.price}
-                                    image={disk.image}
+                                    // image={disk.image}
                                     category={category}
                                     fetchData={fetchData}
                                     setLoading={setLoading}
@@ -51,7 +51,7 @@ export default function DiskGroup({ category, disks, fetchData, setLoading }) {
                         );
                     else
                         return (
-                            <React.Fragment key={disk.disk_id}></React.Fragment>
+                            <React.Fragment key={disk.dish_id}></React.Fragment>
                         );
                 })}
             </Box>

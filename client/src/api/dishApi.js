@@ -1,8 +1,8 @@
 import httpRequest from "./httpRequest";
 
-const PREFIX = "disk";
+const PREFIX = "dishes";
 
-const diskApi = {
+const dishApi = {
     create(data) {
         const url = `${PREFIX}/create`;
         return httpRequest.post(url, data, {
@@ -17,10 +17,10 @@ const diskApi = {
         const url = `${PREFIX}/${id}`;
         return httpRequest.get(url);
     },
-    getListOfDisk() {
-        const url = `${PREFIX}`;
-        return httpRequest.get(url);
-    },
+    // getListOfDisk() {
+    //     const url = `${PREFIX}`;
+    //     return httpRequest.get(url);
+    // },
     delete(id) {
         const url = `${PREFIX}/${id}`;
         return httpRequest.delete(url);
@@ -33,4 +33,4 @@ const diskApi = {
     },
 };
 
-export default diskApi;
+export default dishApi;

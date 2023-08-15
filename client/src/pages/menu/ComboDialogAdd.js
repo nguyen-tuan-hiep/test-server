@@ -22,7 +22,7 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import comboApi from "../../api/comboApi";
-import diskApi from "../../api/diskApi";
+import diskApi from "../../api/dishApi";
 import status from "../../constants/status";
 import { useDebounce } from "../../hooks";
 import ComboDiskList from "./ComboDiskList";

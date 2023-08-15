@@ -22,7 +22,7 @@ import { AspectRatio } from "@mui/joy";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { diskOpts } from ".";
-import diskApi from "../../api/diskApi";
+import diskApi from "../../api/dishApi";
 import status from "../../constants/status";
 
 export default function DiskDialogEdit(props) {

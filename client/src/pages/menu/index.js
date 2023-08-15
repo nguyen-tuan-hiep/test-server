@@ -12,7 +12,7 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 // Custom
 import { useContext, useEffect, useState } from "react";
 import comboApi from "../../api/comboApi";
-import diskApi from "../../api/diskApi";
+import dishApi from "../../api/dishApi";
 import Header from "../../components/Header";
 import Layout from "../../components/Layout";
 import Loading from "../../components/Loading";
@@ -29,14 +29,13 @@ import DiskGroup from "./DiskGroup";
 const comboOpt = "Combo";
 
 export const diskOpts = [
-  "Appetizers/Starters",
-  "Breakfast",
-  "Main Menu (Lunch/Dinner)",
+  "Main Menu",
+  "Side Menu",
   "Dessert",
   "Beverage",
 ];
 
-export const filterOpts = [comboOpt, ...diskOpts];
+export const filterOpts = [...diskOpts];
 
 export default function Menu() {
   const { drawerOpen } = useContext(SideDrawerContext);
@@ -60,10 +59,13 @@ export default function Menu() {
     }
 
     try {
-      const response = await diskApi.search(debounceValue);
-      if (response?.data?.type === status.success) {
-        setDisks(response?.data?.disks);
+      const response = await dishApi.search(debounceValue);
+      if (response?.status === 200) {
+        setDisks(response?.data?.data);
+        console.log(response?.data?.data);
+        console.log(disks);
       }
+
     } catch (err) {
       setDisks([]);
     }
@@ -144,7 +146,7 @@ export default function Menu() {
                   startDecorator={<Add />}
                   onClick={() => setOpenDiskAdd(true)}
                 >
-                  Add disk
+                  Add dish
                 </Button>
                 <DiskDialogAdd
                   open={openDiskAdd}

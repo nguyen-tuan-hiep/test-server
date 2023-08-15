@@ -25,7 +25,7 @@ import ComboDiskList from "./ComboDiskList";
 import ComboDiskListSelected from "./ComboDiskListSelected";
 import { useDebounce } from "../../hooks";
 import comboApi from "../../api/comboApi";
-import diskApi from "../../api/diskApi";
+import diskApi from "../../api/dishApi";
 import status from "../../constants/status";
 import Loading from "../../components/Loading";
 
@@ -115,18 +115,18 @@ export default function ComboDialogEdit(props) {
         const save = async () => {
             const data = imageChanged
                 ? {
-                      name,
-                      description,
-                      price,
-                      image,
-                      disks: selectedDisks,
-                  }
+                    name,
+                    description,
+                    price,
+                    image,
+                    disks: selectedDisks,
+                }
                 : {
-                      name,
-                      description,
-                      price,
-                      disks: selectedDisks,
-                  };
+                    name,
+                    description,
+                    price,
+                    disks: selectedDisks,
+                };
             setLoading(true);
             try {
                 const response = await comboApi.update(id, data);
@@ -222,7 +222,7 @@ export default function ComboDialogEdit(props) {
                                                     (sum, cur) =>
                                                         sum +
                                                         cur.price *
-                                                            cur.quantity,
+                                                        cur.quantity,
                                                     0
                                                 )
                                                 .toLocaleString()}

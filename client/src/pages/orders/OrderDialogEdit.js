@@ -20,7 +20,7 @@ import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import comboApi from "../../api/comboApi";
 import customerApi from "../../api/customerApi";
-import diskApi from "../../api/diskApi";
+import dishApi from "../../api/dishApi";
 import eventApi from "../../api/eventApi";
 import orderApi from "../../api/orderApi";
 import Loading from "../../components/Loading";
@@ -67,7 +67,7 @@ export default function OrderDialogEdit(props) {
     const fetch = async () => {
       setDiskProgress(true);
       try {
-        const response = await diskApi.search(diskSearch);
+        const response = await dishApi.search(diskSearch);
         if (response.data?.type === status.success) {
           const disks = response.data.disks.map((item) => ({
             id: item.disk_id,

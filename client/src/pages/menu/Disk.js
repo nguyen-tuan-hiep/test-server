@@ -17,7 +17,7 @@ import MoreVert from "@mui/icons-material/MoreVert";
 // Custom
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import diskApi from "../../api/diskApi";
+import dishApi from "../../api/dishApi";
 import AlertDialog from "../../components/AlertDialog";
 import status from "../../constants/status";
 import DiskDialogEdit from "./DiskDialogEdit";
@@ -52,7 +52,7 @@ export default function Disk({
     setProgressIcon(true);
     const remove = async () => {
       try {
-        const response = await diskApi.delete(id);
+        const response = await dishApi.delete(id);
 
         if (response?.data?.type === status.success) {
           setProgressIcon(false);
@@ -130,7 +130,7 @@ export default function Disk({
             <ListItemDecorator>
               <Edit />
             </ListItemDecorator>
-            Edit disk
+            Edit dish
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -142,7 +142,7 @@ export default function Disk({
             <ListItemDecorator sx={{ color: "inherit" }}>
               <DeleteForever />
             </ListItemDecorator>
-            Delete disk
+            Delete dish
           </MenuItem>
         </Menu>
         <DiskDialogEdit
