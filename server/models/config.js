@@ -4,12 +4,44 @@ import dotenv from 'dotenv';
 const { Pool } = pg;
 dotenv.config();
 
+const ca = `
+-----BEGIN CERTIFICATE-----
+MIIEQTCCAqmgAwIBAgIUXo8wQrh0lkUjs3DqtDDT9LJftQMwDQYJKoZIhvcNAQEM
+BQAwOjE4MDYGA1UEAwwvNDIwZDRiZmUtZDc0Ny00MTBiLWE3YjMtMGQ3NDkzOTQ0
+NTk5IFByb2plY3QgQ0EwHhcNMjMwODE1MTQwODA4WhcNMzMwODEyMTQwODA4WjA6
+MTgwNgYDVQQDDC80MjBkNGJmZS1kNzQ3LTQxMGItYTdiMy0wZDc0OTM5NDQ1OTkg
+UHJvamVjdCBDQTCCAaIwDQYJKoZIhvcNAQEBBQADggGPADCCAYoCggGBAOA8mcB5
+sYxn+1jX5cb1j5y09CsNmtAGpOMhMaWcg6NaIOFNt/xOUtO3bSEkJjaQ1HZQIeA+
+X66MrrFUrwSDrM1BhOaAx1+gUNMDOxf0VXC0+l3obHCzf7fwxncvDF0eEPJdkN12
+9fC0PIDOL/IY7Y0iMGHFvIg/ugYHeIXlyISiVXshEAi6Bl6xEeDt85+DSDPmUF80
+Yj8IebIuHO3GrpH0ARiVoa+2c7AoAh3AIEhrwC4sPEfVrXEuDUJWfqBtnXCnMrbv
+rzKt4yvHP+AYOQreV4w65DXXfyd0QE/YCdJkFPwfKRGXvJOYwFGBG2Vn30ZU0Hf+
+3hJ3WSQpJaJYe578+QdRD8LD5G6cUS0nIXRqPMn/+arOcAt84/aFkHzwGrWVEDeC
+RT5s1cwQNqaOMdsWk3GNPo3Y8i9gk4Bnov6kllwmBWjNESzEDL6urRNGJ/onYpaz
+F618BeCZhKCkmQWltHNp/jkXOWTvRKwUV3+Rq+U8blc+kOg9h7XmI4BBaQIDAQAB
+oz8wPTAdBgNVHQ4EFgQUT4+oyGfc52pktwsMxENWTTb1wq8wDwYDVR0TBAgwBgEB
+/wIBADALBgNVHQ8EBAMCAQYwDQYJKoZIhvcNAQEMBQADggGBAJSFJRrb9PzIHiD9
+nEqWEDW8ZNRQMt40ZXcYm0Cch5tbq27pdU9jjDnyNCvr3nvchBj5vX2Q59Btgeg5
+XEn9HSwZC/WLUO4KBeQjP+mBzW9fmJ/HY8bqLqhqIwovGurJsocjL3cHD1Cmrm5Q
+tYLxxYgLmc4pCPHF/NodD9cYGikhrNKmIoRaW2Bn37Rsa7URuWNxtRDDdxe/eFLy
+Lz9ZehNB7fMO29Pu5z+qxiAjv3mDwpVwYQT7gI1d527lQB1YmJZxBW8A2SorwN5W
+rJjbVzON/vFrtBJi9YajRo1WbaEvuoITXqp3RJRrXe9yjYAeNsKSkbkYX27oPP0c
+vF4hF0MVygTkzPxkun3YB5jYo4+pmzeAVfyp6W/DHjtHXIxQ/UnGiu3+nCgG1I+M
+sHaTm3g0ylLl1PypEve08tM1vSzF2yFkBEP63UnskJinrWG/p8N214IGJuI4IrXd
+cleURhczi6t+efjva1tUSMwMx7nj+6JrBrZCehunP7ZMkqD43w==
+-----END CERTIFICATE-----
+`;
+
 const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   database: process.env.DB_DATABASE,
+  ssl: {
+    rejectUnauthorized: true,
+    ca: ca,
+  },
 });
 
 export default pool;
