@@ -22,23 +22,23 @@ function App() {
         const fetch = async () => {
             setLoading(true);
 
-            const auth = JSON.parse(localStorage.getItem("login"));
-            if (!auth) {
-                if (window.location.pathname !== "/login")
-                    window.location.pathname = "/login";
-            }
+            // const auth = JSON.parse(localStorage.getItem("login"));
+            // if (!auth) {
+            //     if (window.location.pathname !== "/login")
+            //         window.location.pathname = "/login";
+            // }
 
-            try {
-                const response = await employeeApi.getEmployeeById(
-                    authentication.getUserId()
-                );
+            // try {
+            //     const response = await employeeApi.getEmployeeById(
+            //         authentication.getUserId()
+            //     );
 
-                if (response?.data?.type === status.success) {
-                    setUser(response?.data?.employee);
-                }
-            } catch (err) {
-                console.log(err);
-            }
+            //     if (response?.data?.type === status.success) {
+            //         setUser(response?.data?.employee);
+            //     }
+            // } catch (err) {
+            //     console.log(err);
+            // }
             setLoading(false);
         };
 

@@ -7,8 +7,6 @@ import jwtAuthRouter from './routes/jwtAuth.router.js';
 import dashboardRouter from './routes/dashboard.router.js';
 import uploadRouter from './routes/uploadImage.router.js';
 import exportDataRouter from './routes/exportData.router.js';
-import studentRouter from './routes/student.router.js';
-
 import eventRouter from './routes/event.router.js';
 import orderRouter from './routes/order.router.js';
 import tableRouter from './routes/table.router.js';
@@ -30,8 +28,6 @@ app.use('/auth', jwtAuthRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/upload', uploadRouter);
 app.use('/export', exportDataRouter);
-app.use('/students', studentRouter);
-
 app.use('/events', eventRouter);
 app.use('/orders', orderRouter);
 app.use('/tables', tableRouter);
