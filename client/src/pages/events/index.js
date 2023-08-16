@@ -18,7 +18,6 @@ import SideDrawer, { SideDrawerContext } from "../../components/SideDrawer";
 import Event from "./Event";
 import EventDialogAdd from "./EventDialogAdd";
 import eventApi from "../../api/eventApi";
-import status from "../../constants/status";
 import Loading from "../../components/Loading";
 import useDebounce from "../../hooks/useDebounce";
 
@@ -143,9 +142,8 @@ export default function Events() {
                         id={event.event_id}
                         name={event.event_name}
                         description={event.description}
-                        status={event.event_status}
                         beginTime={event.begin_time}
-                        endTime={event.close_time}
+                        closeTime={event.close_time}
                         poster={event.poster}
                         setLoading={setLoading}
                         fetchData={fetchData}

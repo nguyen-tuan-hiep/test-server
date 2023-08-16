@@ -19,7 +19,6 @@ import { useSnackbar } from "notistack";
 import { useState } from "react";
 import eventApi from "../../api/eventApi";
 import AlertDialog from "../../components/AlertDialog";
-import status from "../../constants/status";
 import EventDialogEdit from "./EventDialogEdit";
 import moment from "moment";
 
@@ -27,7 +26,6 @@ export default function Event({
   id,
   name,
   description,
-  status: eventStatus,
   poster,
   beginTime,
   closeTime,
@@ -55,7 +53,7 @@ export default function Event({
     const remove = async () => {
       try {
         const response = await eventApi.delete(id);
-        if (response?.data?.type === status.success) {
+        if (response?.status === 200) {
           setProgressIcon(false);
           fetchData();
           enqueueSnackbar(response?.data?.message, {
@@ -103,9 +101,9 @@ export default function Event({
         <Box sx={{ flex: 1 }}>
           <Typography textColor="#fff">{name}</Typography>
           <Typography level="body3" mt={0.5} textColor="rgba(255,255,255,0.72)">
-            {moment.utc(beginTime).format("DD/MM/YYYY")}
+            {moment.utc(beginTime).add(1, "d").format("DD/MM/YYYY")}
             {" - "}
-            {moment.utc(closeTime).format("DD/MM/YYYY")}
+            {moment.utc(closeTime).add(1, "d").format("DD/MM/YYYY")}
           </Typography>
         </Box>
         <IconButton
@@ -152,7 +150,6 @@ export default function Event({
           id={id}
           name={name}
           description={description}
-          status={eventStatus}
           poster={poster}
           beginTime={beginTime}
           closeTime={closeTime}
