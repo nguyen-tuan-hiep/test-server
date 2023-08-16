@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post('/create', tableController.createTable);
 
-router.put('/:id', tableController.updateTable);
+router.patch('/:id', tableController.updateTable);
 
 router.get('/:id', tableController.getTableById);
 

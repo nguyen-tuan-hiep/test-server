@@ -33,13 +33,13 @@ async function updateTable(req, res) {
             'SELECT * FROM tables WHERE table_id = $1',
             [id],
         );
-        if (capacity == null && table_status == null) {
-            return res.status(400).json({ message: 'At least 1 field is required' });
+        if (capacity == null || table_status == null) {
+            return res.status(400).json({ message: 'These fields are required!' });
         }
-        if (capacity == null) {
-            capacity =  table1.rows[0].capacity;};
-        if (table_status == null) {
-            table_status = table1.rows[0].table_status;};
+        // if (capacity == null) {
+        //     capacity =  table1.rows[0].capacity;};
+        // if (table_status == null) {
+        //     table_status = table1.rows[0].table_status;};
         const table2 = await pool.query(
             'UPDATE tables SET capacity = $1, table_status = $2 WHERE table_id = $3 RETURNING *',
             [capacity, table_status, id],
@@ -49,7 +49,7 @@ async function updateTable(req, res) {
             return res.status(404).json({ message: 'Table not found' });
         }
         // Update table if it exists
-        return res.json({ message: 'Table was updated!', data: table2.rows[0] });
+        return res.status(200).json({ message: 'Table was updated!', data: table2.rows[0] });
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: 'Unexpected error occurred' });
@@ -77,7 +77,7 @@ async function getTableById(req, res) {
 async function getTableList(req, res) {
     try {
         const tables = await pool.query('SELECT * FROM tables');
-        return res.json({message: 'List found', data: tables.rows });
+        return res.status(200).json({message: 'List found', data: tables.rows });
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: 'Unexpected error occurred' });
@@ -95,7 +95,7 @@ async function deleteTableById(req, res) {
         if (!table.rows.length) {
             return res.status(404).json({ message: 'Table not found' });
         }
-        return res.json({ message: 'Table was deleted!', data: table.rows[0] });
+        return res.status(200).json({ message: 'Table was deleted!', data: table.rows[0] });
     } catch (error) {
         console.error(error.message);
         return res.status(500).json({ message: 'Unexpected error occurred' });

@@ -37,11 +37,11 @@ export default function TableDialogAdd({
             setLoading(true);
             try {
                 const response = await tableApi.createTable({
-                    id,
-                    numberOfSeats,
-                    tableStatus,
+                    table_id: id,
+                    capacity: numberOfSeats,
+                    table_status: tableStatus,
                 });
-                if (response?.data?.type === status.success) {
+                if (response.status === 200) {
                     fetchData();
                     enqueueSnackbar(response?.data?.message, {
                         variant: "success",
@@ -90,7 +90,7 @@ export default function TableDialogAdd({
                         }}
                     >
                         <Stack spacing={2}>
-                            <FormControl required>
+                            {/* <FormControl required>
                                 <FormLabel>ID</FormLabel>
                                 <Input
                                     autoFocus
@@ -99,7 +99,7 @@ export default function TableDialogAdd({
                                     value={id}
                                     onChange={(e) => setId(e.target.value)}
                                 />
-                            </FormControl>
+                            </FormControl> */}
                             <FormControl required>
                                 <FormLabel>Capacity</FormLabel>
                                 <Input

@@ -1,6 +1,6 @@
 import httpRequest from "./httpRequest";
 
-const PREFIX = "table";
+const PREFIX = "tables";
 
 const tableApi = {
     createTable: (data) => {

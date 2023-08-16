@@ -50,7 +50,7 @@ export default function Table({
             try {
                 const response = await tableApi.deleteTableById(id);
 
-                if (response?.data?.type === status.success) {
+                if (response.status === 200) {
                     fetchData();
                     setLoading(false);
                     enqueueSnackbar(response.data.message, {
@@ -99,7 +99,7 @@ export default function Table({
             <Box sx={{ pt: 2, display: "flex", alignItems: "center" }}>
                 <Box sx={{ flex: 1 }}>
                     <Typography>Seats: {numberOfSeats}</Typography>
-                    <Typography color={statusColor}>{tableStatus}</Typography>
+                    <Typography color={statusColor}>Status: {tableStatus === 0 ? "Unavailable" : "Available"}</Typography>
                 </Box>
                 <Box>
                     <IconButton

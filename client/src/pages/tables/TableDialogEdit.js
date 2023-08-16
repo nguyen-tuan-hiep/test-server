@@ -34,19 +34,19 @@ export default function TableDialogEdit(props) {
             setLoading(true);
             try {
                 const response = await tableApi.updateTable(id, {
-                    numberOfSeats,
-                    tableStatus,
+                    capacity: numberOfSeats,
+                    table_Status: tableStatus,
                 });
 
-                if (response?.data?.type === status.success) {
+                if (response.status === 200) {
                     fetchData();
-                    enqueueSnackbar(response?.data?.message, {
+                    enqueueSnackbar(response.message, {
                         variant: "success",
                     });
-                }
+                }                
             } catch (err) {
                 setLoading(false);
-                enqueueSnackbar(err?.data?.message, {
+                enqueueSnackbar(err.message, {
                     variant: "error",
                 });
             }
@@ -77,7 +77,7 @@ export default function TableDialogEdit(props) {
                 </Typography>
                 <Stack component="form">
                     <Stack spacing={2}>
-                        <FormControl required>
+                        {/* <FormControl required>
                             <FormLabel>ID</FormLabel>
                             <Input
                                 disabled
@@ -86,7 +86,7 @@ export default function TableDialogEdit(props) {
                                 value={id}
                                 onChange={(e) => setId(e.target.value)}
                             />
-                        </FormControl>
+                        </FormControl> */}
                         <FormControl required>
                             <FormLabel>Capacity</FormLabel>
                             <Input

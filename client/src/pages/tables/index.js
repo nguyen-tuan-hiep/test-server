@@ -22,13 +22,13 @@ import Table from "./Table";
 import TableDialogAdd from "./TableDialogAdd";
 
 export const filterObjs = [
-  { status: "Available", color: "success" },
-  { status: "Reserved", color: "neutral" },
-  { status: "Occupied", color: "primary" },
-  { status: "Out of Order", color: "danger" },
+  { table_status: "0", color: "success" },
+  { table_status: "1", color: "neutral" },
+  // { status: "Occupied", color: "primary" },
+  // { status: "Out of Order", color: "danger" },
 ];
 
-export const filterOpts = filterObjs.map((filterObj) => filterObj.status);
+export const filterOpts = filterObjs.map((filterObj) => filterObj.table_status);
 
 export default function Tables() {
   const { drawerOpen } = useContext(SideDrawerContext);
@@ -42,8 +42,11 @@ export default function Tables() {
     setLoading(true);
     try {
       const response = await tableApi.getTableList();
-      if (response?.data?.type === status.success) {
-        setTables(response?.data?.tables);
+      
+      console.log(response.data.data);
+      
+      if (response.status === 200) {
+        setTables(response?.data?.data);
       }
     } catch (err) {
       enqueueSnackbar(err.response?.data?.message, {
@@ -103,13 +106,13 @@ export default function Tables() {
               justifyContent="space-between"
               sx={{ my: 2, gap: 2 }}
             >
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+              {/* <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
                 <SelectFilter
                   filterOpt={filterOpt}
                   setFilterOpt={setFilterOpt}
                   filterOpts={filterOpts}
                 />
-              </Stack>
+              </Stack> */}
               <Stack direction="row" spacing={{ xs: 1.5, sm: 2, md: 2 }}>
                 <Button
                   startDecorator={<Add />}
@@ -134,9 +137,9 @@ export default function Tables() {
               px: 0.25,
               display: "grid",
               gridTemplateColumns: {
-                xs: "repeat(auto-fill, minmax(160px, 1fr))",
-                sm: "repeat(auto-fill, minmax(180px, 1fr))",
-                md: "repeat(auto-fill, minmax(200px, 1fr))",
+                xs: "repeat(auto-fill, minmax(200px, 1fr))",
+                sm: "repeat(auto-fill, minmax(220px, 1fr))",
+                md: "repeat(auto-fill, minmax(240px, 1fr))",
               },
               gap: 3,
             }}
@@ -150,13 +153,13 @@ export default function Tables() {
                   <div key={table.table_id}>
                     <Table
                       id={table.table_id}
-                      numberOfSeats={table.number_of_seats}
+                      numberOfSeats={table.capacity}
                       tableStatus={table.table_status}
-                      statusColor={
-                        filterObjs.find(
-                          (item) => item.status === table.table_status
-                        ).color
-                      }
+                      // statusColor={
+                      //   filterObjs.find(
+                      //     (item) => item.status === table.table_status
+                      //   ).color
+                      // }
                       setLoading={setLoading}
                       fetchData={fetchData}
                     />
