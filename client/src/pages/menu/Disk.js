@@ -54,7 +54,7 @@ export default function Disk({
       try {
         const response = await dishApi.delete(id);
 
-        if (response?.data?.type === status.success) {
+        if (response?.status === 200) {
           setProgressIcon(false);
           fetchData();
           enqueueSnackbar(response.data.message, {

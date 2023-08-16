@@ -11,7 +11,6 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 // Custom
 import { useContext, useEffect, useState } from "react";
-import comboApi from "../../api/comboApi";
 import dishApi from "../../api/dishApi";
 import Header from "../../components/Header";
 import Layout from "../../components/Layout";
@@ -19,57 +18,32 @@ import Loading from "../../components/Loading";
 import SelectFilter from "../../components/SelectFilter";
 import SideBar from "../../components/SideBar";
 import SideDrawer, { SideDrawerContext } from "../../components/SideDrawer";
-import status from "../../constants/status";
 import { useDebounce } from "../../hooks";
-import ComboDialogAdd from "./ComboDialogAdd";
-import ComboGroup from "./ComboGroup";
 import DiskDialogAdd from "./DiskDialogAdd";
 import DiskGroup from "./DiskGroup";
 
-const comboOpt = "Combo";
-
-export const diskOpts = [
-  "Main Menu",
-  "Side Menu",
-  "Dessert",
-  "Beverage",
-];
+export const diskOpts = ["Main Menu", "Side Menu", "Dessert Menu", "Beverage Menu"];
 
 export const filterOpts = [...diskOpts];
 
 export default function Menu() {
   const { drawerOpen } = useContext(SideDrawerContext);
   const [openDiskAdd, setOpenDiskAdd] = useState(false);
-  const [openComboAdd, setOpenComboAdd] = useState(false);
   const [currentOpt, setCurrentOpt] = useState(null);
   const [loading, setLoading] = useState(false);
   const [disks, setDisks] = useState([]);
-  const [combos, setCombos] = useState([]);
   const [search, setSearch] = useState("");
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await comboApi.search(debounceValue);
-      if (response?.data?.type === status.success) {
-        setCombos(response?.data?.combos);
-      }
-    } catch (err) {
-      setCombos([]);
-    }
-
-    try {
       const response = await dishApi.search(debounceValue);
       if (response?.status === 200) {
         setDisks(response?.data?.data);
-        console.log(response?.data?.data);
-        console.log(disks);
       }
-
     } catch (err) {
       setDisks([]);
     }
-
     setLoading(false);
   };
 
@@ -77,17 +51,14 @@ export default function Menu() {
 
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line
   }, [debounceValue]);
 
-  return (
-    <>
+  return (<>
       {drawerOpen && <SideDrawer />}
       <Layout.Root
         sx={{
           ...(drawerOpen && {
-            height: "100vh",
-            overflow: "hidden",
+            height: "100vh", overflow: "hidden",
           }),
         }}
       >
@@ -102,18 +73,12 @@ export default function Menu() {
         >
           <Box
             sx={{
-              pt: 1,
-              bgcolor: "background.surface",
-              position: "sticky",
-              top: 64, // TODO: Fix hard code
-              zIndex: 1100,
+              pt: 1, bgcolor: "background.surface", position: "sticky", top: 64, zIndex: 1100,
             }}
           >
             <Box
               sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
               }}
             >
               <Typography fontWeight="bold" level="h3" component="h1">
@@ -154,64 +119,27 @@ export default function Menu() {
                   fetchData={fetchData}
                   setLoading={setLoading}
                 />
-                <Button
-                  color="primary"
-                  startDecorator={<Add />}
-                  onClick={() => setOpenComboAdd(true)}
-                >
-                  Add combo
-                </Button>
-                <ComboDialogAdd
-                  open={openComboAdd}
-                  setOpen={setOpenComboAdd}
-                  fetchData={fetchData}
-                  setLoading={setLoading}
-                />
               </Stack>
             </Stack>
             <Divider />
           </Box>
 
           {loading && <Loading />}
-          {!loading && (
-            <Box px={0.25}>
-              {currentOpt === null ? (
-                filterOpts.map((filterOpt) =>
-                  filterOpt === comboOpt ? (
-                    <ComboGroup
-                      key={filterOpt}
-                      combos={combos}
-                      fetchData={fetchData}
-                      setLoading={setLoading}
-                    />
-                  ) : (
-                    <DiskGroup
-                      key={filterOpt}
-                      category={filterOpt}
-                      disks={disks}
-                      fetchData={fetchData}
-                      setLoading={setLoading}
-                    />
-                  )
-                )
-              ) : currentOpt === comboOpt ? (
-                <ComboGroup
-                  key={currentOpt}
-                  combos={combos}
-                  fetchData={fetchData}
-                />
-              ) : (
-                <DiskGroup
+          {!loading && (<Box px={0.25}>
+              {currentOpt === null ? (filterOpts.map((filterOpt) => (<DiskGroup
+                    key={filterOpt}
+                    category={filterOpt}
+                    disks={disks}
+                    fetchData={fetchData}
+                    setLoading={setLoading}
+                  />))) : (<DiskGroup
                   key={currentOpt}
                   category={currentOpt}
                   disks={disks}
                   fetchData={fetchData}
-                />
-              )}
-            </Box>
-          )}
+                />)}
+            </Box>)}
         </Layout.Main>
       </Layout.Root>
-    </>
-  );
+    </>);
 }

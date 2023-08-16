@@ -22,7 +22,7 @@ import { AspectRatio } from "@mui/joy";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { diskOpts } from ".";
-import diskApi from "../../api/dishApi";
+import dishApi from "../../api/dishApi";
 import status from "../../constants/status";
 
 export default function DiskDialogAdd({
@@ -72,10 +72,11 @@ export default function DiskDialogAdd({
         price,
         description,
       };
+      console.log(data);
 
-      const response = await diskApi.create(data);
+      const response = await dishApi.create(data);
 
-      if (response?.data?.type === status.success) {
+      if (response?.status === 200) {
         fetchData();
         enqueueSnackbar(response.data.message, {
           variant: "success",

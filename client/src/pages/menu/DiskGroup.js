@@ -34,7 +34,7 @@ export default function DiskGroup({ category, disks, fetchData, setLoading }) {
                 }}
             >
                 {disks.map((disk) => {
-                    if (disk.category_name === category)
+                    if (disk.menu_name === category)
                         return (
                             <React.Fragment key={disk.dish_id}>
                                 <Disk

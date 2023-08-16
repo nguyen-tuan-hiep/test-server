@@ -5,7 +5,7 @@ import pool from '../models/config.js';
 
 async function getAllDishes(req, res) {
     try {
-        const allDishes = await pool.query('SELECT * FROM dishes ORDER BY dish_id ASC');
+        const allDishes = await pool.query('SELECT * FROM dishes INNER JOIN menus ON dishes.menu_id = menus.menu_id WHERE dish_status = 1 ORDER BY dish_id ASC');
         res.json({ message: 'success', data: allDishes.rows });
     } catch (error) {
         console.log(error.message);
@@ -18,7 +18,7 @@ async function getAllDishes(req, res) {
 async function getOneDishById(req, res) {
     try {
         const { id } = req.params;
-        const dish = await pool.query('SELECT * FROM dishes WHERE dish_id = $1', [id]);
+        const dish = await pool.query('SELECT * FROM dishes INNER JOIN menus ON dishes.menu_id = menus.menu_id WHERE dish_status = 1 AND dish_id = $1', [id]);
         if (!dish.rows.length) {
             return res.status(500).json({ message: 'Dish not found' });
         }
@@ -39,7 +39,7 @@ async function searchDishByName(req, res) {
             return getAllDishes(req, res);
         }
         const dishes = await pool.query(
-            'SELECT * FROM dishes WHERE dish_name ILIKE $1 ORDER BY dish_id ASC',
+            'SELECT * FROM dishes INNER JOIN menus ON dishes.menu_id = menus.menu_id WHERE dish_status = 1 AND dish_name ILIKE $1 ORDER BY dish_id ASC',
             [`%${name}%`],
         );
         if (!dishes.rows.length) {
@@ -56,8 +56,9 @@ async function searchDishByName(req, res) {
 
 async function createDish(req, res) {
     try {
-        const { dishName, description, price, dishStatus, categoryId, menuId } = req.body;
-        if (!dishName) {
+        console.log(req.body);
+        const { name, categoryId, price, description } = req.body;
+        if (!name) {
             return res.status(400).json({ message: 'Name is required' });
         }
         if (!price) {
@@ -65,11 +66,11 @@ async function createDish(req, res) {
         }
 
         const dish = await pool.query(
-            'INSERT INTO dishes (dish_name, description, price, dish_status, category_id, menu_id) VALUES($1, $2, $3, $4, $5, $6) RETURNING *',
-            [dishName, description, price, dishStatus, categoryId, menuId],
+            'INSERT INTO dishes (dish_name, menu_id, price, description, dish_status) VALUES($1, $2, $3, $4, $5) RETURNING *',
+            [name, categoryId, price, description, 1],
         );
         // res.json({ message: "success", message: 'Dish was created', data: dish.rows[0] });
-        res.json({ message: 'Dish was created!', data: dish.rows[0] });
+        return res.status(200).json({ message: 'Dish was created!', data: dish.rows[0] });
     } catch (error) {
         console.log(error.message);
         // eslint-disable-next-line linebreak-style
@@ -80,6 +81,7 @@ async function createDish(req, res) {
 async function deleteDishById(req, res) {
     try {
         const { id } = req.params;
+        console.log(id)
         // Check if dish exists
         let dish = await pool.query('SELECT * FROM dishes WHERE dish_id = $1', [id]);
         if (!dish.rows.length) {
@@ -90,7 +92,7 @@ async function deleteDishById(req, res) {
         dish = await pool.query('UPDATE dishes SET dish_status = 0 WHERE dish_id = $1 RETURNING *', [
             id,
         ]);
-        res.json({ message: 'Dish status is changed successfully!', data: dish.rows[0] });
+        res.json({ message: 'Dish is deleted!', data: dish.rows[0] });
     } catch (error) {
         console.log(error.message);
     }
@@ -98,6 +100,7 @@ async function deleteDishById(req, res) {
 // TODO: post => patch
 async function updateDish(req, res) {
     try {
+        console.log(req.body);
         const { id } = req.params;
         // Check if dish exists
         const dish = await pool.query('SELECT * FROM dishes WHERE dish_id = $1', [id]);
@@ -117,15 +120,15 @@ async function updateDish(req, res) {
                 `UPDATE dishes SET ${queryFields} WHERE dish_id = $${queryValues.length + 1} RETURNING *`,
                 [...queryValues, id],
             );
-            res.json({
+            return res.status(200).json({
                 message: 'Dish was updated!',
                 data: updatedDish.rows[0],
             });
         } else {
-            res.status(400).json({ message: 'Missing body' });
+            return res.status(400).json({ message: 'Missing body' });
         }
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
         return res.status(500).json({ message: 'Unexpected error occurred' });
     }
 }
