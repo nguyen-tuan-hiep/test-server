@@ -1,4 +1,4 @@
-import pool from '../models/config';
+import pool from '../models/config.js';
 
 async function getAllReservations(req, res) {
   try {
