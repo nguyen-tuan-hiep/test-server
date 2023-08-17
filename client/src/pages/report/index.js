@@ -45,7 +45,7 @@ export default function Report() {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
     const [orders, setOrders] = useState([]);
-    const [beginDate, setBeginDate] = useState(lastMonth);
+    const [beginDate, setBeginDate] = useState('2022-09-25');
     const [endDate, setEndDate] = useState(today);
     const { enqueueSnackbar } = useSnackbar();
     const csvLinkEl = createRef();
