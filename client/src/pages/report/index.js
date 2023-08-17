@@ -21,7 +21,10 @@ import {
     Tooltip,
     XAxis,
     YAxis,
+    BarChart, 
+    Bar,
 } from "recharts";
+// import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import Header from "../../components/Header";
 import Layout from "../../components/Layout";
 import SideBar from "../../components/SideBar";
@@ -46,7 +49,17 @@ export default function Report() {
     const [endDate, setEndDate] = useState(today);
     const { enqueueSnackbar } = useSnackbar();
     const csvLinkEl = createRef();
-
+    const [totalEarned, setTotalEarned] = useState(0);
+    // const yAxisFormatter = (value) => `${value.toLocaleString(undefined, { minimumFractionDigits: 3 })} VND`;
+    // const yAxisFormatter = (value) => {
+    //     const formattedValue = value.toLocaleString(undefined, { minimumFractionDigits: 0 });
+    //     const paddedValue = formattedValue.padStart(6, '0'); // Assuming maximum value is 999,999
+    //     return `${paddedValue} VND`;
+    // };
+    const yAxisFormatter = (value) => {
+        const formattedValue = value.toLocaleString(undefined, { minimumFractionDigits: 0 });
+        return `${formattedValue},000 VND`;
+    };
     useEffect(() => {
         const fetch = async () => {
             setLoading(true);
@@ -62,7 +75,7 @@ export default function Report() {
                             .utc(item.date)
                             .add(1, "d")
                             .format("DD-MM-YYYY"),
-                        Earned: item.earned,
+                        Earned: parseFloat(item.earned),
                     }));
                     setData(orders);
                 }
@@ -81,6 +94,16 @@ export default function Report() {
             setOrders([]);
         }
     }, [csvLinkEl, orders]);
+
+    useEffect(() => {
+        if (data.length > 0) {
+            let total = 0;
+            data.forEach((item) => {
+                total += item.Earned;
+            });
+            setTotalEarned(total);
+        }
+    }, [data]);
 
     const handleExport = () => {
         const getOrders = async () => {
@@ -199,14 +222,14 @@ export default function Report() {
                                         level="h5"
                                         component="h2"
                                     >
-                                        Total Earned
+                                        Total Earned: {totalEarned.toLocaleString()},000 VND
                                     </Typography>
                                     <Box height={350}>
                                         <ResponsiveContainer
                                             width="100%"
                                             height="100%"
                                         >
-                                            <LineChart
+                                            <BarChart
                                                 width={500}
                                                 height={300}
                                                 data={data}
@@ -218,17 +241,17 @@ export default function Report() {
                                                 }}
                                             >
                                                 <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="Date" />
-                                                <YAxis />
+                                                <XAxis dataKey="Date" label={{ value: "Date", position: "insideBottom", offset: -5 }} />
+                                                <YAxis label={{ value: "Earned", angle: -90, position: "insideLeft", offset: -5 }} tickFormatter={yAxisFormatter} />
                                                 <Tooltip />
                                                 <Legend />
-                                                <Line
-                                                    type="monotone"
+                                                <Bar    
                                                     dataKey="Earned"
-                                                    stroke="#8884d8"
-                                                    activeDot={{ r: 8 }}
+                                                    fill="#8884d8"                                                    
+                                                    name="Earned"
+                                                    unit=",000 VND" 
                                                 />
-                                            </LineChart>
+                                            </BarChart>
                                         </ResponsiveContainer>
                                     </Box>
                                 </Stack>
@@ -244,6 +267,14 @@ export default function Report() {
                             )}
                         </>
                     )}
+                    <Divider />
+                    <Box>
+                    {/* top 5 trending between date */}
+                    <Divider />
+                    </Box>
+                    <Box>
+                        
+                    </Box>
                 </Layout.Main>
             </Layout.Root>
         </>

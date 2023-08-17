@@ -70,7 +70,7 @@ async function getStatistic(req, res) {
         .status(400)
         .json({ message: 'Start date and end date are required' });
     }
-    if (beginDate > endDate) {
+    if (beginDate >= endDate) {
       return res
         .status(400)
         .json({ message: 'Start date must be before end date' });
