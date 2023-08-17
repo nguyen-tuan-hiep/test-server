@@ -5,31 +5,5 @@
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": true,
   "editor.inlineSuggest.enabled": true,
-  "editor.lineNumbers": "relative",
-  "editor.renderWhitespace": "none",
-  "emmet.includeLanguages": {
-    "javascript": "javascriptreact",
-    "typescript": "typescriptreact",
-    "jinja-html": "html"
-  },
-  "[html]": {
-    "editor.tabSize": 2,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[css][scss][less]": {
-    "editor.tabSize": 2,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascript][javascriptreact][typescript][typescriptreact]": {
-    "editor.tabSize": 2,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json][jsonc]": {
-    "editor.tabSize": 2,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[sql]": {
-    "editor.formatOnSave": false,
-    "editor.defaultFormatter": "mtxr.sqltools"
-  }
+  "editor.renderWhitespace": "none"
 }
