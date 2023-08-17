@@ -15,6 +15,25 @@ async function getAllCustomers(req, res) {
 async function createCustomer(req, res) {
   try {
     const { name, gender, phone, address, point } = req.body;
+    if (!name) {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+    if (!phone) {
+      return res.status(400).json({ message: 'Phone is required' });
+    }
+    if (!point) {
+      return res.status(400).json({ message: 'Point is required' });
+    }
+    // check if phone is already in use
+    const customerPhone = await pool.query(
+      'SELECT * FROM customers WHERE phone = $1',
+      [phone],
+    );
+    if (customerPhone.rows.length) {
+      return res
+        .status(400)
+        .json({ message: 'Phone is already in use', phone });
+    }
     const customer = await pool.query(
       'INSERT INTO customers (name, gender, phone, address, point) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [name, gender, phone, address, point],
@@ -83,6 +102,14 @@ async function getOneCustomer(req, res) {
 async function deleteCustomer(req, res) {
   try {
     const { id } = req.params;
+    // check if customer exists
+    const customer = await pool.query(
+      'SELECT * FROM customers WHERE customer_id = $1',
+      [id],
+    );
+    if (!customer.rows.length) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
     await pool.query('DELETE FROM customers WHERE customer_id = $1', [id]);
     return res.status(200).json({ message: 'Customer was deleted!' });
   } catch (error) {
@@ -95,7 +122,12 @@ async function searchCustomerByName(req, res) {
   try {
     const { name } = req.body;
     const customers = await pool.query(
-      `SELECT * FROM customers WHERE REPLACE(name, ' ', '') ILIKE $1 ORDER BY customer_id ASC`,
+      `SELECT * FROM customers WHERE REPLACE(name, ' ', '') ILIKE $1
+      ORDER BY CASE mem_type
+      WHEN 'Bronze' THEN 1
+      WHEN 'Silver' THEN 2
+      WHEN 'Gold' THEN 3
+      ELSE 4 `,
       [`%${name}%`],
     );
     if (!customers.rows.length) {
@@ -131,7 +163,7 @@ async function searchCustomerByNameAndMembership(req, res) {
       }
     }
 
-    queryText += ' ORDER BY customer_id ASC';
+    queryText += ' ORDER BY mem_type ASC';
 
     const customers = await pool.query(queryText, queryParams);
 
