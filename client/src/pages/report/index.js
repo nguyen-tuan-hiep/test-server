@@ -45,17 +45,16 @@ export default function Report() {
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState([]);
     const [orders, setOrders] = useState([]);
+
+    const [loading1, setLoading1] = useState(false);
+    const [data1, setData1] = useState([]);
+    const [dishes, setDishes] = useState([]);
     const [beginDate, setBeginDate] = useState('2022-09-25');
     const [endDate, setEndDate] = useState(today);
     const { enqueueSnackbar } = useSnackbar();
     const csvLinkEl = createRef();
     const [totalEarned, setTotalEarned] = useState(0);
-    // const yAxisFormatter = (value) => `${value.toLocaleString(undefined, { minimumFractionDigits: 3 })} VND`;
-    // const yAxisFormatter = (value) => {
-    //     const formattedValue = value.toLocaleString(undefined, { minimumFractionDigits: 0 });
-    //     const paddedValue = formattedValue.padStart(6, '0'); // Assuming maximum value is 999,999
-    //     return `${paddedValue} VND`;
-    // };
+
     const yAxisFormatter = (value) => {
         const formattedValue = value.toLocaleString(undefined, { minimumFractionDigits: 0 });
         return `${formattedValue},000`;
@@ -88,6 +87,35 @@ export default function Report() {
         fetch();
     }, [beginDate, endDate]);
 
+        // count dishes between date
+    useEffect(() => {
+        const fetch = async () => {
+            setLoading1(true);
+            try {
+                const response = await orderApi.getTop5DishesBetweenDate({
+                    beginDate,
+                    endDate,
+                });
+                console.log("response neee");
+                console.log(response)
+                if (response.status === 200) {
+                    console.log("hello");
+                    const dishes = response.data?.dishes.map((item) => ({
+                        dish_id: item.dish_id,
+                        dish_name: item.dish_name,
+                        dish_count: parseFloat(item.dish_count),
+                    }));
+                    setData1(dishes);
+                }
+            } catch (err) {
+                console.log(err.response);
+                setData1([]);
+            }
+            setLoading1(false);
+        };
+        fetch();
+    }, [beginDate, endDate]);
+
     useEffect(() => {
         if (orders.length > 0) {
             csvLinkEl.current.link.click();
@@ -104,6 +132,8 @@ export default function Report() {
             setTotalEarned(total);
         }
     }, [data]);
+
+
 
     const handleExport = () => {
         const getOrders = async () => {
@@ -212,6 +242,7 @@ export default function Report() {
                         </Box>
                         <Divider />
                     </Box>
+                    <Box>
                     {loading && <Loading />}
                     {!loading && (
                         <>
@@ -237,14 +268,14 @@ export default function Report() {
                                                     top: 5,
                                                     right: 30,
                                                     left: 20,
-                                                    bottom: 5,
+                                                    bottom: 90,
                                                 }}
                                             >
                                                 <CartesianGrid strokeDasharray="3 3" />
                                                 <XAxis dataKey="Date" />
                                                 <YAxis tickFormatter={yAxisFormatter} />
                                                 <Tooltip />
-                                                <Legend />
+                                                {/* <Legend /> */}
                                                 <Bar    
                                                     dataKey="Earned"
                                                     fill="#8884d8"                                                    
@@ -268,13 +299,65 @@ export default function Report() {
                         </>
                     )}
                     <Divider />
-                    <Box>
-                    {/* top 5 trending between date */}
-                    <Divider />
                     </Box>
+                    {/* sales of dishes*/}
                     <Box>
-                        
-                    </Box>
+                    {loading1 && <Loading />}
+                    {!loading1 && (
+                        <>
+                            {data1.length > 0 ? (
+                                <Stack mt={2.5} spacing={3}>
+                                    <Typography
+                                        fontWeight="bold"
+                                        level="h5"
+                                        component="h2"
+                                    >
+                                        Sales of dishes:
+                                    </Typography>
+                                    <Box height={350}>
+                                        <ResponsiveContainer
+                                            width="100%"
+                                            height="100%"
+                                        >
+                                            <BarChart
+                                                width={500}
+                                                height={500}
+                                                data={data1}
+                                                margin={{
+                                                    top: 5,
+                                                    right: 30,
+                                                    left: 20,
+                                                    bottom: 90,
+                                                }}
+                                            >
+                                                {<CartesianGrid strokeDasharray="3 3" />}
+                                                <XAxis dataKey="dish_name" interval={0} angle={-90} textAnchor="end"/>
+                                                <YAxis label={{ value: "Number of sales", angle: -90, position: "insideLeft", offset: 5 }}/>
+                                                <Tooltip />
+                                                {/* <Legend /> */}
+                                                <Bar    
+                                                    dataKey="dish_count"
+                                                    fill="#82ca9d"                                                    
+                                                    name="Sales of dishes"
+                                                />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </Box>
+                                </Stack>
+                            ) : (
+                                <Typography
+                                    mt={2}
+                                    fontWeight="bold"
+                                    level="h5"
+                                    component="h2"
+                                >
+                                    No records found!
+                                </Typography>
+                            )}
+                        </>
+                    )}
+                    <Divider />   
+                    </Box>                    
                 </Layout.Main>
             </Layout.Root>
         </>

@@ -43,6 +43,12 @@ const orderApi = {
             params: { beginDate: data.beginDate, endDate: data.endDate },
         });
     },
+    getTop5DishesBetweenDate(data) {
+        const url = `statistic/top5DishesBetweenDate`;
+        return httpRequest.get(url, {
+            params: { beginDate: data.beginDate, endDate: data.endDate },
+        });
+    }
 };
 
 export default orderApi;

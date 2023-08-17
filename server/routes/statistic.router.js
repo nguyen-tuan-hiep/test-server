@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/orderBetweenDate', statisticController.getOrderBetweenDate);
 
-router.post(
+router.get(
   '/top5DishesBetweenDate',
   statisticController.getTop5DishesBetweenDate,
 );
