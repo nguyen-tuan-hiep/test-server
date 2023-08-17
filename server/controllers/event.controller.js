@@ -99,22 +99,28 @@ async function getEventById(req, res) {
 async function searchEventByName(req, res) {
   try {
     const { name } = req.query;
-    if (!name) {
-      return getAllEvents(req, res);
+    let queryText = `SELECT * FROM events`;
+
+    const queryParams = [];
+
+    if (name) {
+      queryText += ' WHERE';
+      queryText += ` REPLACE(event_name, ' ', '') ILIKE $1`;
+      queryParams.push(`%${name}%`);
     }
-    const events = await pool.query(
-      'SELECT * FROM events WHERE event_name ILIKE $1 ORDER BY event_id ASC',
-      [`%${name}%`],
-    );
-    if (!events.rows.length) {
-      return res.status(500).json({ message: 'Event not found' });
+
+    queryText += ' ORDER BY event_id ASC';
+
+    const events = await pool.query(queryText, queryParams);
+
+    if (events.rows.length === 0) {
+      return res.status(404).json({ message: 'Event not found' });
     }
-    return res.json({ message: 'success', data: events.rows });
+
+    return res.json(events.rows);
   } catch (error) {
-    console.log(error.message);
-    return res.status(500).json({
-      message: error.message,
-    });
+    console.error(error.message);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }
 

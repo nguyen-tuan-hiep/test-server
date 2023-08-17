@@ -33,7 +33,7 @@ export default function Events() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await eventApi.searchEvent(debounceValue);
+      const response = await eventApi.searchEvent({name: debounceValue});
       if (response?.status === 200) {
         setEvents(response.data);
       }

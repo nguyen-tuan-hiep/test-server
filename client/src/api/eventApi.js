@@ -11,7 +11,7 @@ const eventApi = {
     const url = `${PREFIX}/${id}`;
     return httpRequest.get(url);
   },
-  searchEvent(name) {
+  searchEvent({name}) {
     const url = `${PREFIX}/search`;
     return httpRequest.get(url, { params: { name } });
   },
