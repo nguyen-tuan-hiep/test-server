@@ -20,6 +20,7 @@ import tableApi from "../../api/tableApi";
 import AlertDialog from "../../components/AlertDialog";
 import status from "../../constants/status";
 import TableDialogEdit from "./TableDialogEdit";
+import { renderOpts } from ".";
 
 export default function Table({
     id,
@@ -99,7 +100,7 @@ export default function Table({
             <Box sx={{ pt: 2, display: "flex", alignItems: "center" }}>
                 <Box sx={{ flex: 1 }}>
                     <Typography>Seats: {numberOfSeats}</Typography>
-                    <Typography color={statusColor}>Status: {tableStatus === 0 ? "Unavailable" : "Available"}</Typography>
+                    <Typography color={statusColor}>{renderOpts[tableStatus]}</Typography>
                 </Box>
                 <Box>
                     <IconButton

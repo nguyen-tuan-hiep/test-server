@@ -9,8 +9,11 @@ import FilterListRoundedIcon from "@mui/icons-material/FilterListRounded";
 // Custom
 import { useRef } from "react";
 
-export default function SelectFilter({ filterOpt, setFilterOpt, filterOpts }) {
+export default function SelectFilter({ filterOpt, setFilterOpt, filterOpts, renderOpts }) {
     const filterRef = useRef(null);
+    if (!renderOpts) {
+        renderOpts = filterOpts;
+    }
 
     return (
         <Select
@@ -40,9 +43,9 @@ export default function SelectFilter({ filterOpt, setFilterOpt, filterOpts }) {
                 indicator: null,
             })}
         >
-            {filterOpts.map((filterOpt) => (
+            {filterOpts.map((filterOpt, index) => (
                 <Option key={filterOpt} value={filterOpt}>
-                    {filterOpt}
+                    {renderOpts[index]}
                 </Option>
             ))}
         </Select>

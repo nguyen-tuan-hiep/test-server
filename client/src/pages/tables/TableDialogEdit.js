@@ -18,8 +18,8 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { useSnackbar } from "notistack";
 import { filterOpts } from ".";
 import tableApi from "../../api/tableApi";
-import status from "../../constants/status";
 import { usePropState } from "../../hooks";
+import { renderOpts } from ".";
 
 export default function TableDialogEdit(props) {
     const { open, setOpen, setLoading, fetchData } = props;
@@ -107,9 +107,9 @@ export default function TableDialogEdit(props) {
                                     setTableStatus(newTableStatus);
                                 }}
                             >
-                                {filterOpts.map((filterOpt) => (
+                                {filterOpts.map((filterOpt, index) => (
                                     <Option key={filterOpt} value={filterOpt}>
-                                        {filterOpt}
+                                        {renderOpts[index]}
                                     </Option>
                                 ))}
                             </Select>

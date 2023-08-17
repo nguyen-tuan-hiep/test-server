@@ -19,7 +19,7 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { useState } from "react";
 import { filterOpts } from ".";
 import tableApi from "../../api/tableApi";
-import status from "../../constants/status";
+import { renderOpts } from ".";
 
 export default function TableDialogAdd({
     open,
@@ -119,12 +119,12 @@ export default function TableDialogAdd({
                                         setTableStatus(newTableStatus);
                                     }}
                                 >
-                                    {filterOpts.map((filterOpt) => (
+                                    {filterOpts.map((filterOpt, index) => (
                                         <Option
                                             key={filterOpt}
                                             value={filterOpt}
                                         >
-                                            {filterOpt}
+                                            {renderOpts[index]}
                                         </Option>
                                     ))}
                                 </Select>

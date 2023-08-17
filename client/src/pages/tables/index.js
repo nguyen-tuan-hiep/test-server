@@ -22,13 +22,14 @@ import Table from "./Table";
 import TableDialogAdd from "./TableDialogAdd";
 
 export const filterObjs = [
-  { table_status: "0", color: "success" },
-  { table_status: "1", color: "neutral" },
-  // { status: "Occupied", color: "primary" },
-  // { status: "Out of Order", color: "danger" },
+  { table_status: 0, renderText: "Available", color: "success" },
+  { table_status: 1, renderText: "Reserved", color: "neutral" },
+  { table_status: 2, renderText: "Occupied", color: "primary" },
+  { table_status: 3, renderText: "Out of Order", color: "danger" },
 ];
 
 export const filterOpts = filterObjs.map((filterObj) => filterObj.table_status);
+export const renderOpts = filterObjs.map((filterObj) => filterObj.renderText);
 
 export default function Tables() {
   const { drawerOpen } = useContext(SideDrawerContext);
@@ -106,13 +107,14 @@ export default function Tables() {
               justifyContent="space-between"
               sx={{ my: 2, gap: 2 }}
             >
-              {/* <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
                 <SelectFilter
                   filterOpt={filterOpt}
                   setFilterOpt={setFilterOpt}
                   filterOpts={filterOpts}
+                  renderOpts={renderOpts}
                 />
-              </Stack> */}
+              </Stack>
               <Stack direction="row" spacing={{ xs: 1.5, sm: 2, md: 2 }}>
                 <Button
                   startDecorator={<Add />}
@@ -155,11 +157,11 @@ export default function Tables() {
                       id={table.table_id}
                       numberOfSeats={table.capacity}
                       tableStatus={table.table_status}
-                      // statusColor={
-                      //   filterObjs.find(
-                      //     (item) => item.status === table.table_status
-                      //   ).color
-                      // }
+                      statusColor={
+                        filterObjs.find(
+                          (item) => item.table_status === table.table_status
+                        )?.color
+                      }
                       setLoading={setLoading}
                       fetchData={fetchData}
                     />
