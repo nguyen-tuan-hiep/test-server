@@ -7,7 +7,7 @@ const discountApi = {
         const url = `${PREFIX}/create`;
         return httpRequest.post(url, data);
     },
-    getdiscountById(id) {
+    getDiscountById(id) {
         const url = `${PREFIX}/${id}`;
         return httpRequest.get(url);
     },

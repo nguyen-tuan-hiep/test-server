@@ -70,19 +70,6 @@ export default function Home() {
                 </li>
                 <li>Your website is not one-size-fits-all.</li>
               </ul>
-              <Typography fontWeight="bold" level="h5" component="h2">
-                RESPONSIVE DESIGN: THE SITE FITS ALL DEVICES
-              </Typography>
-              <Box>
-                As a consumer, you expect responsive website design when you go
-                online. Responsive design means your single website will adapt
-                to the device of every unique visitor. Whether your potential
-                customers are on a desktop or on their phones, you want your
-                site to look beautiful across all devices. RMS considers the
-                responsiveness of your website in our complete website
-                development process. We make sure your site not only functions,
-                but also looks great, on every device.
-              </Box>
             </Stack>
           </Stack>
         </Layout.Main>

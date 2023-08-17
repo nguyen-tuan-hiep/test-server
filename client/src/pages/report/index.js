@@ -58,7 +58,7 @@ export default function Report() {
     // };
     const yAxisFormatter = (value) => {
         const formattedValue = value.toLocaleString(undefined, { minimumFractionDigits: 0 });
-        return `${formattedValue},000 VND`;
+        return `${formattedValue},000`;
     };
     useEffect(() => {
         const fetch = async () => {
@@ -241,8 +241,8 @@ export default function Report() {
                                                 }}
                                             >
                                                 <CartesianGrid strokeDasharray="3 3" />
-                                                <XAxis dataKey="Date" label={{ value: "Date", position: "insideBottom", offset: -5 }} />
-                                                <YAxis label={{ value: "Earned", angle: -90, position: "insideLeft", offset: -5 }} tickFormatter={yAxisFormatter} />
+                                                <XAxis dataKey="Date" />
+                                                <YAxis tickFormatter={yAxisFormatter} />
                                                 <Tooltip />
                                                 <Legend />
                                                 <Bar    

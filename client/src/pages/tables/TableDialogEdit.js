@@ -35,18 +35,20 @@ export default function TableDialogEdit(props) {
             try {
                 const response = await tableApi.updateTable(id, {
                     capacity: numberOfSeats,
-                    table_Status: tableStatus,
+                    table_status: tableStatus,
                 });
 
                 if (response.status === 200) {
                     fetchData();
-                    enqueueSnackbar(response.message, {
+                    console.log(response.data.message);
+                    enqueueSnackbar(response?.data?.message, {
                         variant: "success",
                     });
                 }                
             } catch (err) {
                 setLoading(false);
-                enqueueSnackbar(err.message, {
+                console.log(err);
+                enqueueSnackbar(err.response?.data?.message, {
                     variant: "error",
                 });
             }

@@ -17,7 +17,6 @@ import Loading from "../../components/Loading";
 import SelectFilter from "../../components/SelectFilter";
 import SideBar from "../../components/SideBar";
 import SideDrawer, { SideDrawerContext } from "../../components/SideDrawer";
-import status from "../../constants/status";
 import Table from "./Table";
 import TableDialogAdd from "./TableDialogAdd";
 
@@ -44,7 +43,7 @@ export default function Tables() {
     try {
       const response = await tableApi.getTableList();
       
-      console.log(response.data.data);
+      console.log(response?.data?.data);
       
       if (response.status === 200) {
         setTables(response?.data?.data);

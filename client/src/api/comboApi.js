@@ -5,9 +5,7 @@ const PREFIX = "combo";
 const comboApi = {
     create(data) {
         const url = `${PREFIX}/create`;
-        return httpRequest.post(url, data, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
+        return httpRequest.post(url, data)
     },
     search(name) {
         const url = `${PREFIX}/search`;
@@ -27,9 +25,7 @@ const comboApi = {
     },
     update(id, data) {
         const url = `${PREFIX}/${id}`;
-        return httpRequest.patch(url, data, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
+        return httpRequest.patch(url, data)
     },
 };
 
