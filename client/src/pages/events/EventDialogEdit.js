@@ -64,14 +64,14 @@ export default function EventDialogEdit(props) {
               description,
               beginTime,
               closeTime,
-              poster: poster,
+              poster: URL.createObjectURL(poster),
             }
           : {
               name,
               description,
               beginTime,
               closeTime,
-              poster: poster,
+              poster: URL.createObjectURL(poster),
             };
         const response = await eventApi.update(id, data);
         if (response?.status === 200) {

@@ -71,7 +71,7 @@ export default function EventDialogAdd({
           description,
           beginTime,
           closeTime,
-          poster: poster,
+          poster: URL.createObjectURL(poster),
         };
         const response = await eventApi.create(data);
         if (response?.status === 200) {
