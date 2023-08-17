@@ -21,22 +21,18 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import eventApi from "../../api/eventApi";
-import status from "../../constants/status";
 
 export default function EventDialogEdit(props) {
   const { id, open, setOpen, setLoading, fetchData } = props;
   const [name, setName] = useState(props.name);
   const [description, setDescription] = useState(props.description);
-  const [eventStatus, setEventStatus] = useState(props.status);
   const [poster, setPoster] = useState(props.poster);
-  const [minCost, setMinCost] = useState(props.minCost);
-  const [discount, setDiscount] = useState(props.discount);
-  const [beginTime, setBeginTime] = useState(
-    new Date(props.beginTime).toISOString().replace(/:\d{2}.\d{3}Z$/, "")
-  );
-  const [endTime, setEndTime] = useState(
-    new Date(props.endTime).toISOString().replace(/:\d{2}.\d{3}Z$/, "")
-  );
+  const initialDate = new Date(props.beginTime);
+  initialDate.setDate(initialDate.getDate() + 1);
+  const [beginTime, setBeginTime] = useState(initialDate.toISOString().split("T")[0]);
+  const initialCloseTime = new Date(props.closeTime);
+  initialCloseTime.setDate(initialCloseTime.getDate() + 1);
+  const [closeTime, setEndTime] = useState(initialCloseTime.toISOString().split("T")[0]);
   const [posterChanged, setPosterChanged] = useState(false);
   const [preview, setPreview] = useState();
   const { enqueueSnackbar } = useSnackbar();
@@ -66,24 +62,19 @@ export default function EventDialogEdit(props) {
           ? {
               name,
               description,
-              status: eventStatus,
-              discount,
-              minCost,
               beginTime,
-              endTime,
-              image: poster,
+              closeTime,
+              poster: URL.createObjectURL(poster),
             }
           : {
               name,
               description,
-              status: eventStatus,
-              discount,
-              minCost,
               beginTime,
-              endTime,
+              closeTime,
+              poster: URL.createObjectURL(poster),
             };
         const response = await eventApi.update(id, data);
-        if (response?.data?.type === status.success) {
+        if (response?.status === 200) {
           fetchData();
           enqueueSnackbar(response?.data?.message, {
             variant: "success",
@@ -142,59 +133,27 @@ export default function EventDialogEdit(props) {
                   <Textarea
                     name="description"
                     minRows={2}
-                    maxRows={2}
+                    maxRows={5}
                     placeholder="This is an event featuring..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </FormControl>
-                <FormControl>
-                  <FormLabel>Status</FormLabel>
-                  <Input
-                    name="status"
-                    placeholder="Status"
-                    value={eventStatus}
-                    onChange={(e) => setEventStatus(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl required>
-                  <FormLabel>Discount</FormLabel>
-                  <Input
-                    type="number"
-                    name="discount"
-                    placeholder="50000"
-                    value={discount}
-                    onChange={(e) => setDiscount(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl required>
-                  <FormLabel>Min price</FormLabel>
-                  <Input
-                    type="number"
-                    name="Min price"
-                    placeholder="50000"
-                    value={minCost}
-                    onChange={(e) => setMinCost(e.target.value)}
-                  />
-                </FormControl>
                 <TextField
-                  required
                   label="Begin Time"
-                  type="datetime-local"
+                  type="date"
                   value={beginTime}
                   onChange={(e) => setBeginTime(e.target.value)}
                   sx={{ display: { xs: "flex", sm: "none" } }}
                 />
                 <TextField
-                  required
                   label="Close Time"
-                  type="datetime-local"
-                  value={endTime}
+                  type="date"
+                  value={closeTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   sx={{ display: { xs: "flex", sm: "none" } }}
                 />
                 <FormControl
-                  required
                   sx={{ display: { xs: "flex", sm: "none" } }}
                 >
                   <FormLabel>Poster</FormLabel>
@@ -223,23 +182,20 @@ export default function EventDialogEdit(props) {
               gap={2}
             >
               <TextField
-                required
                 label="Begin Time"
-                type="datetime-local"
+                type="date"
                 value={beginTime}
                 onChange={(e) => setBeginTime(e.target.value)}
                 sx={{ display: { sx: "none", sm: "flex" } }}
               />
               <TextField
-                required
                 label="Close Time"
-                type="datetime-local"
-                value={endTime}
+                type="date"
+                value={closeTime}
                 onChange={(e) => setEndTime(e.target.value)}
                 sx={{ display: { sx: "none", sm: "flex" } }}
               />
               <FormControl
-                required
                 sx={{ display: { sx: "none", sm: "flex" } }}
               >
                 <FormLabel>Poster</FormLabel>

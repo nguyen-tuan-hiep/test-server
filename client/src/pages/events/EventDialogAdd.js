@@ -21,7 +21,6 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import eventApi from "../../api/eventApi";
-import status from "../../constants/status";
 
 export default function EventDialogAdd({
   open,
@@ -29,18 +28,15 @@ export default function EventDialogAdd({
   fetchData,
   setLoading,
 }) {
-  let today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  today = today.toISOString().replace(/:\d{2}.\d{3}Z$/, "");
+  // let today = new Date();
+  // today.setUTCHours(0, 0, 0, 0);
+  // today = today.toISOString().replace(/:\d{2}.\d{3}Z$/, "");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [eventStatus, setEventStatus] = useState("");
   const [poster, setPoster] = useState("");
   const [preview, setPreview] = useState(undefined);
-  const [discount, setDiscount] = useState(0);
-  const [minCost, setMinCost] = useState(0);
-  const [beginTime, setBeginTime] = useState(today);
-  const [endTime, setEndTime] = useState(today);
+  const [beginTime, setBeginTime] = useState("");
+  const [closeTime, setEndTime] = useState("");
   const { enqueueSnackbar } = useSnackbar();
 
   // create a preview as a side effect, whenever selected file is changed
@@ -73,15 +69,12 @@ export default function EventDialogAdd({
         const data = {
           name,
           description,
-          status: eventStatus,
-          discount,
-          minCost,
           beginTime,
-          endTime,
-          image: poster,
+          closeTime,
+          poster: URL.createObjectURL(poster),
         };
         const response = await eventApi.create(data);
-        if (response?.data?.type === status.success) {
+        if (response?.status === 200) {
           fetchData();
           enqueueSnackbar(response.data?.message, {
             variant: "success",
@@ -98,11 +91,8 @@ export default function EventDialogAdd({
     submit();
     setName("");
     setDescription("");
-    setEventStatus("");
-    setDiscount("");
-    setMinCost("");
-    setBeginTime(today);
-    setEndTime(today);
+    setBeginTime("");
+    setEndTime("");
     setPoster("");
   };
 
@@ -154,45 +144,16 @@ export default function EventDialogAdd({
                   <Textarea
                     name="description"
                     minRows={2}
-                    maxRows={2}
+                    maxRows={5}
                     placeholder="This is an event featuring..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </FormControl>
-                <FormControl>
-                  <FormLabel>Status</FormLabel>
-                  <Input
-                    name="status"
-                    placeholder="Status"
-                    value={eventStatus}
-                    onChange={(e) => setEventStatus(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl required>
-                  <FormLabel>Discount</FormLabel>
-                  <Input
-                    type="number"
-                    name="discount"
-                    placeholder="50000"
-                    value={discount}
-                    onChange={(e) => setDiscount(e.target.value)}
-                  />
-                </FormControl>
-                <FormControl required>
-                  <FormLabel>Min price{"(đ)"}</FormLabel>
-                  <Input
-                    type="number"
-                    name="Min price"
-                    placeholder="50000"
-                    value={minCost}
-                    onChange={(e) => setMinCost(e.target.value)}
-                  />
-                </FormControl>
                 <TextField
                   required
                   label="Begin Time"
-                  type="datetime-local"
+                  type="date"
                   value={beginTime}
                   onChange={(e) => setBeginTime(e.target.value)}
                   sx={{ display: { xs: "flex", sm: "none" } }}
@@ -200,15 +161,12 @@ export default function EventDialogAdd({
                 <TextField
                   required
                   label="Close Time"
-                  type="datetime-local"
-                  value={endTime}
+                  type="date"
+                  value={closeTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   sx={{ display: { xs: "flex", sm: "none" } }}
                 />
-                <FormControl
-                  required
-                  sx={{ display: { xs: "flex", sm: "none" } }}
-                >
+                <FormControl sx={{ display: { xs: "flex", sm: "none" } }}>
                   <FormLabel>Poster</FormLabel>
                   <IconButton component="label">
                     <AddPhotoAlternateRoundedIcon />
@@ -237,7 +195,7 @@ export default function EventDialogAdd({
               <TextField
                 required
                 label="Begin Time"
-                type="datetime-local"
+                type="date"
                 value={beginTime}
                 onChange={(e) => setBeginTime(e.target.value)}
                 sx={{ display: { sx: "none", sm: "flex" } }}
@@ -245,15 +203,12 @@ export default function EventDialogAdd({
               <TextField
                 required
                 label="Close Time"
-                type="datetime-local"
-                value={endTime}
+                type="date"
+                value={closeTime}
                 onChange={(e) => setEndTime(e.target.value)}
                 sx={{ display: { sx: "none", sm: "flex" } }}
               />
-              <FormControl
-                required
-                sx={{ display: { sx: "none", sm: "flex" } }}
-              >
+              <FormControl sx={{ display: { sx: "none", sm: "flex" } }}>
                 <FormLabel>Poster</FormLabel>
                 <IconButton component="label">
                   <AddPhotoAlternateRoundedIcon />
