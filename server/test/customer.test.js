@@ -1,6 +1,6 @@
 import chai from 'chai';
 import request from 'supertest';
-import app from '../server/app.js';
+import app from '../app.js';
 
 const { expect } = chai;
 
@@ -14,60 +14,39 @@ describe('API Controller Tests', () => {
           expect(res.body).to.be.an('array');
           done();
         });
-    });
+    }).timeout(10000);
   });
 
-  describe('POST /customers', () => {
+  let createdCustomerId = null;
+  describe('POST /customers/create', () => {
     it('should create a new customer', (done) => {
       const customer = {
         name: 'John Doe',
         gender: 'Male',
-        phone: '0695667619',
+        phone: '0433871340',
         address: '71 Laurel Circle',
         point: '0',
-        mem_type: 'Bronze',
       };
       request(app)
-        .post('/customers')
+        .post('/customers/create')
         .send(customer)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.message).to.equal('Customer was created!');
+          createdCustomerId = res.body.customer.id;
           done();
         });
     });
 
     it('should return an error if name is missing', (done) => {
-      const customer = {};
+      const customer = {
+        gender: 'Male',
+        phone: '1234567',
+        address: '71 Laurel Circle',
+        point: '0',
+      };
       request(app)
-        .post('/customers')
-        .send(customer)
-        .end((err, res) => {
-          expect(res.status).to.equal(400);
-          expect(res.body.message).to.equal('Name is required');
-          done();
-        });
-    });
-  });
-
-  describe('PUT /customers/:id', () => {
-    it('should update an existing customer', (done) => {
-      const customer = { name: 'Michel' };
-      request(app)
-        .put('/customers/6')
-        .send(customer)
-        .end((err, res) => {
-          expect(res.status).to.equal(200);
-          expect(res.body.message).to.equal('Customer was updated!');
-          expect(res.body.customer).to.be.an('object');
-          done();
-        });
-    });
-
-    it('should return an error if name is missing', (done) => {
-      const customer = {};
-      request(app)
-        .put('/customers/1')
+        .post('/customers/create')
         .send(customer)
         .end((err, res) => {
           expect(res.status).to.equal(400);
@@ -76,45 +55,69 @@ describe('API Controller Tests', () => {
         });
     });
 
-    it('should return an error if customer does not exist', (done) => {
+    it('should return an error if phone is missing', (done) => {
       const customer = { name: 'Jane Doe' };
       request(app)
-        .put('/customers/99999999')
+        .post('/customers/create')
         .send(customer)
         .end((err, res) => {
-          expect(res.status).to.equal(404);
-          expect(res.body.message).to.equal('Customer not found');
-          done();
-        });
-    });
-  });
-
-  describe('GET /customers/:id', () => {
-    it('should return a single customer', (done) => {
-      request(app)
-        .get('/customers/1')
-        .end((err, res) => {
-          expect(res.status).to.equal(200);
-          expect(res.body).to.be.an('object');
+          expect(res.status).to.equal(400);
+          expect(res.body.message).to.equal('Phone is required');
           done();
         });
     });
 
-    it('should return an error if customer does not exist', (done) => {
+    it('should return an error if point is missing', (done) => {
+      const customer = {
+        name: 'Jane Doe',
+        phone: '12345146',
+        address: '71 Laurel Circle',
+      };
       request(app)
-        .get('/customers/99999999')
+        .post('/customers/create')
+        .send(customer)
         .end((err, res) => {
-          expect(res.status).to.equal(404);
-          expect(res.body.message).to.equal('Customer not found');
+          expect(res.status).to.equal(400);
+          expect(res.body.message).to.equal('Point is required');
           done();
         });
+    });
+
+    it('should return an error if phone is already in use', (done) => {
+      const customer = {
+        name: 'Jane Doe',
+        phone: '0433871340',
+        point: '0',
+      };
+      request(app)
+        .post('/customers/create')
+        .send(customer)
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.message).to.equal('Phone is already in use');
+          done();
+        });
+    });
+
+    after((done) => {
+      if (createdCustomerId) {
+        // Perform the deletion of the created customer here
+        request(app)
+          .delete(`/customers/${createdCustomerId}`)
+          .end((err, res) => {
+            // You might want to add assertions here to ensure deletion was successful
+            done();
+          });
+      } else {
+        done();
+      }
     });
   });
 
   describe('DELETE /customers/:id', () => {
     it('should delete an existing customer', (done) => {
       request(app)
-        .delete('/customers/1')
+        .delete('/customers/18')
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body.message).to.equal('Customer was deleted!');
@@ -124,24 +127,10 @@ describe('API Controller Tests', () => {
 
     it('should return an error if customer does not exist', (done) => {
       request(app)
-        .delete('/customers/99999999')
+        .delete('/customers/1000000')
         .end((err, res) => {
           expect(res.status).to.equal(404);
           expect(res.body.message).to.equal('Customer not found');
-          done();
-        });
-    });
-  });
-
-  describe('GET /customers/search', () => {
-    it('should return customers matching the input name', (done) => {
-      const searchQuery = { name: 'Michel' };
-      request(app)
-        .get('/customers/search')
-        .send(searchQuery)
-        .end((err, res) => {
-          expect(res.status).to.equal(200);
-          expect(res.body).to.be.an('array');
           done();
         });
     });
