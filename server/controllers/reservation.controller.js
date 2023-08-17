@@ -2,7 +2,7 @@ import pool from '../models/config.js';
 
 async function getAllReservations(req, res) {
   try {
-    // call the procedure
+    // Sync reservations
     await pool.query('CALL delete_old_reservations()');
 
     const allReservations = await pool.query(

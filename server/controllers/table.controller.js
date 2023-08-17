@@ -39,7 +39,15 @@ async function updateTable(req, res) {
       'SELECT * FROM tables WHERE table_id = $1',
       [id],
     );
-    if (capacity === null || table_status === null) {
+    if (
+      capacity === null ||
+      table_status === null ||
+      capacity === undefined ||
+      table_status === undefined ||
+      capacity === '' ||
+      table_status === '' ||
+      capacity === 0
+    ) {
       return res.status(400).json({ message: 'These fields are required!' });
     }
     // if (capacity == null) {
@@ -60,7 +68,9 @@ async function updateTable(req, res) {
       .json({ message: 'Table was updated!', data: table2.rows[0] });
   } catch (error) {
     console.error(error.message);
-    return res.status(500).json({ message: 'Unexpected error occurred' });
+    return res
+      .status(500)
+      .json({ message: `Unexpected error occurred ${error.message}` });
   }
 }
 
@@ -74,6 +84,10 @@ async function getTableById(req, res) {
     if (!table.rows.length) {
       return res.status(404).json({ message: 'Table not found' });
     }
+
+    // Sync reservations
+    await pool.query('CALL delete_old_reservations()');
+
     return res.json({ message: 'Table found!', data: table.rows[0] });
   } catch (error) {
     console.error(error.message);
@@ -83,6 +97,9 @@ async function getTableById(req, res) {
 
 async function getTableList(req, res) {
   try {
+    // Sync reservations
+    await pool.query('CALL delete_old_reservations()');
+
     const tables = await pool.query('SELECT * FROM tables');
     return res.status(200).json({ message: 'List found', data: tables.rows });
   } catch (error) {
