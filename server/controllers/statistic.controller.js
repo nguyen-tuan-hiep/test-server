@@ -4,12 +4,10 @@ async function getOrderBetweenDate(req, res) {
   try {
     const { beginDate, endDate } = req.query;
     if (!beginDate || !endDate) {
-      return res
-        .status(400)
-        .json({
-          message: 'Start date and end date are required',
-          type: 'ERROR',
-        });
+      return res.status(400).json({
+        message: 'Start date and end date are required',
+        type: 'ERROR',
+      });
     }
     if (beginDate > endDate) {
       return res
@@ -37,7 +35,7 @@ async function getOrderBetweenDate(req, res) {
 
 async function getTop5DishesBetweenDate(req, res) {
   try {
-    const { beginDate, endDate } = req.body;
+    const { beginDate, endDate } = req.query;
     if (!beginDate || !endDate) {
       return res
         .status(400)
@@ -49,16 +47,16 @@ async function getTop5DishesBetweenDate(req, res) {
         .json({ message: 'Start date must be before end date' });
     }
     const dishes = await pool.query(
-      'SELECT dish_id, COUNT(*) as dish_count FROM order_dishes od JOIN orders o ON od.order_id = o.order_id WHERE o.order_date BETWEEN $1 AND $2 GROUP BY dish_id ORDER BY dish_count DESC LIMIT 5;',
+      'SELECT od.dish_id, d.dish_name, COUNT(*) AS dish_count FROM order_dishes od JOIN orders o ON od.order_id = o.order_id JOIN dishes d ON od.dish_id = d.dish_id WHERE o.order_date BETWEEN $1 AND $2 GROUP BY od.dish_id, d.dish_name ORDER BY od.dish_id DESC;',
       [beginDate, endDate],
     );
     if (!dishes.rows.length) {
       return res.status(500).json({ message: 'Dish not found' });
     }
-    return res.status(200).json({ type: 'SUCCESS', data: dishes.rows });
+    return res.status(200).json({ type: 'SUCCESS', dishes: dishes.rows, type: 'SUCCESS' });
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ message: 'Unexpected error occurred' });
+    return res.status(500).json({ message: error.message });
   }
 }
 
@@ -87,7 +85,7 @@ async function getStatistic(req, res) {
       .json({ message: 'success', orders: dishes.rows, type: 'SUCCESS' });
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ message: 'Unexpected error occurred' });
+    return res.status(500).json({ message: error.message });
   }
 }
 

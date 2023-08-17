@@ -34,7 +34,9 @@ async function createOrder(req, res) {
       'INSERT INTO orders (phone, order_date, order_time, order_status, total_price, has_children) VALUES ($1, $2, $3,$4, $5, $6) RETURNING *',
       [phone, order_date, order_time, order_status, total_price, has_children],
     );
-    return res.json({ message: 'Order was created!', data: order.rows[0] });
+    return res
+      .status(200)
+      .json({ message: 'Order was created!', data: order.rows[0] });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: error.message });
@@ -123,7 +125,9 @@ async function updateOrderById(req, res) {
         id,
       ],
     );
-    return res.json({ message: 'Order was updated!', data: order2.rows[0] });
+    return res
+      .status(200)
+      .json({ message: 'Order was updated!', data: order2.rows[0] });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: error.message });
@@ -140,7 +144,9 @@ async function getOrderByOrderId(req, res) {
     if (!order.rows.length) {
       return res.status(404).json({ message: 'Order not found' });
     }
-    return res.json({ message: 'Order found!' }, { data: order.rows[0]});
+    return res
+      .status(200)
+      .json({ message: 'Order found!' }, { data: order.rows[0] });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: error.message });
@@ -183,7 +189,6 @@ async function getOrdersBetweenDate(req, res) {
   }
 }
 */
-
 
 export default {
   createOrder,

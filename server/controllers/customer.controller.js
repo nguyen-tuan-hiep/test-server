@@ -171,7 +171,7 @@ async function searchCustomerByNameAndMembership(req, res) {
       return res.status(404).json({ message: 'Customer not found' });
     }
 
-    return res.json(customers.rows);
+    return res.status(200).json(customers.rows);
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: 'Internal server error' });
