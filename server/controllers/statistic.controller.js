@@ -4,12 +4,10 @@ async function getOrderBetweenDate(req, res) {
   try {
     const { beginDate, endDate } = req.query;
     if (!beginDate || !endDate) {
-      return res
-        .status(400)
-        .json({
-          message: 'Start date and end date are required',
-          type: 'ERROR',
-        });
+      return res.status(400).json({
+        message: 'Start date and end date are required',
+        type: 'ERROR',
+      });
     }
     if (beginDate > endDate) {
       return res
@@ -58,7 +56,7 @@ async function getTop5DishesBetweenDate(req, res) {
     return res.status(200).json({ type: 'SUCCESS', data: dishes.rows });
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ message: 'Unexpected error occurred' });
+    return res.status(500).json({ message: error.message });
   }
 }
 
@@ -87,7 +85,7 @@ async function getStatistic(req, res) {
       .json({ message: 'success', orders: dishes.rows, type: 'SUCCESS' });
   } catch (error) {
     console.log(error.message);
-    return res.status(500).json({ message: 'Unexpected error occurred' });
+    return res.status(500).json({ message: error.message });
   }
 }
 
