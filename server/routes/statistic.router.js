@@ -1,10 +1,15 @@
-import express from 'express'
-import statisticController from '../controllers/statistic.controller.js'
+import express from 'express';
+import statisticController from '../controllers/statistic.controller.js';
 
-const router = express.Router()
+const router = express.Router();
 
-router.post('/orderBetweenDate', statisticController.getOrderBetweenDate);
+router.get('/orderBetweenDate', statisticController.getOrderBetweenDate);
 
-router.post('/top5DishesBetweenDate', statisticController.getTop5DishesBetweenDate);
+router.post(
+  '/top5DishesBetweenDate',
+  statisticController.getTop5DishesBetweenDate,
+);
+
+router.get('/', statisticController.getStatistic);
 
 export default router;

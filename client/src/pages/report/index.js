@@ -55,7 +55,8 @@ export default function Report() {
                     beginDate,
                     endDate,
                 });
-                if (response.data?.type === status.success) {
+                console.log(response)
+                if (response.status === 200) {
                     const orders = response.data?.orders.map((item) => ({
                         Date: moment
                             .utc(item.date)

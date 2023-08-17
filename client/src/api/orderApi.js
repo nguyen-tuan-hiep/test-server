@@ -32,13 +32,13 @@ const orderApi = {
         return httpRequest.get(url);
     },
     getStatistic(data) {
-        const url = `${PREFIX}/statistic`;
+        const url = `/statistic`;
         return httpRequest.get(url, {
             params: { beginDate: data.beginDate, endDate: data.endDate },
         });
     },
     getOrdersBetweenDate(data) {
-        const url = `${PREFIX}/orderBetweenDate`;
+        const url = `statistic/orderBetweenDate`;
         return httpRequest.get(url, {
             params: { beginDate: data.beginDate, endDate: data.endDate },
         });
