@@ -6,6 +6,7 @@ import Menu from "./pages/menu";
 import Orders from "./pages/orders";
 import Events from "./pages/events";
 import Members from "./pages/members";
+import Reservaton from "./pages/reservation";
 import Report from "./pages/report";
 
 export default function Router() {
@@ -46,6 +47,10 @@ export default function Router() {
       path: "report",
       element: <Report />,
     },
+    {
+      path: "reservations",
+      element: <Reservaton />,
+    }
   ]);
 
   return routes;

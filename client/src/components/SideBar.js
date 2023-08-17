@@ -66,6 +66,11 @@ export default function SideBar() {
               path="/orders"
               icon={AssignmentIndRoundedIcon}
             />
+            <SideEntry
+              text="Reservations"
+              path="/reservations"
+              icon={AssignmentIndRoundedIcon}
+            />
           </List>
         )}
       </ListItem>
