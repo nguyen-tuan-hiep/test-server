@@ -119,9 +119,7 @@ async function deleteTableById(req, res) {
     if (!table.rows.length) {
       return res.status(404).json({ message: 'Table not found' });
     }
-    return res
-      .status(200)
-      .json({ message: 'Table was deleted!', data: table.rows[0] });
+    return res.status(200).json({ message: 'Table was deleted!', data: table.rows[0] });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: 'Unexpected error occurred' });
