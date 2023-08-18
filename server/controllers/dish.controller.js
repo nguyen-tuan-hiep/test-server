@@ -44,9 +44,10 @@ async function searchDishByName(req, res) {
       return getAllDishes(req, res);
     }
     const dishes = await pool.query(
-      'SELECT * FROM dishes INNER JOIN menus ON dishes.menu_id = menus.menu_id WHERE dish_status = 0 AND dish_name ILIKE $1 ORDER BY dish_id ASC',
+      'SELECT * FROM dishes INNER JOIN menus ON dishes.menu_id = menus.menu_id WHERE dish_status = 1 AND LOWER(dish_name) LIKE LOWER($1) ORDER BY dish_id ASC',
       [`%${name}%`],
     );
+
     if (!dishes.rows.length) {
       return res.status(500).json({ message: 'Dish not found' });
     }

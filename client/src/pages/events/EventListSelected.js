@@ -13,7 +13,6 @@ import Remove from "@mui/icons-material/Remove";
 import React from "react";
 
 export default function EventListSelected({ dishList, setDishList }) {
-  console.log("EventListSelected", dishList);
   const handleIncrease = (id, list, setList) => {
     setList((prev) => {
       const index = list.findIndex((item) => item.id === id);

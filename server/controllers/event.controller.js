@@ -73,7 +73,6 @@ async function updateEventIncludeDish(req, res) {
       'UPDATE events SET event_name = $1, description = $2, begin_time = $3, close_time = $4, poster = $5 WHERE event_id = $6 RETURNING *',
       [name, description, beginTime, closeTime, poster, id],
     );
-    console.log(event.rows);
     // Check if event exists
     if (!event.rows.length) {
       return res.status(404).json({ message: 'Event not found' });
@@ -88,7 +87,7 @@ async function updateEventIncludeDish(req, res) {
     if (dishes) {
       // Insert new dishes of event
       const values = dishes
-        .map((dish) => `(${eventId}, ${dish.dish_id}, ${dish.quantity})`)
+        .map((dish) => `(${eventId}, ${dish.id}, ${dish.quantity}})`)
         .join(', ');
       const results = await pool.query(
         `INSERT INTO event_dishes (event_id, dish_id, quantity) VALUES ${values} RETURNING *;`,
@@ -130,6 +129,7 @@ async function createEvent(req, res) {
   }
 }
 async function createEventIncludeDish(req, res) {
+  console.log(req.body);
   try {
     const { name, description, beginTime, closeTime, poster, dishes } =
       req.body;
@@ -148,12 +148,10 @@ async function createEventIncludeDish(req, res) {
     );
     const eventId = event.rows[0].event_id;
     // dishId is an array
-    console.log(dishes);
     if (dishes) {
       const values = dishes
         .map((dish) => `(${eventId}, ${dish.dish_id}, ${dish.quantity})`)
         .join(', ');
-        console.log(values);
       const query = `INSERT INTO event_dishes (event_id, dish_id, quantity) VALUES ${values} RETURNING *;`;
       const eventDishes = await pool.query(query);
     }

@@ -12,7 +12,6 @@ import Add from "@mui/icons-material/Add";
 import React from "react";
 
 export default function EventList({ list, selectedList, setSelectedList }) {
-  console.log("EventList", list);
   return (
     <Stack py={2} spacing={2}>
       {list.map((item) => (
