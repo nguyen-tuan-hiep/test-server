@@ -20,7 +20,7 @@ import { useState } from "react";
 import reservationApi from "../../api/reservationApi";
 import AlertDialog from "../../components/AlertDialog";
 import status from "../../constants/status";
-import MemberDialogEdit from "./MemberDialogEdit";
+import ReservationDialogEdit from "./ReservationDialogEdit";
 import { rankColors } from "./TableView";
 
 export default function TableFullRow({ data, setLoading, fetchData }) {
