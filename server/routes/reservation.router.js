@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.route("/").get(reservationController.getAllReservations);
 
+router.route("/search").get(reservationController.searchByPhoneOrTableId);
+
 router.route("/create").post(reservationController.createReservation);
 
 router.delete("/:id", reservationController.deleteByReservationId);

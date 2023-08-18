@@ -19,7 +19,13 @@ async function createReservation(req, res) {
   try {
     const { phone, table_id, res_date, res_time_start } = req.body;
 
-    console.log('res_date', res_date);
+    // check table exists
+    const table = await pool.query('SELECT * FROM tables WHERE table_id = $1', [
+      table_id,
+    ]);
+    if (!table.rows.length) {
+      return res.status(400).json({ message: 'Table not found', table_id });
+    }
 
     // call the procedure
     await pool.query('CALL delete_old_reservations()');
@@ -81,8 +87,40 @@ async function deleteByReservationId(req, res) {
   }
 }
 
+async function searchByPhoneOrTableId(req, res) {
+  try {
+    const { phone } = req.query;
+    let queryText = `SELECT * FROM reservations`;
+
+    const queryParams = [];
+
+    if (phone) {
+      queryText += ' WHERE';
+
+      if (phone) {
+        queryText += ` REPLACE(phone, ' ', '') ILIKE $1`;
+        queryParams.push(`%${phone}%`);
+      }
+    }
+
+    queryText += ' ORDER BY table_id ASC';
+
+    const reservations = await pool.query(queryText, queryParams);
+
+    if (reservations.rows.length === 0) {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
+
+    return res.status(200).json(reservations.rows);
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
 export default {
   getAllReservations,
   createReservation,
+  searchByPhoneOrTableId,
   deleteByReservationId,
 };
