@@ -118,9 +118,27 @@ async function searchByPhoneOrTableId(req, res) {
   }
 }
 
+async function getAvailableTables(req, res) {
+  try {
+    const { capacity, res_date, res_time_start } = req.query;
+
+    await pool.query('CALL delete_old_reservations()');
+
+    const availableTables = await pool.query(
+      'SELECT * FROM tables WHERE capacity >= $1 AND table_id NOT IN (SELECT table_id FROM reservations WHERE res_date = $2 AND res_time_start = $3) ORDER BY capacity ASC',
+      [capacity, res_date, res_time_start],
+    );
+    return res.status(200).json(availableTables.rows);
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
 export default {
   getAllReservations,
   createReservation,
   searchByPhoneOrTableId,
+  getAvailableTables,
   deleteByReservationId,
 };

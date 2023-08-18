@@ -7,14 +7,10 @@ const reservationApi = {
 		const url = `${PREFIX}/create`;
 		return httpRequest.post(url, data);
 	},
-	// updateTable: (id, data) => {
-	//     const url = `${PREFIX}/${id}`;
-	//     return httpRequest.patch(url, data);
-	// },
-	// getTableById: (id) => {
-	//     const url = `${PREFIX}/${id}`;
-	//     return httpRequest.get(url);
-	// },
+    getAvailableTables: ({ capacity, res_date, res_time_start }) => {
+        const url = `${PREFIX}/available-tables`;
+        return httpRequest.get(url, { params: { capacity, res_date, res_time_start } });
+    },
 	getReservationList: () => {
 		const url = `${PREFIX}`;
 		return httpRequest.get(url);

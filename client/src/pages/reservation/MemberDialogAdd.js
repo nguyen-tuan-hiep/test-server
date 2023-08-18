@@ -17,9 +17,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 // Custom
 import { useState } from "react";
-import { filterOpts } from ".";
-// import customerApi from "../../api/customerApi";
 import reservationApi from "../../api/reservationApi";
+import AvailableTablesPopup from "./AvailableTablesPopup";
 
 export default function MemberDialogAdd({
 	open,
@@ -27,11 +26,14 @@ export default function MemberDialogAdd({
 	setLoading,
 	fetchData,
 }) {
+	const [openAdd, setOpenAdd] = useState(false);
 	const [table, setTable] = useState(0);
+	const [capacity, setCapacity] = useState(0);
 	const [phone, setPhone] = useState("");
 	const [res_date, setRes_date] = useState(new Date());
 	const [res_time_start, setRes_time_start] = useState(new Date().getTime());
 	const { enqueueSnackbar } = useSnackbar();
+	const [data, setData] = useState([]);
 
 	const filterOpts = [
 		"09:00:00",
@@ -42,6 +44,23 @@ export default function MemberDialogAdd({
 		"19:00:00",
 		"21:00:00",
 	];
+
+	const handleGetAvailableTables = async () => {
+
+		try {
+			const response = await reservationApi.getAvailableTables({
+				capacity,
+				res_date,
+				res_time_start,
+			});
+			if (response?.status === 200) {
+				setOpenAdd(true);
+				setData(response.data);
+			}
+		} catch (err) {
+			setData([]);
+		}
+	};
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -73,6 +92,7 @@ export default function MemberDialogAdd({
 		setOpen(false);
 		setPhone("");
 		setTable(0);
+		setCapacity(0);
 		setRes_date(new Date());
 		setRes_time_start(new Date().getTime());
 	};
@@ -101,15 +121,6 @@ export default function MemberDialogAdd({
 				<form onSubmit={handleSubmit}>
 					<Stack>
 						<Stack spacing={2}>
-							{/* <FormControl required>
-                <FormLabel>Name</FormLabel>
-                <Input
-                  name="name"
-                  placeholder="Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </FormControl> */}
 							<FormControl required>
 								<FormLabel>Phone</FormLabel>
 								<Input
@@ -119,14 +130,16 @@ export default function MemberDialogAdd({
 									onChange={(e) => setPhone(e.target.value)}
 								/>
 							</FormControl>
-							{/* <FormControl>
-                <FormLabel>Table</FormLabel>
-                <SelectFilter
-                  filterOpt={table}
-                  setFilterOpt={setTable}
-                  filterOpts={filterOpts}
-                />
-              </FormControl> */}
+							<FormControl required>
+								<FormLabel>Capacity</FormLabel>
+								<Input
+									name="capacity"
+									placeholder="Capacity"
+									value={capacity}
+									onChange={(e) => setCapacity(e.target.value)}
+								/>
+							</FormControl>
+
 							<FormControl>
 								<FormLabel>Table</FormLabel>
 								<Input
@@ -142,7 +155,6 @@ export default function MemberDialogAdd({
 									dateAdapter={AdapterDateFns}
 									className="px-2">
 									<DatePicker
-										// label="Check-in"
 										value={res_date}
 										onChange={(newValue) => {
 											setRes_date(newValue);
@@ -175,6 +187,19 @@ export default function MemberDialogAdd({
 								sx={{ flex: 1 }}>
 								Save
 							</Button>
+							<Button
+								// type="submit"
+								onClick={handleGetAvailableTables}
+								sx={{ flex: 1 }}>
+								Show available tables
+							</Button>
+							<AvailableTablesPopup
+								// data={response}
+								data={data}
+								open={openAdd}
+								setOpen={setOpenAdd}
+								// setLoading={setLoading}
+							/>
 						</Box>
 					</Stack>
 				</form>

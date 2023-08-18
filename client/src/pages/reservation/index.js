@@ -34,11 +34,9 @@ export default function Reservation() {
 			const response = await reservationApi.searchByPhone({
 				phone: debounceValue,
 			});
-			console.log(response);
 
 			if (response?.status === 200) {
 				setData(response.data);
-				console.log(response.data);
 			}
 		} catch (err) {
 			setData([]);
