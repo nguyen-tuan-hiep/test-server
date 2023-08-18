@@ -111,7 +111,7 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
             <ListItemDecorator>
               <Edit />
             </ListItemDecorator>
-            Edit member
+            Edit customer
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -123,7 +123,7 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
             <ListItemDecorator sx={{ color: "inherit" }}>
               <DeleteForever />
             </ListItemDecorator>
-            Delete member
+            Delete customer
           </MenuItem>
         </Menu>
         <MemberDialogEdit

@@ -43,8 +43,6 @@ export default function Tables() {
     try {
       const response = await tableApi.getTableList();
 
-      console.log(response?.data?.data);
-
       if (response.status === 200) {
         setTables(response?.data?.data);
       }

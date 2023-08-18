@@ -4,9 +4,9 @@ import TableMini from "./TableMini";
 const cols = [
   { field: "phone", headerName: "PHONE" },
   { field: "table_id", headerName: "TABLE" },
-  { field: "res_date", headerName: "RESERVATION DATE" },
-  { field: "res_time_start", headerName: "RESERVATION TIME" },
-  { field: "res_time_end", headerName: "RESERVATION TIME" },
+  { field: "res_date", headerName: "RESERVED DATE" },
+  { field: "res_time_start", headerName: "RESERVED START TIME" },
+  { field: "res_time_end", headerName: "RESERVED END TIME" },
   { field: "action", headerName: "ACTION" },
 ];
 

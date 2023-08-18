@@ -87,9 +87,12 @@ async function deleteByReservationId(req, res) {
   }
 }
 
-async function searchByPhoneOrTableId(req, res) {
+async function searchByPhone(req, res) {
   try {
     const { phone } = req.query;
+
+    await pool.query('CALL delete_old_reservations()');
+
     let queryText = `SELECT * FROM reservations`;
 
     const queryParams = [];
@@ -138,7 +141,7 @@ async function getAvailableTables(req, res) {
 export default {
   getAllReservations,
   createReservation,
-  searchByPhoneOrTableId,
+  searchByPhone,
   getAvailableTables,
   deleteByReservationId,
 };

@@ -19,9 +19,6 @@ import { useState } from "react";
 // import customerApi from "../../api/customerApi";
 import reservationApi from "../../api/reservationApi";
 import AlertDialog from "../../components/AlertDialog";
-import status from "../../constants/status";
-import ReservationDialogEdit from "./ReservationDialogEdit";
-import { rankColors } from "./TableView";
 
 export default function TableFullRow({ data, setLoading, fetchData }) {
   const { enqueueSnackbar } = useSnackbar();

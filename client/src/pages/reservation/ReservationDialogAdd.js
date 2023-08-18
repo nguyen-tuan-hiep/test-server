@@ -8,12 +8,15 @@ import ModalClose from "@mui/joy/ModalClose";
 import TextField from "@mui/material/TextField";
 import ModalDialog from "@mui/joy/ModalDialog";
 import SelectFilter from "../../components/SelectFilter";
+import Select from "@mui/joy/Select";
+import Option from "@mui/joy/Option";
 import Stack from "@mui/joy/Stack";
 import Typography from "@mui/joy/Typography";
 import { useSnackbar } from "notistack";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 
 // Custom
 import { useState } from "react";
@@ -120,7 +123,6 @@ export default function ReservationDialogAdd({
 				<form onSubmit={handleSubmit}>
 					<Stack>
 						<Stack spacing={2}>
-
 							<FormControl required>
 								<FormLabel>Capacity</FormLabel>
 								<Input
@@ -145,26 +147,35 @@ export default function ReservationDialogAdd({
 										format="dd/MM/yyyy"
 										minDate={new Date()}
 										DialogProps={{
-											style: { zIndex: 99999 }, // it should be more than 1200
+											style: { zIndex: 99999 },
 										}}
 									/>
 								</LocalizationProvider>
 							</FormControl>
 							<FormControl>
 								<FormLabel>Reservation Time</FormLabel>
-								<SelectFilter
-									filterOpt={res_time_start}
-									setFilterOpt={setRes_time_start}
-									filterOpts={filterOpts}
-								/>
+								<Select
+									placeholder="Reservation Time"
+									defaultValue="Male"
+									value={res_time_start}
+									onChange={(e, newValue) => setRes_time_start(newValue)}>
+									{filterOpts.map((item) => (
+										<Option
+											value={item}
+											key={item}>
+											{item}
+										</Option>
+									))}
+								</Select>
 							</FormControl>
 							<Button
+								variant="outlined"
 								onClick={handleGetAvailableTables}
 								sx={{ flex: 1 }}>
 								Show available tables
 							</Button>
 
-							<FormControl>
+							<FormControl required>
 								<FormLabel>Table</FormLabel>
 								<Input
 									name="table"
@@ -172,9 +183,9 @@ export default function ReservationDialogAdd({
 									value={table}
 									onChange={(e) => setTable(e.target.value)}
 								/>
-              </FormControl>
+							</FormControl>
 
-              <FormControl required>
+							<FormControl required>
 								<FormLabel>Phone</FormLabel>
 								<Input
 									name="phone"
@@ -182,8 +193,7 @@ export default function ReservationDialogAdd({
 									value={phone}
 									onChange={(e) => setPhone(e.target.value)}
 								/>
-              </FormControl>
-
+							</FormControl>
 						</Stack>
 						<Box
 							mt={3}
@@ -191,6 +201,7 @@ export default function ReservationDialogAdd({
 							gap={2}
 							sx={{ width: "100%" }}>
 							<Button
+								startDecorator={<SaveRoundedIcon />}
 								type="submit"
 								sx={{ flex: 1 }}>
 								Save

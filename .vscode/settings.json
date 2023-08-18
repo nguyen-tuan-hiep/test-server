@@ -1,9 +1,9 @@
 {
-  "files.eol": "\n",
-  "files.trimFinalNewlines": true,
-  "files.insertFinalNewline": true,
-  "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs": true,
-  "editor.inlineSuggest.enabled": true,
-  "editor.renderWhitespace": "none"
+	"files.eol": "\n",
+	"files.trimFinalNewlines": true,
+	"files.insertFinalNewline": true,
+	"editor.bracketPairColorization.enabled": true,
+	"editor.guides.bracketPairs": true,
+	"editor.inlineSuggest.enabled": true,
+	"editor.renderWhitespace": "none"
 }

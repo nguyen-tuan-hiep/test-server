@@ -95,7 +95,7 @@ export default function Members() {
               }}
             >
               <Typography fontWeight="bold" level="h3" component="h1">
-                Members
+                Customers
               </Typography>
             </Box>
             <Stack
@@ -123,7 +123,7 @@ export default function Members() {
                   startDecorator={<Add />}
                   onClick={() => setOpenAdd(true)}
                 >
-                  Add member
+                  Add customer
                 </Button>
               </Stack>
               <MemberDialogAdd
