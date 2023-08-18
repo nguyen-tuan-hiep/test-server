@@ -44,7 +44,9 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
     setProgressIcon(true);
     const remove = async () => {
       try {
-        const response = await reservationApi.deleteReservationById(data.res_id);
+        const response = await reservationApi.deleteReservationById(
+          data.res_id
+        );
 
         if (response?.status === 200) {
           setProgressIcon(false);
@@ -72,7 +74,9 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
         <Typography level="body2">{data.table_id}</Typography>
       </Stack>
       <Stack justifyContent="center">
-        <Typography level="body2">{moment(data.res_date).local().format("YYYY-MM-DD")}</Typography>
+        <Typography level="body2">
+          {moment(data.res_date).local().format("DD-MM-YYYY")}
+        </Typography>
       </Stack>
       <Stack justifyContent="center">
         <Typography level="body2">{data.res_time_start}</Typography>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
@@ -10,7 +10,7 @@ import Add from "@mui/icons-material/Add";
 // Custom
 import { Input, Stack } from "@mui/joy";
 import { useContext, useEffect, useState } from "react";
-import reservationApi from '../../api/reservationApi';
+import reservationApi from "../../api/reservationApi";
 import Header from "../../components/Header";
 import Layout from "../../components/Layout";
 import Loading from "../../components/Loading";
@@ -38,6 +38,7 @@ export default function Reservation() {
 
       if (response?.status === 200) {
         setData(response.data);
+        console.log(response.data);
       }
     } catch (err) {
       setData([]);
