@@ -19,24 +19,24 @@ import SelectFilter from "../../components/SelectFilter";
 import SideBar from "../../components/SideBar";
 import SideDrawer, { SideDrawerContext } from "../../components/SideDrawer";
 import { useDebounce } from "../../hooks";
-import DiskDialogAdd from "./DiskDialogAdd";
-import DiskGroup from "./DiskGroup";
+import DishDialogAdd from "./DishDialogAdd";
+import DishGroup from "./DishGroup";
 
-export const diskOpts = [
+export const dishOpts = [
   "Main Menu",
   "Side Menu",
   "Dessert Menu",
   "Beverage Menu",
 ];
 
-export const filterOpts = [...diskOpts];
+export const filterOpts = [...dishOpts];
 
 export default function Menu() {
   const { drawerOpen } = useContext(SideDrawerContext);
-  const [openDiskAdd, setOpenDiskAdd] = useState(false);
+  const [openDishAdd, setOpenDishAdd] = useState(false);
   const [currentOpt, setCurrentOpt] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [disks, setDisks] = useState([]);
+  const [dishes, setDishes] = useState([]);
   const [search, setSearch] = useState("");
 
   const fetchData = async () => {
@@ -44,10 +44,10 @@ export default function Menu() {
     try {
       const response = await dishApi.search(debounceValue);
       if (response?.status === 200) {
-        setDisks(response?.data?.data);
+        setDishes(response?.data?.data);
       }
     } catch (err) {
-      setDisks([]);
+      setDishes([]);
     }
     setLoading(false);
   };
@@ -122,13 +122,13 @@ export default function Menu() {
                 <Button
                   color="primary"
                   startDecorator={<Add />}
-                  onClick={() => setOpenDiskAdd(true)}
+                  onClick={() => setOpenDishAdd(true)}
                 >
                   Add dish
                 </Button>
-                <DiskDialogAdd
-                  open={openDiskAdd}
-                  setOpen={setOpenDiskAdd}
+                <DishDialogAdd
+                  open={openDishAdd}
+                  setOpen={setOpenDishAdd}
                   fetchData={fetchData}
                   setLoading={setLoading}
                 />
@@ -142,19 +142,19 @@ export default function Menu() {
             <Box px={0.25}>
               {currentOpt === null ? (
                 filterOpts.map((filterOpt) => (
-                  <DiskGroup
+                  <DishGroup
                     key={filterOpt}
                     category={filterOpt}
-                    disks={disks}
+                    dishes={dishes}
                     fetchData={fetchData}
                     setLoading={setLoading}
                   />
                 ))
               ) : (
-                <DiskGroup
+                <DishGroup
                   key={currentOpt}
                   category={currentOpt}
-                  disks={disks}
+                  dishes={dishes}
                   fetchData={fetchData}
                 />
               )}

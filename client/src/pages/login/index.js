@@ -189,7 +189,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </FormControl>
-              <Box
+              {/* <Box
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
@@ -200,7 +200,7 @@ export default function Login() {
                 <Link fontSize="sm" href="#" fontWeight="lg">
                   Forgot password
                 </Link>
-              </Box>
+              </Box> */}
               {error && <span className="text-red-600">{error}</span>}
               <Button onClick={() => handleLogin()} fullWidth>
                 Sign in

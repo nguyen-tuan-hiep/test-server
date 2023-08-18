@@ -99,7 +99,9 @@ export default function Event({
         }}
       >
         <Box sx={{ flex: 1 }}>
-          <Typography textColor="#fff">{name}</Typography>
+          <Typography textColor="#fff">
+            {name} #{id}
+          </Typography>
           <Typography level="body3" mt={0.5} textColor="rgba(255,255,255,0.72)">
             {moment.utc(beginTime).add(1, "d").format("DD/MM/YYYY")}
             {" - "}

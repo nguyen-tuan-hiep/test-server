@@ -7,7 +7,7 @@ import Typography from "@mui/joy/Typography";
 export function SelectEvent({ event, setEvent, events, loading }) {
   return (
     <Autocomplete
-      placeholder="Apply event to discount"
+      placeholder="Apply event to order"
       value={event}
       onOpen={(e) => {
         e.preventDefault();
@@ -38,15 +38,12 @@ export function SelectEvent({ event, setEvent, events, loading }) {
       renderOption={(props, option) => (
         <AutocompleteOption {...props}>
           <ListItemContent sx={{ fontSize: "sm" }}>
-            {option.event_name}
+            {option.event_name} # {option.event_id}
             <Typography level="body3">
               {"Time: "}
               {new Date(option.begin_time).toLocaleDateString()}
               {" - "}
-              {new Date(option.end_time).toLocaleDateString()}
-            </Typography>
-            <Typography level="body3">
-              Discount: {option.discount.toLocaleString()}
+              {new Date(option.close_time).toLocaleDateString()}
             </Typography>
           </ListItemContent>
         </AutocompleteOption>

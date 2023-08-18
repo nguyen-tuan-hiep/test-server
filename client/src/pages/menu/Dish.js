@@ -20,9 +20,9 @@ import { useState } from "react";
 import dishApi from "../../api/dishApi";
 import AlertDialog from "../../components/AlertDialog";
 import status from "../../constants/status";
-import DiskDialogEdit from "./DiskDialogEdit";
+import DishDialogEdit from "./DishDialogEdit";
 
-export default function Disk({
+export default function Dish({
   id,
   name,
   description,
@@ -102,7 +102,7 @@ export default function Disk({
         <Box sx={{ flex: 1 }}>
           <Typography textColor="#fff">{name}</Typography>
           <Typography level="body3" mt={0.5} textColor="rgba(255,255,255,0.72)">
-            Price: {price.toLocaleString()}đ
+            Price: ${price}
           </Typography>
         </Box>
         <IconButton
@@ -145,7 +145,7 @@ export default function Disk({
             Delete dish
           </MenuItem>
         </Menu>
-        <DiskDialogEdit
+        <DishDialogEdit
           id={id}
           name={name}
           description={description}

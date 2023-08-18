@@ -42,6 +42,7 @@ export default function EventDialogAdd({
   const [preview, setPreview] = useState(undefined);
   const [beginTime, setBeginTime] = useState("");
   const [closeTime, setEndTime] = useState("");
+
   const [dishList, setDishList] = useState([]);
   const [selectedDishes, setSelectedDishes] = useState([]);
   const [dishSearch, setDishSearch] = useState("");

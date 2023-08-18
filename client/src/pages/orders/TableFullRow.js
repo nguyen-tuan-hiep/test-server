@@ -28,7 +28,8 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
   const [progressIcon, setProgressIcon] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openMore = Boolean(anchorEl);
-  const date = moment.utc(data.reserved_time).format("DD/MM/YYYY HH:mm:ss");
+
+  const order_date = moment.utc(data.order_date).format("DD/MM/YYYY");
 
   const handleMoreClick = (e) => {
     setAnchorEl(e.currentTarget);
@@ -44,7 +45,7 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
       setProgressIcon(true);
       try {
         const response = await orderApi.delete(data.order_id);
-        if (response.data?.type === status.success) {
+        if (response.status === 200) {
           setProgressIcon(false);
           fetchData();
           enqueueSnackbar(response.data?.message, {
@@ -64,32 +65,22 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
   return (
     <>
       <Stack justifyContent="center">
-        <Typography level="body2">{date}</Typography>
+        <Typography level="body2">{order_date}</Typography>
       </Stack>
       <Stack justifyContent="center">
-        <Typography level="body2">{data.customer_name}</Typography>
+        <Typography level="body2">{data.order_time}</Typography>
+      </Stack>
+      <Stack justifyContent="center">
+        <Typography level="body2">{data.name || "Anonymous"}</Typography>
       </Stack>
       <Stack justifyContent="center">
         <Typography level="body2">{data.phone}</Typography>
       </Stack>
       <Stack justifyContent="center">
-        <Typography level="body2">{data.table_id}</Typography>
+        <Typography level="body2">${data.total_price}</Typography>
       </Stack>
       <Stack justifyContent="center">
-        <Typography level="body2">
-          {data.total_cost_after_discount.toLocaleString()}đ
-        </Typography>
-      </Stack>
-      <Stack justifyContent="center">
-        {data.status === "Paid" ? (
-          <Typography level="body2" sx={{ color: "success.300" }}>
-            {data.status}
-          </Typography>
-        ) : (
-          <Typography level="body2" sx={{ color: "danger.400" }}>
-            {data.status}
-          </Typography>
-        )}
+        <Typography level="body2">${data.final_price}</Typography>
       </Stack>
       <Box>
         <IconButton
@@ -142,7 +133,7 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
         )}
         <AlertDialog
           title="Confirmation"
-          content={`Are you sure you want to delete "${data.customer_name}"?`}
+          content={`Are you sure you want to delete?`}
           dangerText="Delete"
           normalText="Cancel"
           open={openAlert}

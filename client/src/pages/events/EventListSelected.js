@@ -54,7 +54,7 @@ export default function EventListSelected({ dishList, setDishList }) {
               <FormControl>
                 <FormLabel>{item.name}</FormLabel>
                 <Typography level="body3">
-                  Price: {item.price.toLocaleString()}đ
+                  Price: ${item.price.toLocaleString()}
                 </Typography>
                 <Box
                   sx={{

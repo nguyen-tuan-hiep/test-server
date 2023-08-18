@@ -141,7 +141,18 @@ async function searchCustomerByName(req, res) {
 
 async function searchCustomerByNameAndMembership(req, res) {
   try {
-    const { name, rank } = req.query;
+    const { name, rank, phone } = req.query;
+    if (phone) {
+      const customer = await pool.query(
+        'SELECT * FROM customers WHERE phone = $1',
+        [phone],
+      );
+      if (!customer.rows.length) {
+        return res.status(404).json({ message: 'Customer not found' });
+      }
+      return res.status(200).json(customer.rows[0]);
+    }
+
     let queryText = `SELECT * FROM customers`;
 
     const queryParams = [];

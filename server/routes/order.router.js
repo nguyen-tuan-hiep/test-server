@@ -1,17 +1,9 @@
-import express from 'express'
-import orderController from '../controllers/order.controller.js'
+import express from 'express';
+import orderController from '../controllers/order.controller.js';
 
-const router = express.Router()
+const router = express.Router();
 
-// create(data) (post), url = `${PREFIX}/create`
-// delete(id) (delete), url = `${PREFIX}/${id}`
-////// update(id, data) (patch), url = `${PREFIX}/${id}`
-////// updateCost(id, data) (patch), url = `${PREFIX}/cost/${id}
-// getOrderById(id) (get), url = `${PREFIX}/${id}`
-// search(name, date) (get), url = `${PREFIX}/search`
-// getComboAndDisk(id) (get),  url = `${PREFIX}/combo-and-disk/${id}`
-////// getStatistic(data)(get), url = `${PREFIX}/statistic`
-// getOrdersBetweenDate(data) (get), url = `${PREFIX}/orderBetweenDate`
+router.get('/search', orderController.search);
 
 router.post('/create', orderController.createOrder);
 
@@ -21,7 +13,6 @@ router.put('/:id', orderController.updateOrderById);
 
 router.get('/:id', orderController.getOrderByOrderId);
 
-// router.post('/search', orderController.search);
 // router.patch('/cost/:id', orderController.updateCostByOrderId);
 // router.get('/orderBetweenDate', orderController.getOrdersBetweenDate);
 

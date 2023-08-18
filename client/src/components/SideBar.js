@@ -52,23 +52,23 @@ export default function SideBar() {
             }}
           >
             <SideEntry
-              text="Tables"
-              path="/tables"
-              icon={AssignmentIndRoundedIcon}
-            />
-            <SideEntry
               text="Menu"
               path="/menu"
               icon={AssignmentIndRoundedIcon}
             />
             <SideEntry
-              text="Orders"
-              path="/orders"
+              text="Reservations"
+              path="/reservations"
               icon={AssignmentIndRoundedIcon}
             />
             <SideEntry
-              text="Reservations"
-              path="/reservations"
+              text="Tables"
+              path="/tables"
+              icon={AssignmentIndRoundedIcon}
+            />
+            <SideEntry
+              text="Orders"
+              path="/orders"
               icon={AssignmentIndRoundedIcon}
             />
           </List>

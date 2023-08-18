@@ -12,12 +12,7 @@ import Remove from "@mui/icons-material/Remove";
 // Custom
 import React from "react";
 
-export default function OrderListSelected({
-  comboList,
-  setComboList,
-  diskList,
-  setDiskList,
-}) {
+export default function OrderListSelected({ dishList, setDishList }) {
   const handleIncrease = (id, list, setList) => {
     setList((prev) => {
       const index = list.findIndex((item) => item.id === id);
@@ -41,87 +36,28 @@ export default function OrderListSelected({
 
   return (
     <Stack spacing={2}>
-      {comboList.length + diskList.length > 0 ? (
-        <Stack>
-          <Stack spacing={2}>
-            {comboList.length > 0 && (
-              <>
-                <Typography
-                  level="h6"
-                  fontWeight="bold"
-                  textColor="text.secondary"
-                >
-                  Combo{comboList.length > 1 ? "s" : ""}
-                </Typography>
-                {comboList.map((item) => (
-                  <React.Fragment key={item.id}>
-                    <FormControl>
-                      <FormLabel>{item.name}</FormLabel>
-                      <Typography level="body3">
-                        Price: {item.price.toLocaleString()}đ
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          gap: 2,
-                          alignItems: "center",
-                          pt: 1,
-                          pr: 2,
-                          mr: 3,
-                          borderTop: "1px solid",
-                          borderColor: "background.level2",
-                        }}
-                      >
-                        <IconButton
-                          size="sm"
-                          variant="outlined"
-                          onClick={() =>
-                            handleDecrease(item.id, comboList, setComboList)
-                          }
-                        >
-                          <Remove />
-                        </IconButton>
-                        <Typography fontWeight="md" textColor="text.secondary">
-                          {item.quantity}
-                        </Typography>
-                        <IconButton
-                          size="sm"
-                          variant="outlined"
-                          onClick={() =>
-                            handleIncrease(item.id, comboList, setComboList)
-                          }
-                        >
-                          <Add />
-                        </IconButton>
-                      </Box>
-                    </FormControl>
-                  </React.Fragment>
-                ))}
-              </>
-            )}
-          </Stack>
-        </Stack>
-      ) : (
+      {dishList?.length <= 0 && (
         <>
           <Typography level="h6" fontWeight="bold" textColor="text.secondary">
             Selected
           </Typography>
-          <Typography mt={1}>
-            You haven't selected any combos or dishes yet.
-          </Typography>
+          <Typography mt={1}>You haven't selected any dishes yet.</Typography>
         </>
       )}
-      {diskList.length > 0 && (
+      {dishList?.length > 0 && (
         <>
           <Typography level="h6" fontWeight="bold" textColor="text.secondary">
-            Disk{diskList.length > 1 ? "s" : ""}
+            Dish{dishList?.length > 1 ? "es" : ""}
           </Typography>
-          {diskList.map((item) => (
+          {dishList.map((item) => (
             <React.Fragment key={item.id}>
               <FormControl>
                 <FormLabel>{item.name}</FormLabel>
                 <Typography level="body3">
-                  Price: {item.price.toLocaleString()}đ
+                  Price:{" "}
+                  {item.price === 0
+                    ? "Free"
+                    : `$${item.price.toLocaleString()}`}
                 </Typography>
                 <Box
                   sx={{
@@ -139,7 +75,7 @@ export default function OrderListSelected({
                     size="sm"
                     variant="outlined"
                     onClick={() =>
-                      handleDecrease(item.id, diskList, setDiskList)
+                      handleDecrease(item.id, dishList, setDishList)
                     }
                   >
                     <Remove />
@@ -151,7 +87,7 @@ export default function OrderListSelected({
                     size="sm"
                     variant="outlined"
                     onClick={() =>
-                      handleIncrease(item.id, diskList, setDiskList)
+                      handleIncrease(item.id, dishList, setDishList)
                     }
                   >
                     <Add />

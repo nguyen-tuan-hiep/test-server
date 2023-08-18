@@ -21,37 +21,25 @@ import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import { AspectRatio } from "@mui/joy";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
-import { diskOpts } from ".";
+import { dishOpts } from ".";
 import dishApi from "../../api/dishApi";
 import status from "../../constants/status";
 
-export default function DiskDialogAdd({
-  open,
-  setOpen,
-  setLoading,
-  fetchData,
-}) {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [image, setImage] = useState(undefined);
-  const [category, setCategory] = useState(diskOpts[0]);
+export default function DishDialogEdit(props) {
+  const { id, open, setOpen, fetchData, setLoading } = props;
+  const [name, setName] = useState(props.name);
+  const [description, setDescription] = useState(props.description);
+  const [price, setPrice] = useState(props.price);
+  const [image, setImage] = useState(props.image);
+  const [category, setCategory] = useState(props.category);
   const [preview, setPreview] = useState();
   const { enqueueSnackbar } = useSnackbar();
 
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
-    if (!image) {
-      setPreview(undefined);
-      return;
-    }
-
-    const objectUrl = URL.createObjectURL(image);
-    setPreview(objectUrl);
-
-    // free memory when ever this component is unmounted
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [image]);
+    setPreview(image);
+    // eslint-disable-next-line
+  }, []);
 
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -60,47 +48,45 @@ export default function DiskDialogAdd({
     }
     // I've kept this example simple by using the first image instead of multiple
     setImage(e.target.files[0]);
+    const objectUrl = URL.createObjectURL(e.target.files[0]);
+    setPreview(objectUrl);
   };
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      const data = {
-        name,
-        image,
-        categoryId: diskOpts.findIndex((item) => item === category) + 1,
-        price,
-        description,
-      };
-      console.log(data);
-
-      const response = await dishApi.create(data);
-
-      if (response?.status === 200) {
-        fetchData();
-        enqueueSnackbar(response.data.message, {
-          variant: "success",
+  const handleSave = (e) => {
+    e.preventDefault();
+    const save = async () => {
+      setLoading(true);
+      try {
+        const response = await dishApi.update(id, {
+          dish_name: name,
+          //image
+          description,
+          price,
+          menu_id: dishOpts.findIndex((item) => item === category) + 1,
         });
-      }
-    } catch (err) {
-      setLoading(false);
-      enqueueSnackbar(err.response.data.message, {
-        variant: "error",
-      });
-    }
 
-    setName("");
-    setImage(undefined);
-    setCategory(diskOpts[0]);
-    setPrice("");
-    setDescription("");
+        if (response?.status === 200) {
+          fetchData();
+          enqueueSnackbar(response.data.message, {
+            variant: "success",
+          });
+        }
+      } catch (err) {
+        enqueueSnackbar(err.response.data?.message, {
+          variant: "error",
+        });
+        setLoading(false);
+      }
+    };
+    save();
+    setOpen(() => false);
   };
 
   return (
     <Modal open={open} onClose={() => setOpen(false)}>
       <ModalDialog
         sx={{
-          width: "95%",
+          width: "90%",
           maxWidth: 550,
           maxHeight: "95vh",
           overflowY: "auto",
@@ -116,16 +102,9 @@ export default function DiskDialogAdd({
           fontSize="1.25em"
           mb="0.25em"
         >
-          Add new dish
+          Edit dish
         </Typography>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit();
-            setOpen(false);
-          }}
-          encType="multipart/form-data"
-        >
+        <form>
           <Stack direction="row" spacing={3}>
             <Stack className="col-1" flex={1}>
               <Stack spacing={2}>
@@ -140,12 +119,12 @@ export default function DiskDialogAdd({
                   />
                 </FormControl>
                 <FormControl>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Desc.</FormLabel>
                   <Textarea
                     name="description"
                     minRows={2}
                     maxRows={2}
-                    placeholder="This is a disk made with..."
+                    placeholder="This is a dish made with..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
@@ -184,7 +163,7 @@ export default function DiskDialogAdd({
                     value={category}
                     onChange={(e, newCategory) => setCategory(newCategory)}
                   >
-                    {diskOpts.map((filterOpt) => (
+                    {dishOpts.map((filterOpt) => (
                       <Option key={filterOpt} value={filterOpt}>
                         {filterOpt}
                       </Option>
@@ -220,7 +199,8 @@ export default function DiskDialogAdd({
 
           <Box mt={3} display="flex" gap={2} sx={{ width: "100%" }}>
             <Button
-              type="submit"
+              type="button"
+              onClick={(e) => handleSave(e)}
               startDecorator={<SaveRoundedIcon />}
               sx={{ flex: 1 }}
             >
@@ -229,8 +209,8 @@ export default function DiskDialogAdd({
             <Button
               type="button"
               variant="soft"
-              onClick={() => setOpen(false)}
               color="danger"
+              onClick={() => setOpen(false)}
               sx={{ flex: 1 }}
             >
               Cancel

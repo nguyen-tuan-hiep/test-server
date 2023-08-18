@@ -37,7 +37,6 @@ async function getOneDishById(req, res) {
 
 // .TODO: searchDishByName name with space, ex: 'Burger King'
 async function searchDishByName(req, res) {
-  console.log('Hello');
   try {
     const { name } = req.query;
     if (!name) {

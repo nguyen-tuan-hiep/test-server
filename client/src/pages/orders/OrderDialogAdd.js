@@ -20,14 +20,14 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 // Custom
 import OrderList from "./OrderList";
 import OrderListSelected from "./OrderListSelected";
-import { SelectCustomer } from "./SelectCustomer";
 import { SelectEvent } from "./SelectEvent";
 import dishApi from "../../api/dishApi";
-import comboApi from "../../api/comboApi";
 import status from "../../constants/status";
 import customerApi from "../../api/customerApi";
 import eventApi from "../../api/eventApi";
 import orderApi from "../../api/orderApi";
+import moment from "moment";
+import { useDebounce } from "../../hooks";
 
 export default function OrderDialogAdd({
   open,
@@ -35,12 +35,10 @@ export default function OrderDialogAdd({
   setLoading,
   fetchData,
 }) {
-  let today = new Date();
-  today.setUTCHours(0, 0, 0, 0);
-  today = today.toISOString().replace(/:\d{2}.\d{3}Z$/, "");
+  let today = new moment().local().format("YYYY-MM-DDTHH:mm");
   const [customer, setCustomer] = useState(null);
-  const [customers, setCustomers] = useState([]);
-  const [customerSearchProgress, setCustomerProgress] = useState(false);
+  const [usedPoint, setUsedPoints] = useState(0);
+  const [afterCost, setAfterCost] = useState(0);
   const [table, setTable] = useState(0);
   const [event, setEvent] = useState(null);
   const [events, setEvents] = useState([]);
@@ -48,97 +46,69 @@ export default function OrderDialogAdd({
   const [phone, setPhone] = useState("");
   const [eventSearchProgress, setEventProgress] = useState(false);
   const [reservedTime, setReservedTime] = useState(today);
-  const [comboList, setComboList] = useState([]);
-  const [comboSearch, setComboSearch] = useState("");
-  const [comboSearchProgress, setComboProgress] = useState(false);
-  const [diskList, setDiskList] = useState([]);
-  const [diskSearch, setDiskSearch] = useState("");
-  const [diskSearchProgress, setDiskProgress] = useState(false);
-  const [selectedDisks, setSelectedDisks] = useState([]);
-  const [selectedCombos, setSelectedCombos] = useState([]);
-  const [openComboListModal, setOpenComboListModal] = useState(false);
-  const [openDiskListModal, setOpenDiskListModal] = useState(false);
+
+  const [dishList, setDishList] = useState([]);
+  const [selectedDishes, setSelectedDishes] = useState([]);
+  const [dishSearch, setDishSearch] = useState("");
+  const [dishSearchProgress, setDishProgress] = useState(false);
+  const [openDishListModal, setOpenDishListModal] = useState(false);
   const [openSelectedListModal, setOpenSelectedListModal] = useState(false);
 
+  const debounceValue = useDebounce(phone, 500);
   const { enqueueSnackbar } = useSnackbar();
 
   let beforeCost = 0;
-  beforeCost += selectedCombos.reduce((s, i) => s + i.price * i.quantity, 0);
-  beforeCost += selectedDisks.reduce((s, i) => s + i.price * i.quantity, 0);
-  const afterCost = beforeCost - (event?.discount || 0);
+  beforeCost += selectedDishes.reduce((s, i) => s + i.price * i.quantity, 0);
+  // let afterCost = beforeCost - usedPoints || 0;
+
+  useEffect(() => {
+    // Get user by phone
+    const fetch = async () => {
+      if (!debounceValue) {
+        setCustomer(null);
+        return;
+      }
+      try {
+        const response = await customerApi.searchByPhone(debounceValue);
+        if (response.status === 200) {
+          const customer = response.data;
+          setCustomer(customer);
+        }
+      } catch (err) {
+        setCustomer(null);
+      }
+    };
+    fetch();
+  }, [debounceValue]);
 
   useEffect(() => {
     const fetch = async () => {
-      setDiskProgress(true);
+      setDishProgress(true);
       try {
-        const response = await dishApi.search(diskSearch);
-        if (response.data?.type === status.success) {
-          const disks = response.data.disks.map((item) => ({
-            id: item.disk_id,
-            name: item.disk_name,
+        const response = await dishApi.search(dishSearch);
+        if (response.data.message === "success") {
+          const dishes = response.data.data.map((item) => ({
+            id: item.dish_id,
+            name: item.dish_name,
             price: item.price,
           }));
-          setDiskList(disks);
+          setDishList(dishes);
         }
       } catch (err) {
-        setDiskList([]);
+        setDishList([]);
       }
-      setDiskProgress(false);
+      setDishProgress(false);
     };
     fetch();
-  }, [diskSearch]);
-
-  useEffect(() => {
-    const fetch = async () => {
-      setComboProgress(true);
-      try {
-        const response = await comboApi.search(comboSearch);
-        if (response.data?.type === status.success) {
-          const combos = response.data.combos.map((item) => ({
-            id: item.combo_id,
-            name: item.combo_name,
-            price: item.combo_price,
-          }));
-          setComboList(combos);
-        }
-      } catch (err) {
-        setComboList([]);
-      }
-      setComboProgress(false);
-    };
-    fetch();
-  }, [comboSearch]);
-
-  useEffect(() => {
-    const fetch = async () => {
-      setCustomerProgress(true);
-      try {
-        const response = await customerApi.searchByNameOrRank({
-          name: "",
-        });
-        if (response.data?.type === status.success) {
-          const customers = response.data.customers.map((item) => ({
-            id: item.id,
-            name: item.name,
-            phone: item.phone,
-          }));
-          setCustomers(customers);
-        }
-      } catch (err) {
-        setCustomers([]);
-      }
-      setCustomerProgress(false);
-    };
-    fetch();
-  }, []);
+  }, [dishSearch]);
 
   useEffect(() => {
     const fetch = async () => {
       setEventProgress(true);
       try {
-        const response = await eventApi.searchEvent("", beforeCost);
-        if (response.data?.type === status.success) {
-          setEvents(response.data?.events);
+        const response = await eventApi.searchEvent("");
+        if (response.status === 200) {
+          setEvents(response.data);
         }
       } catch (err) {
         setEvents([]);
@@ -148,6 +118,33 @@ export default function OrderDialogAdd({
     fetch();
   }, [beforeCost]);
 
+  useEffect(() => {
+    // Add free dishes from event
+    const fetch = async () => {
+      if (!event) {
+        setSelectedDishes(selectedDishes.filter((item) => !item.isFree));
+        return;
+      }
+      try {
+        const response = await eventApi.getFreeDishes(event.event_id);
+        if (response.status === 200) {
+          const dishes = response.data.map((item) => ({
+            id: item.dish_id,
+            name: item.dish_name,
+            price: 0,
+            quantity: +item.quantity,
+            isFree: true,
+          }));
+          setSelectedDishes((prev) => [...prev, ...dishes]);
+        }
+      } catch (err) {
+        setSelectedDishes([]);
+      }
+    };
+
+    fetch();
+  }, [event]);
+
   const handleClose = () => {
     setOpen(false);
     setEvent(null);
@@ -155,36 +152,27 @@ export default function OrderDialogAdd({
     setPhone("");
     setTable(0);
     setReservedTime(today);
-    setSelectedCombos([]);
-    setSelectedDisks([]);
+    setSelectedDishes([]);
   };
 
   const handleSubmit = () => {
-    const submit = async () => {
+    const createOrder = async () => {
       const data = {
-        tableId: table,
-        reservedTime,
-        disks: selectedDisks.filter((item) => item.quantity !== 0),
-        combos: selectedCombos.filter((item) => item.quantity !== 0),
-        beforeCost,
-        afterCost,
+        phone,
+        customer_id: customer.customer_id,
+        order_date: reservedTime.slice(0, 10),
+        order_time: reservedTime.slice(11, 16),
+        order_status: 1,
+        total_price: afterCost,
+        dishes: selectedDishes.filter(
+          (item) => item.quantity !== 0 || item.isFree
+        ),
+        used_point: usedPoint,
       };
-      if (customer) {
-        data.customerId = customer.id;
-      } else {
-        data.customerId = null;
-        data.customerName = name;
-        data.phone = phone;
-      }
-      if (event) {
-        data.eventId = event.event_id;
-      } else {
-        data.eventId = null;
-      }
       setLoading(true);
       try {
         const response = await orderApi.create(data);
-        if (response.data?.type === status.success) {
+        if (response.status === 200) {
           fetchData();
           enqueueSnackbar(response.data?.message, {
             variant: "success",
@@ -193,20 +181,45 @@ export default function OrderDialogAdd({
       } catch (err) {
         setLoading(false);
         enqueueSnackbar(err.response.data?.message, {
-          variant: "false",
+          variant: "error",
         });
       }
     };
 
-    submit();
+    const updateCustomer = async () => {
+      if (!customer) {
+        return;
+      }
+      try {
+        console.log("customer", customer);
+        const response = await customerApi.updateCustomerById(
+          customer.customer_id,
+          {
+            ...customer,
+            point: customer.point - usedPoint + afterCost * 0.1,
+          }
+        );
+        if (response.status === 200) {
+          enqueueSnackbar(response.data?.message, {
+            variant: "success",
+          });
+        }
+      } catch (err) {
+        enqueueSnackbar(err.response.data?.message, {
+          variant: "error",
+        });
+      }
+    };
+
+    createOrder();
+    updateCustomer();
     setName("");
     setPhone("");
     setReservedTime(today);
     setEvent(null);
     setTable(0);
     setCustomer(null);
-    setSelectedCombos([]);
-    setSelectedDisks([]);
+    setSelectedDishes([]);
   };
 
   return (
@@ -242,18 +255,6 @@ export default function OrderDialogAdd({
             <Stack className="col-1" width={250} flex={1}>
               <Stack spacing={2}>
                 <FormControl required>
-                  <FormLabel>Customer name</FormLabel>
-                  <SelectCustomer
-                    customer={customer}
-                    setCustomer={setCustomer}
-                    customers={customers}
-                    name={name}
-                    setName={setName}
-                    setPhone={setPhone}
-                    loading={customerSearchProgress}
-                  />
-                </FormControl>
-                <FormControl required>
                   <FormLabel>Phone</FormLabel>
                   <Input
                     name="phone"
@@ -262,16 +263,30 @@ export default function OrderDialogAdd({
                     onChange={(e) => setPhone(e.target.value.trimStart())}
                   />
                 </FormControl>
-                <FormControl required>
-                  <FormLabel>Table</FormLabel>
-                  <Input
-                    type="number"
-                    name="table"
-                    placeholder="Table"
-                    value={table}
-                    onChange={(e) => setTable(e.target.value)}
-                  />
-                </FormControl>
+                {/* Notify found customer */}
+                {customer ? (
+                  <>
+                    <Typography level="p" fontSize="0.85em">
+                      {customer.name}: {customer.point} pts
+                    </Typography>
+                    <FormControl>
+                      <FormLabel>Points to Use</FormLabel>
+                      <Input
+                        name="point"
+                        placeholder="Points to use"
+                        value={usedPoint}
+                        onChange={(e) => {
+                          setUsedPoints(e.target.value);
+                          setAfterCost(beforeCost - e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                  </>
+                ) : (
+                  <Typography level="p" fontSize="0.85em">
+                    Is currently not a member!
+                  </Typography>
+                )}
                 <TextField
                   required
                   label="Reserved At"
@@ -280,10 +295,7 @@ export default function OrderDialogAdd({
                   onChange={(e) => setReservedTime(e.target.value)}
                 />
                 <FormControl>
-                  <FormLabel>
-                    Event{" "}
-                    {`(Discount: ${(event?.discount || 0).toLocaleString()})`}
-                  </FormLabel>
+                  <FormLabel>Event</FormLabel>
                   <SelectEvent
                     event={event}
                     setEvent={setEvent}
@@ -293,22 +305,12 @@ export default function OrderDialogAdd({
                 </FormControl>
 
                 <FormControl sx={{ display: { xs: "flex", sm: "none" } }}>
-                  <FormLabel>Disks</FormLabel>
+                  <FormLabel>Dishes</FormLabel>
                   <Button
                     variant="outlined"
-                    onClick={() => setOpenDiskListModal(true)}
+                    onClick={() => setOpenDishListModal(true)}
                   >
-                    Select disks
-                  </Button>
-                </FormControl>
-
-                <FormControl sx={{ display: { xs: "flex", sm: "none" } }}>
-                  <FormLabel>Combos</FormLabel>
-                  <Button
-                    variant="outlined"
-                    onClick={() => setOpenComboListModal(true)}
-                  >
-                    Select combos
+                    Select dishes
                   </Button>
                 </FormControl>
 
@@ -333,8 +335,8 @@ export default function OrderDialogAdd({
                 <Typography level="h3" fontSize="1.1em" mt={1}>
                   {"Total: "}
                   {beforeCost === afterCost
-                    ? `${beforeCost.toLocaleString()}`
-                    : `${beforeCost.toLocaleString()} → ${afterCost.toLocaleString()}`}
+                    ? `${beforeCost}`
+                    : `${beforeCost} → ${afterCost}`}
                 </Typography>
               </Stack>
             </Stack>
@@ -346,68 +348,12 @@ export default function OrderDialogAdd({
                 display: {
                   xs: "none",
                   sm: "flex",
-                  md: "none",
-                  lg: "flex",
                 },
               }}
             >
-              <FormControl
-                sx={{
-                  display: {
-                    xs: "none",
-                    sm: "flex",
-                    md: "none",
-                  },
-                }}
-              >
-                <FormLabel>Disks</FormLabel>
-                <Button
-                  variant="outlined"
-                  onClick={() => setOpenDiskListModal(true)}
-                >
-                  Select disks
-                </Button>
-              </FormControl>
-
-              <FormControl
-                sx={{
-                  display: {
-                    xs: "none",
-                    sm: "flex",
-                    md: "none",
-                  },
-                }}
-              >
-                <FormLabel>Combos</FormLabel>
-                <Button
-                  variant="outlined"
-                  onClick={() => setOpenComboListModal(true)}
-                >
-                  Select combos
-                </Button>
-              </FormControl>
-
               <OrderViewSelected
-                comboList={selectedCombos}
-                setComboList={setSelectedCombos}
-                diskList={selectedDisks}
-                setDiskList={setSelectedDisks}
-              />
-            </Stack>
-
-            <Stack
-              className="col-3"
-              sx={{ display: { xs: "none", md: "flex" } }}
-            >
-              <OrderSelector
-                field={"Combo"}
-                search={comboSearch}
-                setSearch={setComboSearch}
-                progressIcon={comboSearchProgress}
-                list={comboList}
-                setList={setComboList}
-                selectedList={selectedCombos}
-                setSelectedList={setSelectedCombos}
+                dishList={selectedDishes}
+                setDishList={setSelectedDishes}
               />
             </Stack>
 
@@ -416,14 +362,14 @@ export default function OrderDialogAdd({
               sx={{ display: { xs: "none", md: "flex" } }}
             >
               <OrderSelector
-                field={"Disk"}
-                search={diskSearch}
-                setSearch={setDiskSearch}
-                progressIcon={diskSearchProgress}
-                list={diskList}
-                setList={setDiskList}
-                selectedList={selectedDisks}
-                setSelectedList={setSelectedDisks}
+                field={"Dish"}
+                search={dishSearch}
+                setSearch={setDishSearch}
+                progressIcon={dishSearchProgress}
+                list={dishList}
+                setList={setDishList}
+                selectedList={selectedDishes}
+                setSelectedList={setSelectedDishes}
               />
             </Stack>
           </Stack>
@@ -466,17 +412,15 @@ export default function OrderDialogAdd({
                 Edit selected
               </Typography>
               <OrderViewSelected
-                comboList={selectedCombos}
-                setComboList={setSelectedCombos}
-                diskList={selectedDisks}
-                setDiskList={setSelectedDisks}
+                dishList={selectedDishes}
+                setDishList={setSelectedDishes}
               />
             </ModalDialog>
           </Modal>
 
           <Modal
-            open={openComboListModal}
-            onClose={() => setOpenComboListModal(false)}
+            open={openDishListModal}
+            onClose={() => setOpenDishListModal(false)}
           >
             <ModalDialog
               sx={{
@@ -490,48 +434,17 @@ export default function OrderDialogAdd({
             >
               <ModalClose />
               <Typography component="h2" fontSize="1.25em">
-                Select combos
+                Select dishes
               </Typography>
               <OrderSelector
-                field={"Combo"}
-                search={comboSearch}
-                setSearch={setComboSearch}
-                progressIcon={comboSearchProgress}
-                list={comboList}
-                setList={setComboList}
-                selectedList={selectedCombos}
-                setSelectedList={setSelectedCombos}
-              />
-            </ModalDialog>
-          </Modal>
-
-          <Modal
-            open={openDiskListModal}
-            onClose={() => setOpenDiskListModal(false)}
-          >
-            <ModalDialog
-              sx={{
-                maxWidth: "100vw",
-                maxHeight: "95vh",
-                overflow: "auto",
-                borderRadius: "md",
-                p: 3,
-                boxShadow: "lg",
-              }}
-            >
-              <ModalClose />
-              <Typography component="h2" fontSize="1.25em">
-                Select disks
-              </Typography>
-              <OrderSelector
-                field={"Disk"}
-                search={diskSearch}
-                setSearch={setDiskSearch}
-                progressIcon={diskSearchProgress}
-                list={diskList}
-                setList={setDiskList}
-                selectedList={selectedDisks}
-                setSelectedList={setSelectedDisks}
+                field={"Dish"}
+                search={dishSearch}
+                setSearch={setDishSearch}
+                progressIcon={dishSearchProgress}
+                list={dishList}
+                setList={setDishList}
+                selectedList={selectedDishes}
+                setSelectedList={setSelectedDishes}
               />
             </ModalDialog>
           </Modal>
@@ -541,7 +454,7 @@ export default function OrderDialogAdd({
   );
 }
 
-function OrderViewSelected({ comboList, setComboList, diskList, setDiskList }) {
+function OrderViewSelected({ dishList, setDishList }) {
   return (
     <Stack
       flexBasis={0}
@@ -553,12 +466,7 @@ function OrderViewSelected({ comboList, setComboList, diskList, setDiskList }) {
         overflowY: "auto",
       }}
     >
-      <OrderListSelected
-        comboList={comboList}
-        setComboList={setComboList}
-        diskList={diskList}
-        setDiskList={setDiskList}
-      />
+      <OrderListSelected dishList={dishList} setDishList={setDishList} />
     </Stack>
   );
 }

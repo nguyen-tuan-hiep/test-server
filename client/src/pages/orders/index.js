@@ -15,7 +15,6 @@ import Layout from "../../components/Layout";
 import Loading from "../../components/Loading";
 import SideBar from "../../components/SideBar";
 import SideDrawer, { SideDrawerContext } from "../../components/SideDrawer";
-import status from "../../constants/status";
 import useDebounce from "../../hooks/useDebounce";
 import OrderDialogAdd from "./OrderDialogAdd";
 import TableView from "./TableView";
@@ -30,11 +29,13 @@ export default function Orders() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await orderApi.search(debounceValue);
-      if (response.data?.type === status.success) {
-        setData(response.data.orders);
+      const response = await orderApi.searchByPhone(debounceValue);
+      console.log("response", response);
+      if (response?.status === 200) {
+        setData(response.data);
       }
     } catch (err) {
+      console.log("err", err);
       setData([]);
     }
     setLoading(false);

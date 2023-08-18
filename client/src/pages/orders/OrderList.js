@@ -23,9 +23,7 @@ export default function OrderList({ list, selectedList, setSelectedList }) {
           >
             <FormControl>
               <FormLabel>{item.name}</FormLabel>
-              <Typography level="body3">
-                Price: {item.price.toLocaleString()}đ
-              </Typography>
+              <Typography level="body3">Price: ${item.price}</Typography>
               <Box
                 sx={{
                   display: "flex",

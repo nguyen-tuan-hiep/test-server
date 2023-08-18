@@ -179,7 +179,7 @@ export default function EventDialogEdit(props) {
           fontSize="1.25em"
           mb="0.25em"
         >
-          Edit event
+          Edit event #{id}
         </Typography>
         <Stack component="form">
           <Stack direction="row" spacing={2.5}>
