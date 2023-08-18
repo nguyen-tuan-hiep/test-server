@@ -12,7 +12,8 @@ import Remove from "@mui/icons-material/Remove";
 // Custom
 import React from "react";
 
-export default function EventListSelected({ diskList, setDiskList }) {
+export default function EventListSelected({ dishList, setDishList }) {
+  console.log("EventListSelected", dishList);
   const handleIncrease = (id, list, setList) => {
     setList((prev) => {
       const index = list.findIndex((item) => item.id === id);
@@ -36,7 +37,7 @@ export default function EventListSelected({ diskList, setDiskList }) {
 
   return (
     <Stack spacing={2}>
-      {diskList.length <= 0 && (
+      {dishList?.length <= 0 && (
         <>
           <Typography level="h6" fontWeight="bold" textColor="text.secondary">
             Selected
@@ -44,12 +45,12 @@ export default function EventListSelected({ diskList, setDiskList }) {
           <Typography mt={1}>You haven't selected any dishes yet.</Typography>
         </>
       )}
-      {diskList.length > 0 && (
+      {dishList?.length > 0 && (
         <>
           <Typography level="h6" fontWeight="bold" textColor="text.secondary">
-            Disk{diskList.length > 1 ? "s" : ""}
+            Dish{dishList?.length > 1 ? "es" : ""}
           </Typography>
-          {diskList.map((item) => (
+          {dishList.map((item) => (
             <React.Fragment key={item.id}>
               <FormControl>
                 <FormLabel>{item.name}</FormLabel>
@@ -72,7 +73,7 @@ export default function EventListSelected({ diskList, setDiskList }) {
                     size="sm"
                     variant="outlined"
                     onClick={() =>
-                      handleDecrease(item.id, diskList, setDiskList)
+                      handleDecrease(item.id, dishList, setDishList)
                     }
                   >
                     <Remove />
@@ -84,7 +85,7 @@ export default function EventListSelected({ diskList, setDiskList }) {
                     size="sm"
                     variant="outlined"
                     onClick={() =>
-                      handleIncrease(item.id, diskList, setDiskList)
+                      handleIncrease(item.id, dishList, setDishList)
                     }
                   >
                     <Add />

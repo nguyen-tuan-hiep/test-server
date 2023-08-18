@@ -37,19 +37,20 @@ async function getOneDishById(req, res) {
 
 // .TODO: searchDishByName name with space, ex: 'Burger King'
 async function searchDishByName(req, res) {
+  console.log('Hello');
   try {
     const { name } = req.query;
     if (!name) {
       return getAllDishes(req, res);
     }
     const dishes = await pool.query(
-      'SELECT * FROM dishes INNER JOIN menus ON dishes.menu_id = menus.menu_id WHERE dish_status = 1 AND dish_name ILIKE $1 ORDER BY dish_id ASC',
+      'SELECT * FROM dishes INNER JOIN menus ON dishes.menu_id = menus.menu_id WHERE dish_status = 0 AND dish_name ILIKE $1 ORDER BY dish_id ASC',
       [`%${name}%`],
     );
     if (!dishes.rows.length) {
       return res.status(500).json({ message: 'Dish not found' });
     }
-    return res.json({ message: 'success', data: dishes.rows });
+    return res.status(200).json({ message: 'success', data: dishes.rows });
   } catch (error) {
     console.log(error.message);
     return res.status(500).json({
@@ -146,9 +147,8 @@ async function updateDish(req, res) {
         message: 'Dish was updated!',
         data: updatedDish.rows[0],
       });
-    } else {
-      return res.status(400).json({ message: 'Missing body' });
     }
+    return res.status(400).json({ message: 'Missing body' });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: error.message });

@@ -58,9 +58,10 @@ async function updateEvent(req, res) {
     return res.status(500).json({ message: error.message });
   }
 }
+
 async function updateEventIncludeDish(req, res) {
   try {
-    const { name, description, beginTime, closeTime, poster, dishId } =
+    const { name, description, beginTime, closeTime, poster, dishes } =
       req.body;
     const { id } = req.params;
 
@@ -77,20 +78,22 @@ async function updateEventIncludeDish(req, res) {
       return res.status(404).json({ message: 'Event not found' });
     }
 
-    let resData = { events: event.rows[0], dishes: [] };
+    const resData = { events: event.rows[0], dishes: [] };
     // Update event_dishes table
 
     // Delete all dishes of event
     await pool.query('DELETE FROM event_dishes WHERE event_id = $1', [id]);
 
     const eventId = event.rows[0].event_id;
-    if (dishId) {
+    if (dishes) {
       // Insert new dishes of event
-      const values = dishId.map((id) => `(${eventId}, ${id})`).join(', ');
-      const dishes = await pool.query(
-        `INSERT INTO event_dishes (event_id, dish_id) VALUES ${values} RETURNING *;`,
+      const values = dishes
+        .map((dish) => `(${eventId}, ${dish.id}, ${dish.quantity}})`)
+        .join(', ');
+      const results = await pool.query(
+        `INSERT INTO event_dishes (event_id, dish_id, quantity) VALUES ${values} RETURNING *;`,
       );
-      resData.dishes = dishes.rows;
+      resData.dishes = results.rows;
     }
 
     return res
@@ -101,6 +104,7 @@ async function updateEventIncludeDish(req, res) {
     return res.status(500).json({ message: error.message });
   }
 }
+
 async function createEvent(req, res) {
   try {
     const { name, description, beginTime, closeTime, poster } = req.body;
@@ -127,7 +131,7 @@ async function createEvent(req, res) {
 }
 async function createEventIncludeDish(req, res) {
   try {
-    const { name, description, beginTime, closeTime, poster, dishId } =
+    const { name, description, beginTime, closeTime, poster, dishes } =
       req.body;
     if (!name) {
       return res.status(400).json({ message: 'Name is required' });
@@ -144,9 +148,11 @@ async function createEventIncludeDish(req, res) {
     );
     const eventId = event.rows[0].event_id;
     // dishId is an array
-    if (dishId) {
-      const values = dishId.map((id) => `(${eventId}, ${id})`).join(', ');
-      const query = `INSERT INTO event_dishes (event_id, dish_id) VALUES ${values} RETURNING *;`;
+    if (dishes) {
+      const values = dishes
+        .map((dish) => `(${eventId}, ${dish.id}, ${dish.quantity})`)
+        .join(', ');
+      const query = `INSERT INTO event_dishes (event_id, dish_id, quantity) VALUES ${values} RETURNING *;`;
       const eventDishes = await pool.query(query);
     }
     return res
@@ -209,7 +215,7 @@ async function getAllDishesOfEvent(req, res) {
       'SELECT dish_id FROM event_dishes WHERE event_id = $1',
       [id],
     );
-    
+
     return res.status(200).json(dishes.rows);
   } catch (error) {
     console.error(error.message);
