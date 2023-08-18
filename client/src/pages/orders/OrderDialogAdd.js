@@ -38,7 +38,6 @@ export default function OrderDialogAdd({
   let today = new moment().local().format("YYYY-MM-DDTHH:mm");
   const [customer, setCustomer] = useState(null);
   const [usedPoint, setUsedPoints] = useState(0);
-  const [afterCost, setAfterCost] = useState(0);
   const [table, setTable] = useState(0);
   const [event, setEvent] = useState(null);
   const [events, setEvents] = useState([]);
@@ -59,7 +58,7 @@ export default function OrderDialogAdd({
 
   let beforeCost = 0;
   beforeCost += selectedDishes.reduce((s, i) => s + i.price * i.quantity, 0);
-  // let afterCost = beforeCost - usedPoints || 0;
+  let afterCost = beforeCost - usedPoint || 0;
 
   useEffect(() => {
     // Get user by phone
@@ -266,8 +265,10 @@ export default function OrderDialogAdd({
                 {/* Notify found customer */}
                 {customer ? (
                   <>
-                    <Typography level="p" fontSize="0.85em">
-                      {customer.name}: {customer.point} pts
+                    <Typography level="h3" fontSize="1em">
+                      {customer.name}: {customer.point}
+                      {usedPoint > 0 &&
+                        ` → ${customer.point - usedPoint + afterCost * 0.1}`}
                     </Typography>
                     <FormControl>
                       <FormLabel>Points to Use</FormLabel>
@@ -277,7 +278,6 @@ export default function OrderDialogAdd({
                         value={usedPoint}
                         onChange={(e) => {
                           setUsedPoints(e.target.value);
-                          setAfterCost(beforeCost - e.target.value);
                         }}
                       />
                     </FormControl>
@@ -332,7 +332,7 @@ export default function OrderDialogAdd({
                   </Button>
                 </FormControl>
 
-                <Typography level="h3" fontSize="1.1em" mt={1}>
+                <Typography level="h3" fontSize="1em" mt={1}>
                   {"Total: "}
                   {beforeCost === afterCost
                     ? `${beforeCost}`
