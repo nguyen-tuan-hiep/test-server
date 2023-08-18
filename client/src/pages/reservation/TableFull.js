@@ -15,7 +15,7 @@ export default function TableFull({ rows, cols, setLoading, fetchData }) {
                 gridColumn: "1/-1",
                 display: { xs: "none", sm: "grid" },
                 gridTemplateColumns:
-                    "minmax(140px, 1fr) minmax(115px, 1fr) minmax(115px, 1fr) minmax(115px, 1fr) minmax(100px, 1fr) 75px",
+                    "minmax(140px, 1fr) minmax(115px, 1fr) minmax(115px, 1fr) minmax(115px, 1fr) minmax(100px, 1fr) 100px",
                 "& > *": {
                     p: 2,
                     [`&:nth-of-type(n)`]: {

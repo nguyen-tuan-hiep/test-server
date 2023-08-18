@@ -19,6 +19,8 @@ async function createReservation(req, res) {
   try {
     const { phone, table_id, res_date, res_time_start } = req.body;
 
+    console.log('res_date', res_date);
+
     // call the procedure
     await pool.query('CALL delete_old_reservations()');
 
@@ -30,7 +32,7 @@ async function createReservation(req, res) {
     if (reservationTable.rows.length) {
       return res
         .status(400)
-        .json({ message: 'Table is already in use', table_id });
+        .json({ message: 'Table is already reserved at this time', table_id });
     }
     if (!table_id) {
       return res.status(400).json({ message: 'Table is required' });

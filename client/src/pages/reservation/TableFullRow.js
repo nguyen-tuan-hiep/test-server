@@ -6,6 +6,7 @@ import Menu from "@mui/joy/Menu";
 import MenuItem from "@mui/joy/MenuItem";
 import Stack from "@mui/joy/Stack";
 import Typography from "@mui/joy/Typography";
+import moment from "moment";
 
 // Icons
 import DeleteForever from "@mui/icons-material/DeleteForever";
@@ -71,7 +72,7 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
         <Typography level="body2">{data.table_id}</Typography>
       </Stack>
       <Stack justifyContent="center">
-        <Typography level="body2">{data.res_date}</Typography>
+        <Typography level="body2">{moment(data.res_date).local().format("YYYY-MM-DD")}</Typography>
       </Stack>
       <Stack justifyContent="center">
         <Typography level="body2">{data.res_time_start}</Typography>
