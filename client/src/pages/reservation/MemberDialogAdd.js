@@ -46,7 +46,6 @@ export default function MemberDialogAdd({
 	];
 
 	const handleGetAvailableTables = async () => {
-
 		try {
 			const response = await reservationApi.getAvailableTables({
 				capacity,
@@ -55,7 +54,7 @@ export default function MemberDialogAdd({
 			});
 			if (response?.status === 200) {
 				setOpenAdd(true);
-				setData(response.data);
+				setData([ ...response.data ]);
 			}
 		} catch (err) {
 			setData([]);
@@ -188,7 +187,6 @@ export default function MemberDialogAdd({
 								Save
 							</Button>
 							<Button
-								// type="submit"
 								onClick={handleGetAvailableTables}
 								sx={{ flex: 1 }}>
 								Show available tables
