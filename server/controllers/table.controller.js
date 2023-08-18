@@ -100,7 +100,7 @@ async function getTableList(req, res) {
     // Sync reservations
     await pool.query('CALL delete_old_reservations()');
 
-    const tables = await pool.query('SELECT * FROM tables');
+    const tables = await pool.query('SELECT * FROM tables ORDER BY table_id');
     return res.status(200).json({ message: 'List found', data: tables.rows });
   } catch (error) {
     console.error(error.message);

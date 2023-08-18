@@ -20,7 +20,7 @@ import { useState } from "react";
 import reservationApi from "../../api/reservationApi";
 import AlertDialog from "../../components/AlertDialog";
 import status from "../../constants/status";
-import MemberDialogEdit from "./MemberDialogEdit";
+import ReservationDialogEdit from "./ReservationDialogEdit";
 import { rankColors } from "./TableView";
 
 export default function TableFullRow({ data, setLoading, fetchData }) {
@@ -113,12 +113,12 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
           aria-labelledby="positioned-button"
           placement="bottom-end"
         >
-          <MenuItem onClick={() => setOpenEdit(true)}>
+          {/* <MenuItem onClick={() => setOpenEdit(true)}>
             <ListItemDecorator>
               <Edit />
             </ListItemDecorator>
             Edit member
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem
             onClick={() => {
               setOpenAlert(true);
@@ -129,7 +129,7 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
             <ListItemDecorator sx={{ color: "inherit" }}>
               <DeleteForever />
             </ListItemDecorator>
-            Delete member
+            Delete reservation
           </MenuItem>
         </Menu>
         {/* <MemberDialogEdit

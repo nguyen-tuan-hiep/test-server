@@ -1,6 +1,7 @@
 import AspectRatio from "@mui/joy/AspectRatio";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
+import CircularProgress from "@mui/joy/CircularProgress";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import IconButton from "@mui/joy/IconButton";
@@ -9,18 +10,22 @@ import Modal from "@mui/joy/Modal";
 import ModalClose from "@mui/joy/ModalClose";
 import ModalDialog from "@mui/joy/ModalDialog";
 import Stack from "@mui/joy/Stack";
-import Textarea from "@mui/joy/Textarea";
 import TextField from "@mui/joy/TextField";
+import Textarea from "@mui/joy/Textarea";
 import Typography from "@mui/joy/Typography";
 
 // Icons
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 // Custom
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
+import dishApi from "../../api/dishApi";
 import eventApi from "../../api/eventApi";
+import EventListSelected from "./EventListSelected";
+import EventList from "./EventList";
 
 export default function EventDialogEdit(props) {
   const { id, open, setOpen, setLoading, fetchData } = props;
@@ -29,13 +34,50 @@ export default function EventDialogEdit(props) {
   const [poster, setPoster] = useState(props.poster);
   const initialDate = new Date(props.beginTime);
   initialDate.setDate(initialDate.getDate() + 1);
-  const [beginTime, setBeginTime] = useState(initialDate.toISOString().split("T")[0]);
+  const [beginTime, setBeginTime] = useState(
+    initialDate.toISOString().split("T")[0]
+  );
   const initialCloseTime = new Date(props.closeTime);
   initialCloseTime.setDate(initialCloseTime.getDate() + 1);
-  const [closeTime, setEndTime] = useState(initialCloseTime.toISOString().split("T")[0]);
+  const [closeTime, setEndTime] = useState(
+    initialCloseTime.toISOString().split("T")[0]
+  );
   const [posterChanged, setPosterChanged] = useState(false);
   const [preview, setPreview] = useState();
+
+  const [dishList, setDishList] = useState([]);
+  const [selectedDishes, setSelectedDishes] = useState([]);
+  const [dishSearch, setDishSearch] = useState("");
+  const [dishSearchProgress, setDishProgress] = useState(false);
+  const [loadingEdit, setLoadingEdit] = useState(false);
+  const [openDishListModal, setOpenDishListModal] = useState(false);
+  const [openSelectedListModal, setOpenSelectedListModal] = useState(false);
+
   const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    const fetch = async () => {
+      setDishProgress(true);
+      try {
+        const response = await dishApi.search(dishSearch);
+        console.log(response.data.data);
+        if (response?.status >= 200 && response?.status < 400) {
+          const dishes = response.data.data.map((item) => ({
+            id: item.dish_id,
+            name: item.dish_name,
+            price: item.price,
+          }));
+          setDishList(dishes);
+          console.log(dishes);
+        }
+      } catch (err) {
+        setDishList([]);
+      }
+      setDishProgress(false);
+    };
+    fetch();
+  }, [dishSearch]);
+
   useEffect(() => {
     setPreview(poster);
     // eslint-disable-next-line
@@ -96,10 +138,9 @@ export default function EventDialogEdit(props) {
     <Modal open={open} onClose={() => setOpen(false)}>
       <ModalDialog
         sx={{
-          width: "95%",
-          maxWidth: 550,
+          maxWidth: "100vw",
           maxHeight: "95vh",
-          overflowY: "auto",
+          overflow: "auto",
           borderRadius: "md",
           p: 3,
           boxShadow: "lg",
@@ -115,8 +156,8 @@ export default function EventDialogEdit(props) {
           Add new event
         </Typography>
         <Stack component="form">
-          <Stack direction="row" spacing={3}>
-            <Stack className="col-1" flex={1}>
+          <Stack direction="row" spacing={2.5}>
+            <Stack className="col-1" width={250} flex={1}>
               <Stack spacing={2}>
                 <FormControl required>
                   <FormLabel>Name</FormLabel>
@@ -153,9 +194,38 @@ export default function EventDialogEdit(props) {
                   onChange={(e) => setEndTime(e.target.value)}
                   sx={{ display: { xs: "flex", sm: "none" } }}
                 />
-                <FormControl
-                  sx={{ display: { xs: "flex", sm: "none" } }}
-                >
+                <FormControl sx={{ display: { xs: "flex", sm: "none" } }}>
+                  <FormLabel>Poster</FormLabel>
+                  <IconButton component="label">
+                    <AddPhotoAlternateRoundedIcon />
+                    <input type="file" hidden onChange={onSelectFile} />
+                  </IconButton>
+                  {poster && (
+                    <AspectRatio
+                      ratio="4 / 3"
+                      maxHeight={175}
+                      objectFit="cover"
+                      sx={{ marginTop: 1 }}
+                    >
+                      <img src={preview} alt="Preview" />
+                    </AspectRatio>
+                  )}
+                </FormControl>
+                <TextField
+                  label="Begin Time"
+                  type="date"
+                  value={beginTime}
+                  onChange={(e) => setBeginTime(e.target.value)}
+                  sx={{ display: { sx: "none", sm: "flex" } }}
+                />
+                <TextField
+                  label="Close Time"
+                  type="date"
+                  value={closeTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  sx={{ display: { sx: "none", sm: "flex" } }}
+                />
+                <FormControl sx={{ display: { sx: "none", sm: "flex" } }}>
                   <FormLabel>Poster</FormLabel>
                   <IconButton component="label">
                     <AddPhotoAlternateRoundedIcon />
@@ -177,44 +247,32 @@ export default function EventDialogEdit(props) {
 
             <Stack
               className="col-2"
-              sx={{ display: { xs: "none", sm: "flex" } }}
-              flex={1}
               gap={2}
+              sx={{
+                display: {
+                  xs: "none",
+                  lg: "flex",
+                },
+              }}
             >
-              <TextField
-                label="Begin Time"
-                type="date"
-                value={beginTime}
-                onChange={(e) => setBeginTime(e.target.value)}
-                sx={{ display: { sx: "none", sm: "flex" } }}
+              <EventViewSelected
+                dishList={selectedDishes}
+                setDishList={setSelectedDishes}
               />
-              <TextField
-                label="Close Time"
-                type="date"
-                value={closeTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                sx={{ display: { sx: "none", sm: "flex" } }}
-              />
-              <FormControl
-                sx={{ display: { sx: "none", sm: "flex" } }}
-              >
-                <FormLabel>Poster</FormLabel>
-                <IconButton component="label">
-                  <AddPhotoAlternateRoundedIcon />
-                  <input type="file" hidden onChange={onSelectFile} />
-                </IconButton>
-                {poster && (
-                  <AspectRatio
-                    ratio="4 / 3"
-                    maxHeight={175}
-                    objectFit="cover"
-                    sx={{ marginTop: 1 }}
-                  >
-                    <img src={preview} alt="Preview" />
-                  </AspectRatio>
-                )}
-              </FormControl>
             </Stack>
+          </Stack>
+
+          <Stack className="col-3" sx={{ display: { xs: "none", md: "flex" } }}>
+            <EventSelector
+              field={"Dish"}
+              search={dishSearch}
+              setSearch={setDishSearch}
+              progressIcon={dishSearchProgress}
+              list={dishList}
+              setList={setDishList}
+              selectedList={selectedDishes}
+              setSelectedList={setSelectedDishes}
+            />
           </Stack>
 
           <Box mt={3} display="flex" gap={2} sx={{ width: "100%" }}>
@@ -236,8 +294,131 @@ export default function EventDialogEdit(props) {
               Cancel
             </Button>
           </Box>
+
+          <Modal
+            open={openSelectedListModal}
+            onClose={() => setOpenSelectedListModal(false)}
+          >
+            <ModalDialog
+              sx={{
+                maxWidth: "100vw",
+                maxHeight: "95vh",
+                overflow: "auto",
+                borderRadius: "md",
+                p: 3,
+                boxShadow: "lg",
+              }}
+            >
+              <ModalClose />
+              <Typography component="h2" fontSize="1.25em">
+                Edit selected
+              </Typography>
+              <EventViewSelected
+                dishList={selectedDishes}
+                setDishList={setSelectedDishes}
+              />
+            </ModalDialog>
+          </Modal>
+
+          <Modal
+            open={openDishListModal}
+            onClose={() => setOpenDishListModal(false)}
+          >
+            <ModalDialog
+              sx={{
+                maxWidth: "100vw",
+                maxHeight: "95vh",
+                overflow: "auto",
+                borderRadius: "md",
+                p: 3,
+                boxShadow: "lg",
+              }}
+            >
+              <ModalClose />
+              <Typography component="h2" fontSize="1.25em">
+                Select dishes
+              </Typography>
+              <EventSelector
+                field={"Dish"}
+                search={dishSearch}
+                setSearch={setDishSearch}
+                progressIcon={dishSearchProgress}
+                list={dishList}
+                setList={setDishList}
+                selectedList={selectedDishes}
+                setSelectedList={setSelectedDishes}
+              />
+            </ModalDialog>
+          </Modal>
         </Stack>
       </ModalDialog>
     </Modal>
+  );
+}
+
+function EventViewSelected({ dishList, setDishList }) {
+  return (
+    <Stack
+      flexBasis={0}
+      flexGrow={1}
+      sx={{
+        pb: 2,
+        width: 250,
+        maxHeight: { xs: "100%" },
+        overflowY: "auto",
+      }}
+    >
+      <EventListSelected dishList={dishList} setDishList={setDishList} />
+    </Stack>
+  );
+}
+
+function EventSelector({
+  field,
+  search,
+  setSearch,
+  progressIcon,
+  list,
+  selectedList,
+  setSelectedList,
+}) {
+  return (
+    <>
+      <Box width={250}>
+        <FormControl>
+          <FormLabel>{field}</FormLabel>
+          <Input
+            name="search"
+            placeholder="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value.trimStart())}
+            endDecorator={
+              progressIcon ? (
+                <CircularProgress size="sm" color="primary" />
+              ) : (
+                <SearchRoundedIcon color="neutral" />
+              )
+            }
+            sx={{ width: "95%" }}
+          />
+        </FormControl>
+      </Box>
+      <Stack
+        flexBasis={0}
+        flexGrow={1}
+        sx={{
+          mt: 2,
+          pb: 2,
+          maxHeight: { xs: "100%" },
+          overflow: "auto",
+        }}
+      >
+        <EventList
+          list={list}
+          selectedList={selectedList}
+          setSelectedList={setSelectedList}
+        />
+      </Stack>
+    </>
   );
 }

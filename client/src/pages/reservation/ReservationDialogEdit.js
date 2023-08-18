@@ -1,28 +1,28 @@
-import Box from '@mui/joy/Box';
-import Button from '@mui/joy/Button';
-import FormControl from '@mui/joy/FormControl';
-import FormLabel from '@mui/joy/FormLabel';
-import Input from '@mui/joy/Input';
-import Modal from '@mui/joy/Modal';
-import ModalClose from '@mui/joy/ModalClose';
-import ModalDialog from '@mui/joy/ModalDialog';
-import Stack from '@mui/joy/Stack';
-import Typography from '@mui/joy/Typography';
+import Box from "@mui/joy/Box";
+import Button from "@mui/joy/Button";
+import FormControl from "@mui/joy/FormControl";
+import FormLabel from "@mui/joy/FormLabel";
+import Input from "@mui/joy/Input";
+import Modal from "@mui/joy/Modal";
+import ModalClose from "@mui/joy/ModalClose";
+import ModalDialog from "@mui/joy/ModalDialog";
+import Stack from "@mui/joy/Stack";
+import Typography from "@mui/joy/Typography";
 import SelectFilter from "../../components/SelectFilter";
 
 // Icons
-import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
-import SaveRoundedIcon from '@mui/icons-material/SaveRounded';
+import DeleteForeverRoundedIcon from "@mui/icons-material/DeleteForeverRounded";
+import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 
 // Custom
-import { useState } from 'react';
-import { filterOpts } from '.';
-import { useSnackbar } from 'notistack';
+import { useState } from "react";
+import { filterOpts } from ".";
+import { useSnackbar } from "notistack";
 // import customerApi from '../../api/customerApi';
-import reservationApi from '../../api/reservationApi';
-import status from '../../constants/status';
+import reservationApi from "../../api/reservationApi";
+import status from "../../constants/status";
 
-export default function MemberDialogEdit(props) {
+export default function ReservationDialogEdit(props) {
   const { id, open, setOpen, setLoading, fetchData } = props;
   const [name, setName] = useState(props.name);
   const [phone, setPhone] = useState(props.phone);
@@ -41,12 +41,12 @@ export default function MemberDialogEdit(props) {
         if (response?.status === 200) {
           fetchData();
           enqueueSnackbar(response.data.message, {
-            variant: 'success',
+            variant: "success",
           });
         }
       } catch (err) {
         enqueueSnackbar(err.response.data?.message, {
-          variant: 'error',
+          variant: "error",
         });
       }
     };
@@ -88,9 +88,9 @@ export default function MemberDialogEdit(props) {
       <ModalDialog
         sx={{
           width: 350,
-          borderRadius: 'md',
+          borderRadius: "md",
           p: 3,
-          boxShadow: 'lg',
+          boxShadow: "lg",
         }}
       >
         <ModalClose />
@@ -116,10 +116,10 @@ export default function MemberDialogEdit(props) {
             <FormControl>
               <FormLabel>Gender</FormLabel>
               <SelectFilter
-                  filterOpt={gender}
-                  setFilterOpt={setGender}
-                  filterOpts={filterOpts}
-                />
+                filterOpt={gender}
+                setFilterOpt={setGender}
+                filterOpts={filterOpts}
+              />
             </FormControl>
             <FormControl required>
               <FormLabel>Phone</FormLabel>
@@ -150,7 +150,7 @@ export default function MemberDialogEdit(props) {
             </FormControl>
           </Stack>
 
-          <Box mt={3} display="flex" gap={2} sx={{ width: '100%' }}>
+          <Box mt={3} display="flex" gap={2} sx={{ width: "100%" }}>
             {/* <Button
               type="button"
               onClick={(e) => handleSave(e)}
@@ -167,8 +167,8 @@ export default function MemberDialogEdit(props) {
               sx={{
                 flex: 1,
                 display: {
-                  xs: 'none',
-                  sm: 'flex',
+                  xs: "none",
+                  sm: "flex",
                 },
               }}
             >
@@ -183,8 +183,8 @@ export default function MemberDialogEdit(props) {
               sx={{
                 flex: 1,
                 display: {
-                  xs: 'flex',
-                  sm: 'none',
+                  xs: "flex",
+                  sm: "none",
                 },
               }}
             >

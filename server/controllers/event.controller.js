@@ -59,6 +59,52 @@ async function updateEvent(req, res) {
   }
 }
 
+async function updateEventIncludeDish(req, res) {
+  try {
+    const { name, description, beginTime, closeTime, poster, dishes } =
+      req.body;
+    const { id } = req.params;
+
+    if (!name) {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+    // Update event if it exists
+    const event = await pool.query(
+      'UPDATE events SET event_name = $1, description = $2, begin_time = $3, close_time = $4, poster = $5 WHERE event_id = $6 RETURNING *',
+      [name, description, beginTime, closeTime, poster, id],
+    );
+    console.log(event.rows);
+    // Check if event exists
+    if (!event.rows.length) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    // Update event_dishes table
+
+    // Delete all dishes of event
+    await pool.query('DELETE FROM event_dishes WHERE event_id = $1', [id]);
+    const resData = { events: event.rows[0], dishes: [] };
+
+    const eventId = event.rows[0].event_id;
+    if (dishes) {
+      // Insert new dishes of event
+      const values = dishes
+        .map((dish) => `(${eventId}, ${dish.dish_id}, ${dish.quantity})`)
+        .join(', ');
+      const results = await pool.query(
+        `INSERT INTO event_dishes (event_id, dish_id, quantity) VALUES ${values} RETURNING *;`,
+      );
+      resData.dishes = results.rows;
+    }
+
+    return res
+      .status(200)
+      .json({ message: 'Event was updated!', data: resData });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
+  }
+}
+
 async function createEvent(req, res) {
   try {
     const { name, description, beginTime, closeTime, poster } = req.body;
@@ -75,6 +121,42 @@ async function createEvent(req, res) {
       'INSERT INTO events (event_name, description, begin_time, close_time, poster) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [name, description, beginTime, closeTime, poster],
     );
+    return res
+      .status(200)
+      .json({ message: 'Event was created!', data: event.rows[0] });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
+  }
+}
+async function createEventIncludeDish(req, res) {
+  try {
+    const { name, description, beginTime, closeTime, poster, dishes } =
+      req.body;
+    if (!name) {
+      return res.status(400).json({ message: 'Name is required' });
+    }
+    if (!beginTime) {
+      return res.status(400).json({ message: 'Begin time is required' });
+    }
+    if (!closeTime) {
+      return res.status(400).json({ message: 'End time is required' });
+    }
+    const event = await pool.query(
+      'INSERT INTO events (event_name, description, begin_time, close_time, poster) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [name, description, beginTime, closeTime, poster],
+    );
+    const eventId = event.rows[0].event_id;
+    // dishId is an array
+    console.log(dishes);
+    if (dishes) {
+      const values = dishes
+        .map((dish) => `(${eventId}, ${dish.dish_id}, ${dish.quantity})`)
+        .join(', ');
+        console.log(values);
+      const query = `INSERT INTO event_dishes (event_id, dish_id, quantity) VALUES ${values} RETURNING *;`;
+      const eventDishes = await pool.query(query);
+    }
     return res
       .status(200)
       .json({ message: 'Event was created!', data: event.rows[0] });
@@ -128,6 +210,21 @@ async function searchEventByName(req, res) {
   }
 }
 
+async function getAllDishesOfEvent(req, res) {
+  try {
+    const { id } = req.params;
+    const dishes = await pool.query(
+      'SELECT dish_id FROM event_dishes WHERE event_id = $1',
+      [id],
+    );
+
+    return res.status(200).json(dishes.rows);
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
 export default {
   getAllEvents,
   deleteEvent,
@@ -135,4 +232,7 @@ export default {
   createEvent,
   getEventById,
   searchEventByName,
+  createEventIncludeDish,
+  updateEventIncludeDish,
+  getAllDishesOfEvent,
 };
