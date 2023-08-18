@@ -12,10 +12,7 @@ import Remove from "@mui/icons-material/Remove";
 // Custom
 import React from "react";
 
-export default function EventListSelected({
-  diskList,
-  setDiskList,
-}) {
+export default function EventListSelected({ diskList, setDiskList }) {
   const handleIncrease = (id, list, setList) => {
     setList((prev) => {
       const index = list.findIndex((item) => item.id === id);
@@ -44,9 +41,7 @@ export default function EventListSelected({
           <Typography level="h6" fontWeight="bold" textColor="text.secondary">
             Selected
           </Typography>
-          <Typography mt={1}>
-            You haven't selected any combos or dishes yet.
-          </Typography>
+          <Typography mt={1}>You haven't selected any dishes yet.</Typography>
         </>
       )}
       {diskList.length > 0 && (
