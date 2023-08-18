@@ -77,12 +77,11 @@ async function updateEventIncludeDish(req, res) {
     if (!event.rows.length) {
       return res.status(404).json({ message: 'Event not found' });
     }
-
-    const resData = { events: event.rows[0], dishes: [] };
     // Update event_dishes table
 
     // Delete all dishes of event
     await pool.query('DELETE FROM event_dishes WHERE event_id = $1', [id]);
+    const resData = { events: event.rows[0], dishes: [] };
 
     const eventId = event.rows[0].event_id;
     if (dishes) {
@@ -130,6 +129,7 @@ async function createEvent(req, res) {
   }
 }
 async function createEventIncludeDish(req, res) {
+  console.log(req.body);
   try {
     const { name, description, beginTime, closeTime, poster, dishes } =
       req.body;
@@ -150,7 +150,7 @@ async function createEventIncludeDish(req, res) {
     // dishId is an array
     if (dishes) {
       const values = dishes
-        .map((dish) => `(${eventId}, ${dish.id}, ${dish.quantity})`)
+        .map((dish) => `(${eventId}, ${dish.dish_id}, ${dish.quantity})`)
         .join(', ');
       const query = `INSERT INTO event_dishes (event_id, dish_id, quantity) VALUES ${values} RETURNING *;`;
       const eventDishes = await pool.query(query);

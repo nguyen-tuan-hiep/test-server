@@ -114,7 +114,7 @@ export default function EventDialogAdd({
           description,
           beginTime,
           closeTime,
-          poster: URL.createObjectURL(poster),
+          poster: poster && URL.createObjectURL(poster),
           dishes: selectedDishes.filter((item) => item.quantity !== 0),
         };
         const response = await eventApi.create(data);
@@ -126,6 +126,7 @@ export default function EventDialogAdd({
         }
       } catch (err) {
         setLoading(false);
+        console.log(err);
         enqueueSnackbar(err.response?.data?.message, {
           variant: "error",
         });

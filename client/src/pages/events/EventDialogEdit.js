@@ -60,7 +60,6 @@ export default function EventDialogEdit(props) {
       setDishProgress(true);
       try {
         const response = await dishApi.search(dishSearch);
-        console.log(response.data.data);
         if (response?.status >= 200 && response?.status < 400) {
           const dishes = response.data.data.map((item) => ({
             id: item.dish_id,
@@ -68,7 +67,6 @@ export default function EventDialogEdit(props) {
             price: item.price,
           }));
           setDishList(dishes);
-          console.log(dishes);
         }
       } catch (err) {
         setDishList([]);
@@ -260,19 +258,22 @@ export default function EventDialogEdit(props) {
                 setDishList={setSelectedDishes}
               />
             </Stack>
-          </Stack>
 
-          <Stack className="col-3" sx={{ display: { xs: "none", md: "flex" } }}>
-            <EventSelector
-              field={"Dish"}
-              search={dishSearch}
-              setSearch={setDishSearch}
-              progressIcon={dishSearchProgress}
-              list={dishList}
-              setList={setDishList}
-              selectedList={selectedDishes}
-              setSelectedList={setSelectedDishes}
-            />
+            <Stack
+              className="col-3"
+              sx={{ display: { xs: "none", md: "flex" } }}
+            >
+              <EventSelector
+                field={"Dish"}
+                search={dishSearch}
+                setSearch={setDishSearch}
+                progressIcon={dishSearchProgress}
+                list={dishList}
+                setList={setDishList}
+                selectedList={selectedDishes}
+                setSelectedList={setSelectedDishes}
+              />
+            </Stack>
           </Stack>
 
           <Box mt={3} display="flex" gap={2} sx={{ width: "100%" }}>

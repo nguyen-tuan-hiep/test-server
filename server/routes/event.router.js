@@ -15,14 +15,14 @@ router.delete('/:id', eventController.deleteEvent);
 // update
 // router.post('/:id', eventController.updateEvent);
 
-// update include dish (delete event_dish and insert new event_dish)
-router.post('/:id', eventController.updateEventIncludeDish);
-
 // create
-router.post('/create', eventController.createEvent);
+// router.post('/create', eventController.createEvent);
 
-//create 
-router.post('/createv2', eventController.createEventIncludeDish);  
+//create
+router.post('/create', eventController.createEventIncludeDish);
+
+// update include dish (delete event_dish and insert new event_dish)
+router.put('/:id', eventController.updateEventIncludeDish);
 
 // get all dishes of an event
 router.get('/getDishes/:id', eventController.getAllDishesOfEvent);
