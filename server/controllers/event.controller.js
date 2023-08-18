@@ -58,10 +58,17 @@ async function updateEvent(req, res) {
     return res.status(500).json({ message: error.message });
   }
 }
+
 async function updateEventIncludeDish(req, res) {
   try {
-    const { name, description, beginTime, closeTime, poster, dishId } =
-      req.body;
+    const {
+      name,
+      description,
+      beginTime,
+      closeTime,
+      poster,
+      dishId: dishIds,
+    } = req.body;
     const { id } = req.params;
 
     if (!name) {
@@ -84,9 +91,9 @@ async function updateEventIncludeDish(req, res) {
     await pool.query('DELETE FROM event_dishes WHERE event_id = $1', [id]);
 
     const eventId = event.rows[0].event_id;
-    if (dishId) {
+    if (dishIds) {
       // Insert new dishes of event
-      const values = dishId.map((id) => `(${eventId}, ${id})`).join(', ');
+      const values = dishIds.map((id) => `(${eventId}, ${id})`).join(', ');
       const dishes = await pool.query(
         `INSERT INTO event_dishes (event_id, dish_id) VALUES ${values} RETURNING *;`,
       );
@@ -101,6 +108,7 @@ async function updateEventIncludeDish(req, res) {
     return res.status(500).json({ message: error.message });
   }
 }
+
 async function createEvent(req, res) {
   try {
     const { name, description, beginTime, closeTime, poster } = req.body;
@@ -209,7 +217,7 @@ async function getAllDishesOfEvent(req, res) {
       'SELECT dish_id FROM event_dishes WHERE event_id = $1',
       [id],
     );
-    
+
     return res.status(200).json(dishes.rows);
   } catch (error) {
     console.error(error.message);

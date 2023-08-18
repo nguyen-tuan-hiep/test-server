@@ -45,36 +45,38 @@ export default function EventDialogEdit(props) {
   const [posterChanged, setPosterChanged] = useState(false);
   const [preview, setPreview] = useState();
 
-  const [diskList, setDiskList] = useState([]);
-  const [selectedDisks, setSelectedDisks] = useState([]);
-  const [diskSearch, setDiskSearch] = useState("");
-  const [diskSearchProgress, setDiskProgress] = useState(false);
+  const [dishList, setDishList] = useState([]);
+  const [selectedDishes, setSelectedDishes] = useState([]);
+  const [dishSearch, setDishSearch] = useState("");
+  const [dishSearchProgress, setDishProgress] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
-  const [openDiskListModal, setOpenDiskListModal] = useState(false);
+  const [openDishListModal, setOpenDishListModal] = useState(false);
   const [openSelectedListModal, setOpenSelectedListModal] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     const fetch = async () => {
-      setDiskProgress(true);
+      setDishProgress(true);
       try {
-        const response = await dishApi.search(diskSearch);
-        if (response?.status === 200) {
-          const disks = response.data.disks.map((item) => ({
-            id: item.disk_id,
-            name: item.disk_name,
+        const response = await dishApi.search(dishSearch);
+        console.log(response.data.data);
+        if (response?.status >= 200 && response?.status < 400) {
+          const dishes = response.data.data.map((item) => ({
+            id: item.dish_id,
+            name: item.dish_name,
             price: item.price,
           }));
-          setDiskList(disks);
+          setDishList(dishes);
+          console.log(dishes);
         }
       } catch (err) {
-        setDiskList([]);
+        setDishList([]);
       }
-      setDiskProgress(false);
+      setDishProgress(false);
     };
     fetch();
-  }, [diskSearch]);
+  }, [dishSearch]);
 
   useEffect(() => {
     setPreview(poster);
@@ -254,8 +256,8 @@ export default function EventDialogEdit(props) {
               }}
             >
               <EventViewSelected
-                diskList={selectedDisks}
-                setDiskList={setSelectedDisks}
+                dishList={selectedDishes}
+                setDishList={setSelectedDishes}
               />
             </Stack>
           </Stack>
@@ -263,13 +265,13 @@ export default function EventDialogEdit(props) {
           <Stack className="col-3" sx={{ display: { xs: "none", md: "flex" } }}>
             <EventSelector
               field={"Dish"}
-              search={diskSearch}
-              setSearch={setDiskSearch}
-              progressIcon={diskSearchProgress}
-              list={diskList}
-              setList={setDiskList}
-              selectedList={selectedDisks}
-              setSelectedList={setSelectedDisks}
+              search={dishSearch}
+              setSearch={setDishSearch}
+              progressIcon={dishSearchProgress}
+              list={dishList}
+              setList={setDishList}
+              selectedList={selectedDishes}
+              setSelectedList={setSelectedDishes}
             />
           </Stack>
 
@@ -312,15 +314,15 @@ export default function EventDialogEdit(props) {
                 Edit selected
               </Typography>
               <EventViewSelected
-                diskList={selectedDisks}
-                setDiskList={setSelectedDisks}
+                dishList={selectedDishes}
+                setDishList={setSelectedDishes}
               />
             </ModalDialog>
           </Modal>
 
           <Modal
-            open={openDiskListModal}
-            onClose={() => setOpenDiskListModal(false)}
+            open={openDishListModal}
+            onClose={() => setOpenDishListModal(false)}
           >
             <ModalDialog
               sx={{
@@ -334,17 +336,17 @@ export default function EventDialogEdit(props) {
             >
               <ModalClose />
               <Typography component="h2" fontSize="1.25em">
-                Select disks
+                Select dishes
               </Typography>
               <EventSelector
                 field={"Dish"}
-                search={diskSearch}
-                setSearch={setDiskSearch}
-                progressIcon={diskSearchProgress}
-                list={diskList}
-                setList={setDiskList}
-                selectedList={selectedDisks}
-                setSelectedList={setSelectedDisks}
+                search={dishSearch}
+                setSearch={setDishSearch}
+                progressIcon={dishSearchProgress}
+                list={dishList}
+                setList={setDishList}
+                selectedList={selectedDishes}
+                setSelectedList={setSelectedDishes}
               />
             </ModalDialog>
           </Modal>
@@ -354,7 +356,7 @@ export default function EventDialogEdit(props) {
   );
 }
 
-function EventViewSelected({ diskList, setDiskList }) {
+function EventViewSelected({ dishList, setDishList }) {
   return (
     <Stack
       flexBasis={0}
@@ -366,7 +368,7 @@ function EventViewSelected({ diskList, setDiskList }) {
         overflowY: "auto",
       }}
     >
-      <EventListSelected diskList={diskList} setDiskList={setDiskList} />
+      <EventListSelected dishList={dishList} setDishList={setDishList} />
     </Stack>
   );
 }
