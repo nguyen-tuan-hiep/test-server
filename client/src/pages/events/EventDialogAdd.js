@@ -97,14 +97,14 @@ export default function EventDialogAdd({
   };
 
   const handleClose = () => {
-      setOpen(false);
-      setName("");
-      setDescription("");
-      setPoster("");
-      setBeginTime("");
-      setEndTime("");
-      setSelectedCombos([]);
-      setSelectedDisks([]);
+    setOpen(false);
+    setName("");
+    setDescription("");
+    setPoster("");
+    setBeginTime("");
+    setEndTime("");
+    setSelectedCombos([]);
+    setSelectedDisks([]);
   };
 
   const handleSubmit = () => {
@@ -146,10 +146,9 @@ export default function EventDialogAdd({
     <Modal open={open} onClose={() => setOpen(false)}>
       <ModalDialog
         sx={{
-          width: "95%",
-          maxWidth: 550,
+          maxWidth: "100vw",
           maxHeight: "95vh",
-          overflowY: "auto",
+          overflow: "auto",
           borderRadius: "md",
           p: 3,
           boxShadow: "lg",
@@ -190,7 +189,7 @@ export default function EventDialogAdd({
                   <Textarea
                     name="description"
                     minRows={2}
-                    maxRows={5}
+                    maxRows={2}
                     placeholder="This is an event featuring..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -202,7 +201,7 @@ export default function EventDialogAdd({
                   type="date"
                   value={beginTime}
                   onChange={(e) => setBeginTime(e.target.value)}
-                  sx={{ display: { xs: "flex", sm: "none" } }}
+                  // sx={{ display: { xs: "flex", sm: "none" } }}
                 />
                 <TextField
                   required
@@ -210,9 +209,11 @@ export default function EventDialogAdd({
                   type="date"
                   value={closeTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  sx={{ display: { xs: "flex", sm: "none" } }}
+                  // sx={{ display: { xs: "flex", sm: "none" } }}
                 />
-                <FormControl sx={{ display: { xs: "flex", sm: "none" } }}>
+                <FormControl
+                // sx={{ display: { xs: "flex", sm: "none" } }}
+                >
                   <FormLabel>Poster</FormLabel>
                   <IconButton component="label">
                     <AddPhotoAlternateRoundedIcon />
@@ -230,119 +231,67 @@ export default function EventDialogAdd({
                   )}
                 </FormControl>
 
-                <FormControl
-                    sx={{ display: { xs: "flex", sm: "none" } }}
-                >
-                    <FormLabel>Disks</FormLabel>
-                    <Button
-                        variant="outlined"
-                        onClick={() =>
-                            setOpenDiskListModal(true)
-                        }
-                    >
-                        Select disks
-                    </Button>
+                <FormControl sx={{ display: { xs: "flex", sm: "none" } }}>
+                  <FormLabel>Disks</FormLabel>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setOpenDiskListModal(true)}
+                  >
+                    Select disks
+                  </Button>
                 </FormControl>
 
                 <FormControl
-                    sx={{
-                        display: {
-                            xs: "flex",
-                            md: "flex",
-                            lg: "none",
-                        },
-                    }}
+                  sx={{
+                    display: {
+                      xs: "flex",
+                      md: "flex",
+                      lg: "none",
+                    },
+                  }}
                 >
-                    <FormLabel>Selected</FormLabel>
-                    <Button
-                        variant="outlined"
-                        onClick={() =>
-                            setOpenSelectedListModal(true)
-                        }
-                    >
-                        Edit selected
-                    </Button>
+                  <FormLabel>Selected</FormLabel>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setOpenSelectedListModal(true)}
+                  >
+                    Edit selected
+                  </Button>
                 </FormControl>
               </Stack>
             </Stack>
 
             <Stack
               className="col-2"
-              sx={{ display: { xs: "none", sm: "flex" } }}
-              flex={1}
-              gap={2}
-            >
-              <TextField
-                required
-                label="Begin Time"
-                type="date"
-                value={beginTime}
-                onChange={(e) => setBeginTime(e.target.value)}
-                sx={{ display: { sx: "none", sm: "flex" } }}
-              />
-              <TextField
-                required
-                label="Close Time"
-                type="date"
-                value={closeTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                sx={{ display: { sx: "none", sm: "flex" } }}
-              />
-              <FormControl sx={{ display: { sx: "none", sm: "flex" } }}>
-                <FormLabel>Poster</FormLabel>
-                <IconButton component="label">
-                  <AddPhotoAlternateRoundedIcon />
-                  <input type="file" hidden onChange={onSelectFile} />
-                </IconButton>
-                {poster && (
-                  <AspectRatio
-                    ratio="4 / 3"
-                    maxHeight={175}
-                    objectFit="cover"
-                    sx={{ marginTop: 1 }}
-                  >
-                    <img src={preview} alt="Preview" />
-                  </AspectRatio>
-                )}
-              </FormControl>
-            </Stack>
-
-          <Stack
-              className="col-2"
               gap={2}
               sx={{
-                  display: {
-                      xs: "none",
-                      sm: "flex",
-                      md: "none",
-                      lg: "flex",
-                  },
+                display: {
+                  xs: "none",
+                  lg: "flex",
+                },
               }}
-          >
-              <FormControl
-                  sx={{
-                      display: {
-                          xs: "none",
-                          sm: "flex",
-                          md: "none",
-                      },
-                  }}
-              >
-                  <FormLabel>Disks</FormLabel>
-                  <Button
-                      variant="outlined"
-                      onClick={() => setOpenDiskListModal(true)}
-                  >
-                      Select disks
-                  </Button>
-              </FormControl>
-
+            >
               <EventViewSelected
-                  diskList={selectedDisks}
-                  setDiskList={setSelectedDisks}
+                diskList={selectedDisks}
+                setDiskList={setSelectedDisks}
               />
-          </Stack>
+            </Stack>
 
+            <Stack
+              className="col-3"
+              sx={{ display: { xs: "none", sm: "flex" } }}
+            >
+              <EventSelector
+                field={"Disk"}
+                search={diskSearch}
+                setSearch={setDiskSearch}
+                progressIcon={diskSearchProgress}
+                list={diskList}
+                setList={setDiskList}
+                selectedList={selectedDisks}
+                setSelectedList={setSelectedDisks}
+              />
+            </Stack>
           </Stack>
 
           <Box mt={3} display="flex" gap={2} sx={{ width: "100%" }}>
@@ -370,71 +319,68 @@ export default function EventDialogAdd({
 }
 
 function EventViewSelected({ comboList, setComboList, diskList, setDiskList }) {
-    return (
-        <Stack
-            flexBasis={0}
-            flexGrow={1}
-            sx={{
-                pb: 2,
-                width: 250,
-                maxHeight: { xs: "100%" },
-                overflowY: "auto",
-            }}
-        >
-            <EventListSelected
-                diskList={diskList}
-                setDiskList={setDiskList}
-            />
-        </Stack>
-    );
+  return (
+    <Stack
+      flexBasis={0}
+      flexGrow={1}
+      sx={{
+        pb: 2,
+        width: 250,
+        maxHeight: { xs: "100%" },
+        overflowY: "auto",
+      }}
+    >
+      <EventListSelected diskList={diskList} setDiskList={setDiskList} />
+    </Stack>
+  );
 }
 
 function EventSelector({
-    field,
-    search,
-    setSearch,
-    progressIcon,
-    list,
-    selectedList,
-    setSelectedList,
+  field,
+  search,
+  setSearch,
+  progressIcon,
+  list,
+  selectedList,
+  setSelectedList,
 }) {
-    return (
-        <>
-            <Box width={250}>
-                <FormControl>
-                    <FormLabel>{field}</FormLabel>
-                    <Input
-                        name="search"
-                        placeholder="Search"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value.trimStart())}
-                        endDecorator={
-                            progressIcon ? (
-                                <CircularProgress size="sm" color="primary" />
-                            ) : (
-                                <SearchRoundedIcon color="neutral" />
-                            )
-                        }
-                        sx={{ width: "95%" }}
-                    />
-                </FormControl>
-            </Box>
-            <Stack
-                flexBasis={0}
-                flexGrow={1}
-                sx={{
-                    mt: 2,
-                    pb: 2,
-                    maxHeight: { xs: "100%" },
-                    overflow: "auto",
-                }}
-            >
-                <EventList
-                    list={list}
-                    selectedList={selectedList}
-                    setSelectedList={setSelectedList}
-                />
-            </Stack>
-        </>
-    );
+  return (
+    <>
+      <Box width={250}>
+        <FormControl>
+          <FormLabel>{field}</FormLabel>
+          <Input
+            name="search"
+            placeholder="Search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value.trimStart())}
+            endDecorator={
+              progressIcon ? (
+                <CircularProgress size="sm" color="primary" />
+              ) : (
+                <SearchRoundedIcon color="neutral" />
+              )
+            }
+            sx={{ width: "95%" }}
+          />
+        </FormControl>
+      </Box>
+      <Stack
+        flexBasis={0}
+        flexGrow={1}
+        sx={{
+          mt: 2,
+          pb: 2,
+          maxHeight: { xs: "100%" },
+          overflow: "auto",
+        }}
+      >
+        <EventList
+          list={list}
+          selectedList={selectedList}
+          setSelectedList={setSelectedList}
+        />
+      </Stack>
+    </>
+  );
 }
