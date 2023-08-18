@@ -5,11 +5,15 @@ import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
 import Modal from "@mui/joy/Modal";
 import ModalClose from "@mui/joy/ModalClose";
+import TextField from "@mui/material/TextField";
 import ModalDialog from "@mui/joy/ModalDialog";
 import SelectFilter from "../../components/SelectFilter";
 import Stack from "@mui/joy/Stack";
 import Typography from "@mui/joy/Typography";
 import { useSnackbar } from "notistack";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // Custom
 import { useState } from "react";
@@ -24,13 +28,16 @@ export default function MemberDialogAdd({
   fetchData,
 }) {
   const [name, setName] = useState("");
+  const [table, setTable] = useState(0);
   const [phone, setPhone] = useState("");
   const [address, setAdress] = useState("");
   const [gender, setGender] = useState("");
+  const [res_date, setRes_date] = useState(new Date());
+  const [res_time_start, setRes_time_start] = useState(new Date().getTime());
   const [point, setPoint] = useState("");
   const { enqueueSnackbar } = useSnackbar();
 
-  const filterOpts = ["Female", "Male"];
+  const filterOpts = [7, 9, 11, 13, 15, 17, 19, 21];
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -73,10 +80,12 @@ export default function MemberDialogAdd({
     <Modal open={open} onClose={() => setOpen(false)}>
       <ModalDialog
         sx={{
+          position: "relative",
           width: 350,
           borderRadius: "md",
           p: 3,
           boxShadow: "lg",
+          zIndex: 1000,
         }}
       >
         <ModalClose />
@@ -91,7 +100,7 @@ export default function MemberDialogAdd({
         <form onSubmit={handleSubmit}>
           <Stack>
             <Stack spacing={2}>
-              <FormControl required>
+              {/* <FormControl required>
                 <FormLabel>Name</FormLabel>
                 <Input
                   name="name"
@@ -99,7 +108,7 @@ export default function MemberDialogAdd({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
-              </FormControl>
+              </FormControl> */}
               <FormControl required>
                 <FormLabel>Phone</FormLabel>
                 <Input
@@ -109,30 +118,49 @@ export default function MemberDialogAdd({
                   onChange={(e) => setPhone(e.target.value)}
                 />
               </FormControl>
-              <FormControl>
-                <FormLabel>Gender</FormLabel>
+              {/* <FormControl>
+                <FormLabel>Table</FormLabel>
                 <SelectFilter
-                  filterOpt={gender}
-                  setFilterOpt={setGender}
+                  filterOpt={table}
+                  setFilterOpt={setTable}
                   filterOpts={filterOpts}
                 />
-              </FormControl>
+              </FormControl> */}
               <FormControl>
-                <FormLabel>Address</FormLabel>
+                <FormLabel>Table</FormLabel>
                 <Input
-                  name="address"
-                  placeholder="Address"
-                  value={address}
-                  onChange={(e) => setAdress(e.target.value)}
+                  name="table"
+                  placeholder="Table"
+                  value={table}
+                  onChange={(e) => setTable(e.target.value)}
                 />
               </FormControl>
               <FormControl required>
-                <FormLabel>Point</FormLabel>
-                <Input
-                  name="point"
-                  placeholder="Point"
-                  value={point}
-                  onChange={(e) => setPoint(e.target.value)}
+                <FormLabel>Reservation Date</FormLabel>
+                <LocalizationProvider dateAdapter={AdapterDateFns} className="px-2">
+          <DatePicker
+            label="Check-in"
+            value={res_date}
+            onChange={(newValue) => {
+              setRes_date(newValue);
+            }}
+            textField={(params) => <TextField {...params} />}
+            format="dd/MM/yyyy"
+            minDate={new Date()}
+            maxDate={
+              res_date ? new Date(String(res_date)) : new Date('2099-12-31')
+            }
+
+          />
+              </LocalizationProvider>
+
+              </FormControl>
+              <FormControl>
+                <FormLabel>Reservation Time</FormLabel>
+                <SelectFilter
+                  filterOpt={res_time_start}
+                  setFilterOpt={setRes_time_start}
+                  filterOpts={filterOpts}
                 />
               </FormControl>
             </Stack>
