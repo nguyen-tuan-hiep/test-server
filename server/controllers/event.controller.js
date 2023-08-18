@@ -64,6 +64,7 @@ async function updateEventIncludeDish(req, res) {
     const { name, description, beginTime, closeTime, poster, dishes } =
       req.body;
     const { id } = req.params;
+    console.log(req.body);
 
     if (!name) {
       return res.status(400).json({ message: 'Name is required' });
@@ -84,11 +85,13 @@ async function updateEventIncludeDish(req, res) {
     const resData = { events: event.rows[0], dishes: [] };
 
     const eventId = event.rows[0].event_id;
-    if (dishes) {
+
+    if (dishes && dishes.length > 0) {
       // Insert new dishes of event
       const values = dishes
-        .map((dish) => `(${eventId}, ${dish.id}, ${dish.quantity}})`)
+        .map((dish) => `(${eventId}, ${dish.id}, ${dish.quantity})`)
         .join(', ');
+      console.log(values);
       const results = await pool.query(
         `INSERT INTO event_dishes (event_id, dish_id, quantity) VALUES ${values} RETURNING *;`,
       );
@@ -212,7 +215,7 @@ async function getAllDishesOfEvent(req, res) {
   try {
     const { id } = req.params;
     const dishes = await pool.query(
-      'SELECT dish_id FROM event_dishes WHERE event_id = $1',
+      'SELECT d.dish_id, d.dish_name, d.price, e.quantity FROM event_dishes e JOIN dishes d ON e.dish_id = d.dish_id WHERE event_id = $1',
       [id],
     );
 

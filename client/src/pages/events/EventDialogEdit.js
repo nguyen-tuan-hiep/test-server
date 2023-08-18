@@ -77,6 +77,31 @@ export default function EventDialogEdit(props) {
   }, [dishSearch]);
 
   useEffect(() => {
+    const fetch = async () => {
+      setLoadingEdit(true);
+      try {
+        const response = await eventApi.getFreeDishes(id);
+        console.log(response);
+        if (response?.status === 200) {
+          const newSelected = response.data.map((item) => ({
+            id: item.dish_id,
+            name: item.dish_name,
+            price: +item.price,
+            quantity: +item.quantity,
+          }));
+          setSelectedDishes(newSelected);
+          // setSelectedDishes(response.data);
+        }
+      } catch (err) {
+        console.log("Reseting selected dishes for id: ", id);
+        setSelectedDishes([]);
+      }
+      setLoadingEdit(false);
+    };
+    fetch();
+  }, [id, open]);
+
+  useEffect(() => {
     setPreview(poster);
     // eslint-disable-next-line
   }, []);
@@ -105,6 +130,7 @@ export default function EventDialogEdit(props) {
               beginTime,
               closeTime,
               poster: URL.createObjectURL(poster),
+              dishes: selectedDishes.filter((item) => item.quantity !== 0),
             }
           : {
               name,
@@ -112,7 +138,9 @@ export default function EventDialogEdit(props) {
               beginTime,
               closeTime,
               poster: poster,
+              dishes: selectedDishes.filter((item) => item.quantity !== 0),
             };
+        console.log(data);
         const response = await eventApi.update(id, data);
         if (response?.status === 200) {
           fetchData();
@@ -151,7 +179,7 @@ export default function EventDialogEdit(props) {
           fontSize="1.25em"
           mb="0.25em"
         >
-          Add new event
+          Edit event
         </Typography>
         <Stack component="form">
           <Stack direction="row" spacing={2.5}>

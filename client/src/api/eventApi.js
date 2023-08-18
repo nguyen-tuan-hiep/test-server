@@ -23,6 +23,10 @@ const eventApi = {
     const url = `${PREFIX}/${id}`;
     return httpRequest.put(url, data);
   },
+  getFreeDishes(id) {
+    const url = `${PREFIX}/getDishes/${id}`;
+    return httpRequest.get(url);
+  },
 };
 
 export default eventApi;
