@@ -104,7 +104,7 @@ export default function SideBar() {
               icon={AssignmentIndRoundedIcon}
             />
             <SideEntry
-              text="Members"
+              text="Customers"
               path="/members"
               icon={AssignmentIndRoundedIcon}
             />

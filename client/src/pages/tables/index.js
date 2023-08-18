@@ -22,8 +22,8 @@ import TableDialogAdd from "./TableDialogAdd";
 
 export const filterObjs = [
   { table_status: 0, renderText: "Available", color: "success" },
-  { table_status: 1, renderText: "Reserved", color: "neutral" },
-  { table_status: 2, renderText: "Occupied", color: "primary" },
+  { table_status: 1, renderText: "Occupied", color: "primary" },
+  { table_status: 2, renderText: "Reserved", color: "neutral" },
   { table_status: 3, renderText: "Out of Order", color: "danger" },
 ];
 
@@ -42,9 +42,9 @@ export default function Tables() {
     setLoading(true);
     try {
       const response = await tableApi.getTableList();
-      
+
       console.log(response?.data?.data);
-      
+
       if (response.status === 200) {
         setTables(response?.data?.data);
       }
@@ -148,7 +148,7 @@ export default function Tables() {
             {!loading &&
               tables
                 .filter((table) =>
-                  filterOpt ? table.table_status === filterOpt : true
+                  filterOpt !== null ? table.table_status === filterOpt : true
                 )
                 .map((table) => (
                   <div key={table.table_id}>

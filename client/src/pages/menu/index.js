@@ -22,7 +22,12 @@ import { useDebounce } from "../../hooks";
 import DiskDialogAdd from "./DiskDialogAdd";
 import DiskGroup from "./DiskGroup";
 
-export const diskOpts = ["Main Menu", "Side Menu", "Dessert Menu", "Beverage Menu"];
+export const diskOpts = [
+  "Main Menu",
+  "Side Menu",
+  "Dessert Menu",
+  "Beverage Menu",
+];
 
 export const filterOpts = [...diskOpts];
 
@@ -53,12 +58,14 @@ export default function Menu() {
     fetchData();
   }, [debounceValue]);
 
-  return (<>
+  return (
+    <>
       {drawerOpen && <SideDrawer />}
       <Layout.Root
         sx={{
           ...(drawerOpen && {
-            height: "100vh", overflow: "hidden",
+            height: "100vh",
+            overflow: "hidden",
           }),
         }}
       >
@@ -73,12 +80,18 @@ export default function Menu() {
         >
           <Box
             sx={{
-              pt: 1, bgcolor: "background.surface", position: "sticky", top: 64, zIndex: 1100,
+              pt: 1,
+              bgcolor: "background.surface",
+              position: "sticky",
+              top: 64,
+              zIndex: 1100,
             }}
           >
             <Box
               sx={{
-                display: "flex", alignItems: "center", justifyContent: "space-between",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
               <Typography fontWeight="bold" level="h3" component="h1">
@@ -107,7 +120,7 @@ export default function Menu() {
               </Stack>
               <Stack direction="row" spacing={{ xs: 1.5, sm: 2, md: 2 }}>
                 <Button
-                  color="success"
+                  color="primary"
                   startDecorator={<Add />}
                   onClick={() => setOpenDiskAdd(true)}
                 >
@@ -125,21 +138,30 @@ export default function Menu() {
           </Box>
 
           {loading && <Loading />}
-          {!loading && (<Box px={0.25}>
-              {currentOpt === null ? (filterOpts.map((filterOpt) => (<DiskGroup
+          {!loading && (
+            <Box px={0.25}>
+              {currentOpt === null ? (
+                filterOpts.map((filterOpt) => (
+                  <DiskGroup
                     key={filterOpt}
                     category={filterOpt}
                     disks={disks}
                     fetchData={fetchData}
                     setLoading={setLoading}
-                  />))) : (<DiskGroup
+                  />
+                ))
+              ) : (
+                <DiskGroup
                   key={currentOpt}
                   category={currentOpt}
                   disks={disks}
                   fetchData={fetchData}
-                />)}
-            </Box>)}
+                />
+              )}
+            </Box>
+          )}
         </Layout.Main>
       </Layout.Root>
-    </>);
+    </>
+  );
 }

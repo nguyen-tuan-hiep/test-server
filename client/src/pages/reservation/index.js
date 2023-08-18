@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
@@ -10,21 +10,19 @@ import Add from "@mui/icons-material/Add";
 // Custom
 import { Input, Stack } from "@mui/joy";
 import { useContext, useEffect, useState } from "react";
-import reservationApi from '../../api/reservationApi';
+import reservationApi from "../../api/reservationApi";
 import Header from "../../components/Header";
 import Layout from "../../components/Layout";
 import Loading from "../../components/Loading";
-import SelectFilter from "../../components/SelectFilter";
 import SideBar from "../../components/SideBar";
 import SideDrawer, { SideDrawerContext } from "../../components/SideDrawer";
 import { useDebounce } from "../../hooks";
-import MemberDialogAdd from "./MemberDialogAdd";
+import ReservationDialogAdd from "./ReservationDialogAdd";
 import TableView from "./TableView";
 
 export default function Reservation() {
   const { drawerOpen } = useContext(SideDrawerContext);
   const [openAdd, setOpenAdd] = useState(false);
-  const [currentOpt, setCurrentOpt] = useState(null);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -33,8 +31,9 @@ export default function Reservation() {
     setLoading(true);
     try {
       // const rankIndex = filterOpts.findIndex((item) => item === currentOpt);
-      const response = await reservationApi.getReservationList();
-      console.log(response);
+      const response = await reservationApi.searchByPhone({
+        phone: debounceValue,
+      });
 
       if (response?.status === 200) {
         setData(response.data);
@@ -50,7 +49,7 @@ export default function Reservation() {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line
-  }, [currentOpt, debounceValue]);
+  }, [debounceValue]);
 
   return (
     <>
@@ -101,17 +100,12 @@ export default function Reservation() {
               <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
                 <Input
                   name="search"
-                  placeholder="Search"
+                  placeholder="Phone"
                   value={search}
                   onChange={(e) => setSearch(e.target.value.trimStart())}
                   startDecorator={<SearchRoundedIcon />}
                   sx={{ width: { md: 165 } }}
                 />
-                {/* <SelectFilter
-                  filterOpt={currentOpt}
-                  setFilterOpt={setCurrentOpt}
-                  filterOpts={filterOpts}
-                /> */}
               </Stack>
               <Stack direction="row" spacing={{ xs: 1.5, sm: 2, md: 2 }}>
                 <Button
@@ -121,7 +115,7 @@ export default function Reservation() {
                   Add reservation
                 </Button>
               </Stack>
-              <MemberDialogAdd
+              <ReservationDialogAdd
                 open={openAdd}
                 setOpen={setOpenAdd}
                 setLoading={setLoading}

@@ -6,6 +6,7 @@ import Menu from "@mui/joy/Menu";
 import MenuItem from "@mui/joy/MenuItem";
 import Stack from "@mui/joy/Stack";
 import Typography from "@mui/joy/Typography";
+import moment from "moment";
 
 // Icons
 import DeleteForever from "@mui/icons-material/DeleteForever";
@@ -19,7 +20,7 @@ import { useState } from "react";
 import reservationApi from "../../api/reservationApi";
 import AlertDialog from "../../components/AlertDialog";
 import status from "../../constants/status";
-import MemberDialogEdit from "./MemberDialogEdit";
+import ReservationDialogEdit from "./ReservationDialogEdit";
 import { rankColors } from "./TableView";
 
 export default function TableFullRow({ data, setLoading, fetchData }) {
@@ -43,7 +44,9 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
     setProgressIcon(true);
     const remove = async () => {
       try {
-        const response = await reservationApi.deleteReservationById(data.res_id);
+        const response = await reservationApi.deleteReservationById(
+          data.res_id
+        );
 
         if (response?.status === 200) {
           setProgressIcon(false);
@@ -71,7 +74,9 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
         <Typography level="body2">{data.table_id}</Typography>
       </Stack>
       <Stack justifyContent="center">
-        <Typography level="body2">{data.res_date}</Typography>
+        <Typography level="body2">
+          {moment(data.res_date).local().format("DD-MM-YYYY")}
+        </Typography>
       </Stack>
       <Stack justifyContent="center">
         <Typography level="body2">{data.res_time_start}</Typography>
@@ -108,12 +113,12 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
           aria-labelledby="positioned-button"
           placement="bottom-end"
         >
-          <MenuItem onClick={() => setOpenEdit(true)}>
+          {/* <MenuItem onClick={() => setOpenEdit(true)}>
             <ListItemDecorator>
               <Edit />
             </ListItemDecorator>
             Edit member
-          </MenuItem>
+          </MenuItem> */}
           <MenuItem
             onClick={() => {
               setOpenAlert(true);
@@ -124,7 +129,7 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
             <ListItemDecorator sx={{ color: "inherit" }}>
               <DeleteForever />
             </ListItemDecorator>
-            Delete member
+            Delete reservation
           </MenuItem>
         </Menu>
         {/* <MemberDialogEdit
