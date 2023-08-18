@@ -282,7 +282,7 @@ export default function EventDialogAdd({
               sx={{ display: { xs: "none", sm: "flex" } }}
             >
               <EventSelector
-                field={"Disk"}
+                field={"Dish"}
                 search={diskSearch}
                 setSearch={setDiskSearch}
                 progressIcon={diskSearchProgress}
@@ -318,7 +318,7 @@ export default function EventDialogAdd({
   );
 }
 
-function EventViewSelected({ comboList, setComboList, diskList, setDiskList }) {
+function EventViewSelected({ diskList, setDiskList }) {
   return (
     <Stack
       flexBasis={0}
