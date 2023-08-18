@@ -23,7 +23,7 @@ export default function SelectFilter({ filterOpt, setFilterOpt, filterOpts, rend
             placeholder="Filters"
             onChange={(e, newValue) => setFilterOpt(newValue)}
             startDecorator={<FilterListRoundedIcon />}
-            {...(filterOpt && {
+            {...(filterOpt !== null && {
                 endDecorator: (
                     <IconButton
                         size="sm"

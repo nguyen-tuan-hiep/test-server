@@ -12,15 +12,20 @@ import Stack from "@mui/joy/Stack";
 import Textarea from "@mui/joy/Textarea";
 import TextField from "@mui/joy/TextField";
 import Typography from "@mui/joy/Typography";
+import { CircularProgress } from "@mui/joy";
 
 // Icons
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 // Custom
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import eventApi from "../../api/eventApi";
+import dishApi from "../../api/dishApi";
+import EventListSelected from "./EventListSelected";
+import EventList from "./EventList";
 
 export default function EventDialogAdd({
   open,
@@ -37,7 +42,36 @@ export default function EventDialogAdd({
   const [preview, setPreview] = useState(undefined);
   const [beginTime, setBeginTime] = useState("");
   const [closeTime, setEndTime] = useState("");
+  const [diskList, setDiskList] = useState([]);
+  const [selectedDisks, setSelectedDisks] = useState([]);
+  const [selectedCombos, setSelectedCombos] = useState([]);
+  const [diskSearch, setDiskSearch] = useState("");
+  const [diskSearchProgress, setDiskProgress] = useState(false);
+  const [openDiskListModal, setOpenDiskListModal] = useState(false);
+  const [openSelectedListModal, setOpenSelectedListModal] = useState(false);
+
   const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    const fetch = async () => {
+      setDiskProgress(true);
+      try {
+        const response = await dishApi.search(diskSearch);
+        if (response?.status === 200) {
+          const disks = response.data.disks.map((item) => ({
+            id: item.disk_id,
+            name: item.disk_name,
+            price: item.price,
+          }));
+          setDiskList(disks);
+        }
+      } catch (err) {
+        setDiskList([]);
+      }
+      setDiskProgress(false);
+    };
+    fetch();
+  }, [diskSearch]);
 
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
@@ -62,6 +96,17 @@ export default function EventDialogAdd({
     setPoster(e.target.files[0]);
   };
 
+  const handleClose = () => {
+      setOpen(false);
+      setName("");
+      setDescription("");
+      setPoster("");
+      setBeginTime("");
+      setEndTime("");
+      setSelectedCombos([]);
+      setSelectedDisks([]);
+  };
+
   const handleSubmit = () => {
     const submit = async () => {
       setLoading(true);
@@ -72,6 +117,7 @@ export default function EventDialogAdd({
           beginTime,
           closeTime,
           poster: URL.createObjectURL(poster),
+          disks: selectedDisks.filter((item) => item.quantity !== 0),
         };
         const response = await eventApi.create(data);
         if (response?.status === 200) {
@@ -126,8 +172,8 @@ export default function EventDialogAdd({
             setOpen(false);
           }}
         >
-          <Stack direction="row" spacing={3}>
-            <Stack className="col-1" flex={1}>
+          <Stack direction="row" spacing={2.5}>
+            <Stack className="col-1" width={250} flex={1}>
               <Stack spacing={2}>
                 <FormControl required>
                   <FormLabel>Name</FormLabel>
@@ -183,6 +229,40 @@ export default function EventDialogAdd({
                     </AspectRatio>
                   )}
                 </FormControl>
+
+                <FormControl
+                    sx={{ display: { xs: "flex", sm: "none" } }}
+                >
+                    <FormLabel>Disks</FormLabel>
+                    <Button
+                        variant="outlined"
+                        onClick={() =>
+                            setOpenDiskListModal(true)
+                        }
+                    >
+                        Select disks
+                    </Button>
+                </FormControl>
+
+                <FormControl
+                    sx={{
+                        display: {
+                            xs: "flex",
+                            md: "flex",
+                            lg: "none",
+                        },
+                    }}
+                >
+                    <FormLabel>Selected</FormLabel>
+                    <Button
+                        variant="outlined"
+                        onClick={() =>
+                            setOpenSelectedListModal(true)
+                        }
+                    >
+                        Edit selected
+                    </Button>
+                </FormControl>
               </Stack>
             </Stack>
 
@@ -226,6 +306,43 @@ export default function EventDialogAdd({
                 )}
               </FormControl>
             </Stack>
+
+          <Stack
+              className="col-2"
+              gap={2}
+              sx={{
+                  display: {
+                      xs: "none",
+                      sm: "flex",
+                      md: "none",
+                      lg: "flex",
+                  },
+              }}
+          >
+              <FormControl
+                  sx={{
+                      display: {
+                          xs: "none",
+                          sm: "flex",
+                          md: "none",
+                      },
+                  }}
+              >
+                  <FormLabel>Disks</FormLabel>
+                  <Button
+                      variant="outlined"
+                      onClick={() => setOpenDiskListModal(true)}
+                  >
+                      Select disks
+                  </Button>
+              </FormControl>
+
+              <EventViewSelected
+                  diskList={selectedDisks}
+                  setDiskList={setSelectedDisks}
+              />
+          </Stack>
+
           </Stack>
 
           <Box mt={3} display="flex" gap={2} sx={{ width: "100%" }}>
@@ -250,4 +367,74 @@ export default function EventDialogAdd({
       </ModalDialog>
     </Modal>
   );
+}
+
+function EventViewSelected({ comboList, setComboList, diskList, setDiskList }) {
+    return (
+        <Stack
+            flexBasis={0}
+            flexGrow={1}
+            sx={{
+                pb: 2,
+                width: 250,
+                maxHeight: { xs: "100%" },
+                overflowY: "auto",
+            }}
+        >
+            <EventListSelected
+                diskList={diskList}
+                setDiskList={setDiskList}
+            />
+        </Stack>
+    );
+}
+
+function EventSelector({
+    field,
+    search,
+    setSearch,
+    progressIcon,
+    list,
+    selectedList,
+    setSelectedList,
+}) {
+    return (
+        <>
+            <Box width={250}>
+                <FormControl>
+                    <FormLabel>{field}</FormLabel>
+                    <Input
+                        name="search"
+                        placeholder="Search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value.trimStart())}
+                        endDecorator={
+                            progressIcon ? (
+                                <CircularProgress size="sm" color="primary" />
+                            ) : (
+                                <SearchRoundedIcon color="neutral" />
+                            )
+                        }
+                        sx={{ width: "95%" }}
+                    />
+                </FormControl>
+            </Box>
+            <Stack
+                flexBasis={0}
+                flexGrow={1}
+                sx={{
+                    mt: 2,
+                    pb: 2,
+                    maxHeight: { xs: "100%" },
+                    overflow: "auto",
+                }}
+            >
+                <EventList
+                    list={list}
+                    selectedList={selectedList}
+                    setSelectedList={setSelectedList}
+                />
+            </Stack>
+        </>
+    );
 }

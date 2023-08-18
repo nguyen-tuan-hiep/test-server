@@ -148,7 +148,7 @@ export default function Tables() {
             {!loading &&
               tables
                 .filter((table) =>
-                  filterOpt ? table.table_status === filterOpt : true
+                  filterOpt !== null ? table.table_status === filterOpt : true
                 )
                 .map((table) => (
                   <div key={table.table_id}>

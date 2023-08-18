@@ -138,20 +138,22 @@ export default function MemberDialogAdd({
               <FormControl required>
                 <FormLabel>Reservation Date</FormLabel>
                 <LocalizationProvider dateAdapter={AdapterDateFns} className="px-2">
-          <DatePicker
-            label="Check-in"
-            value={res_date}
-            onChange={(newValue) => {
-              setRes_date(newValue);
-            }}
-            textField={(params) => <TextField {...params} />}
-            format="dd/MM/yyyy"
-            minDate={new Date()}
-            maxDate={
-              res_date ? new Date(String(res_date)) : new Date('2099-12-31')
-            }
-
-          />
+              <DatePicker
+                label="Check-in"
+                value={res_date}
+                onChange={(newValue) => {
+                  setRes_date(newValue);
+                }}
+                textField={(params) => <TextField {...params} />}
+                format="dd/MM/yyyy"
+                minDate={new Date()}
+                maxDate={
+                  res_date ? new Date(String(res_date)) : new Date('2099-12-31')
+                }
+                DialogProps={{
+          style: { zIndex: 99999 } // it should be more than 1200
+      }}
+              />
               </LocalizationProvider>
 
               </FormControl>
