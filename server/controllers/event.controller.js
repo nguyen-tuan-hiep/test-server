@@ -153,7 +153,7 @@ async function createEventIncludeDish(req, res) {
     // dishId is an array
     if (dishes) {
       const values = dishes
-        .map((dish) => `(${eventId}, ${dish.dish_id}, ${dish.quantity})`)
+        .map((dish) => `(${eventId}, ${dish.id}, ${dish.quantity})`)
         .join(', ');
       const query = `INSERT INTO event_dishes (event_id, dish_id, quantity) VALUES ${values} RETURNING *;`;
       const eventDishes = await pool.query(query);
