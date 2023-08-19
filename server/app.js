@@ -14,6 +14,7 @@ import reservationRouter from './routes/reservation.router.js';
 import statisticRouter from './routes/statistic.router.js';
 import tableRouter from './routes/table.router.js';
 import uploadRouter from './routes/uploadImage.router.js';
+import userRouter from './routes/user.router.js';
 
 dotenv.config();
 const app = express();
@@ -41,6 +42,7 @@ app.use('/tables', tableRouter);
 app.use('/statistic', statisticRouter);
 app.use('/dishes', dishRouter);
 app.use('/reservations', reservationRouter);
+app.use('/users', userRouter);
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);

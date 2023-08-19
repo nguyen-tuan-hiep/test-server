@@ -14,11 +14,11 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 
 // Custom
 import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../contexts/UserProvider";
 import authentication from "../utils/authentication";
 import HeaderMenu from "./HeaderMenu";
 import Layout from "./Layout";
 import { SideDrawerContext } from "./SideDrawer";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 function ColorSchemeToggle() {
   const { mode, setMode } = useColorScheme();
@@ -51,7 +51,7 @@ function ColorSchemeToggle() {
 export default function Header() {
   const { setDrawerOpen } = useContext(SideDrawerContext);
 
-  const { user } = useContext(UserContext);
+  const { user } = useAuthContext();
 
   return (
     <Layout.Header>
@@ -81,7 +81,7 @@ export default function Header() {
           <GroupRoundedIcon />
         </IconButton>
         <Typography component="h1" fontWeight="xl">
-          {user.name}
+          {user?.name}
         </Typography>
       </Box>
       <Input

@@ -21,48 +21,27 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import employeeApi from "../../api/employeeApi";
 import status from "../../constants/status";
-import { UserContext } from "../../contexts/UserProvider";
+// import { UserContext } from "../../contexts/UserProvider";
 import authentication from "../../utils/authentication";
+import { useLogin } from "../../hooks/useLogin";
 
 export default function Login() {
-  const navigate = useNavigate();
-
-  const { setUser } = useContext(UserContext);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const login = async () => {
-    if (!email || !password) {
-      setError("Email or password is empty!");
-      return;
-    }
+  const login = useLogin();
+  const navigate = useNavigate();
 
-    setLoading(true);
+  const handleSubmit = async (e) => {
+    // e.preventDefault();
     try {
-      const response = await employeeApi.login({ email, password });
-      if (response?.data?.type === status.success) {
-        authentication.login(response?.data?.employee.employee_id);
-        setUser(response?.data?.employee);
-        setLoading(false);
-        navigate("/home");
-      }
+      await login(email, password);
+      navigate("/");
     } catch (err) {
-      if (err.response?.data?.type === status.error) {
-        setError(err.response?.data?.message);
-      }
-      setLoading(false);
+      console.log("err", err);
     }
-  };
-
-  const handleLoginEnter = (e) => {
-    if (e.key === "Enter") login();
-  };
-
-  const handleLogin = () => {
-    login();
   };
 
   return (
@@ -78,118 +57,117 @@ export default function Login() {
           },
         }}
       />
-      <div onKeyDown={handleLoginEnter}>
+      <Box
+        sx={(theme) => ({
+          width:
+            "clamp(100vw - var(--Cover-width), (var(--Collapsed-breakpoint) - 100vw) * 999, 100vw)",
+          transition: "width var(--Transition-duration)",
+          transitionDelay: "calc(var(--Transition-duration) + 0.1s)",
+          position: "relative",
+          zIndex: 1,
+          display: "flex",
+          justifyContent: "flex-end",
+          backdropFilter: "blur(4px)",
+          backgroundColor: "rgba(255 255 255 / 0.6)",
+          [theme.getColorSchemeSelector("dark")]: {
+            backgroundColor: "rgba(19 19 24 / 0.4)",
+          },
+        })}
+      >
         <Box
-          sx={(theme) => ({
-            width:
-              "clamp(100vw - var(--Cover-width), (var(--Collapsed-breakpoint) - 100vw) * 999, 100vw)",
-            transition: "width var(--Transition-duration)",
-            transitionDelay: "calc(var(--Transition-duration) + 0.1s)",
-            position: "relative",
-            zIndex: 1,
+          sx={{
             display: "flex",
-            justifyContent: "flex-end",
-            backdropFilter: "blur(4px)",
-            backgroundColor: "rgba(255 255 255 / 0.6)",
-            [theme.getColorSchemeSelector("dark")]: {
-              backgroundColor: "rgba(19 19 24 / 0.4)",
-            },
-          })}
+            flexDirection: "column",
+            minHeight: "100dvh",
+            width:
+              "clamp(var(--Form-maxWidth), (var(--Collapsed-breakpoint) - 100vw) * 999, 100%)",
+            maxWidth: "100%",
+            px: 2,
+          }}
         >
           <Box
+            component="header"
             sx={{
+              py: 3,
               display: "flex",
-              flexDirection: "column",
-              minHeight: "100dvh",
-              width:
-                "clamp(var(--Form-maxWidth), (var(--Collapsed-breakpoint) - 100vw) * 999, 100%)",
-              maxWidth: "100%",
-              px: 2,
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
-            <Box
-              component="header"
-              sx={{
-                py: 3,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
+            <Typography
+              fontWeight="lg"
+              startDecorator={
+                <Box
+                  component="span"
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    background: (theme) =>
+                      `linear-gradient(45deg, ${theme.vars.palette.primary.solidBg}, ${theme.vars.palette.primary.solidBg} 30%, ${theme.vars.palette.primary.softBg})`,
+                    borderRadius: "50%",
+                    boxShadow: (theme) => theme.shadow.md,
+                    "--joy-shadowChannel": (theme) =>
+                      theme.vars.palette.primary.mainChannel,
+                  }}
+                />
+              }
             >
-              <Typography
-                fontWeight="lg"
-                startDecorator={
-                  <Box
-                    component="span"
-                    sx={{
-                      width: 24,
-                      height: 24,
-                      background: (theme) =>
-                        `linear-gradient(45deg, ${theme.vars.palette.primary.solidBg}, ${theme.vars.palette.primary.solidBg} 30%, ${theme.vars.palette.primary.softBg})`,
-                      borderRadius: "50%",
-                      boxShadow: (theme) => theme.shadow.md,
-                      "--joy-shadowChannel": (theme) =>
-                        theme.vars.palette.primary.mainChannel,
-                    }}
-                  />
-                }
-              >
-                RMS
-              </Typography>
-              <ColorSchemeToggle />
-            </Box>
-            <Box
-              component="main"
-              sx={{
-                my: "auto",
-                py: 2,
-                pb: 5,
+              RMS
+            </Typography>
+            <ColorSchemeToggle />
+          </Box>
+          <Box
+            component="main"
+            sx={{
+              my: "auto",
+              py: 2,
+              pb: 5,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              width: 400,
+              maxWidth: "100%",
+              mx: "auto",
+              borderRadius: "sm",
+              "& form": {
                 display: "flex",
                 flexDirection: "column",
                 gap: 2,
-                width: 400,
-                maxWidth: "100%",
-                mx: "auto",
-                borderRadius: "sm",
-                "& form": {
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                },
-                [`& .${formLabelClasses.asterisk}`]: {
-                  visibility: "hidden",
-                },
-              }}
-            >
-              <div>
-                <Typography component="h2" fontSize="xl2" fontWeight="lg">
-                  Welcome back
-                </Typography>
-                <Typography level="body2" sx={{ my: 1, mb: 3 }}>
-                  Let&apos;s get started! Please enter your details.
-                </Typography>
-              </div>
-              <FormControl required>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  placeholder="Enter your email"
-                  type="email"
-                  name="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </FormControl>
-              <FormControl required>
-                <FormLabel>Password</FormLabel>
-                <Input
-                  placeholder="•••••••"
-                  type="password"
-                  name="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </FormControl>
-              {/* <Box
+              },
+              [`& .${formLabelClasses.asterisk}`]: {
+                visibility: "hidden",
+              },
+            }}
+          >
+            <div>
+              <Typography component="h2" fontSize="xl2" fontWeight="lg">
+                Welcome back
+              </Typography>
+              <Typography level="body2" sx={{ my: 1, mb: 3 }}>
+                Let&apos;s get started! Please enter your details.
+              </Typography>
+            </div>
+            <FormControl required>
+              <FormLabel>Email</FormLabel>
+              <Input
+                placeholder="Enter your email"
+                type="email"
+                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </FormControl>
+            <FormControl required>
+              <FormLabel>Password</FormLabel>
+              <Input
+                placeholder="•••••••"
+                type="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </FormControl>
+            {/* <Box
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
@@ -201,27 +179,26 @@ export default function Login() {
                   Forgot password
                 </Link>
               </Box> */}
-              {error && <span className="text-red-600">{error}</span>}
-              <Button onClick={() => handleLogin()} fullWidth>
-                Sign in
-              </Button>
-              <Stack alignItems="center">
-                <CircularProgress
-                  variant="soft"
-                  sx={{
-                    visibility: loading ? "visible" : "hidden",
-                  }}
-                />
-              </Stack>
-            </Box>
-            <Box component="footer" sx={{ py: 3 }}>
-              <Typography level="body3" textAlign="center">
-                © RMS {new Date().getFullYear()}
-              </Typography>
-            </Box>
+            {error && <span className="text-red-600">{error}</span>}
+            <Button onClick={() => handleSubmit()} fullWidth>
+              Sign in
+            </Button>
+            <Stack alignItems="center">
+              <CircularProgress
+                variant="soft"
+                sx={{
+                  visibility: loading ? "visible" : "hidden",
+                }}
+              />
+            </Stack>
+          </Box>
+          <Box component="footer" sx={{ py: 3 }}>
+            <Typography level="body3" textAlign="center">
+              © RMS {new Date().getFullYear()}
+            </Typography>
           </Box>
         </Box>
-      </div>
+      </Box>
       <Box
         sx={(theme) => ({
           height: "100%",
