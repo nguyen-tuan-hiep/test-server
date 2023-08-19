@@ -42,7 +42,7 @@ export default function DishGroup({ category, dishes, fetchData, setLoading }) {
                   name={dish.dish_name}
                   description={dish.description}
                   price={dish.price}
-                  // image={dish.image}
+                  image={dish.image}
                   category={category}
                   fetchData={fetchData}
                   setLoading={setLoading}
