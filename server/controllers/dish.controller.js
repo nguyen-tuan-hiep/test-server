@@ -69,6 +69,14 @@ async function createDish(req, res) {
     if (!price) {
       return res.status(400).json({ message: 'Price is required' });
     }
+    // check if dish exists
+    const dishExists = await pool.query(
+      'SELECT * FROM dishes WHERE dish_name = $1 AND dish_status = 1',
+      [name],
+    );
+    if (dishExists.rows.length) {
+      return res.status(400).json({ message: 'Dish already exists' });
+    }
 
     const dish = await pool.query(
       'INSERT INTO dishes (dish_name, menu_id, price, description, dish_status) VALUES($1, $2, $3, $4, $5) RETURNING *',
