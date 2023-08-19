@@ -161,7 +161,7 @@ export default function OrderDialogAdd({
         customer_id: customer.customer_id,
         order_date: reservedTime.slice(0, 10),
         order_time: reservedTime.slice(11, 16),
-        order_status: 1,
+        order_status: 1, // success
         total_price: afterCost,
         dishes: selectedDishes.filter(
           (item) => item.quantity !== 0 || item.isFree
@@ -190,7 +190,6 @@ export default function OrderDialogAdd({
         return;
       }
       try {
-        console.log("customer", customer);
         const response = await customerApi.updateCustomerById(
           customer.customer_id,
           {

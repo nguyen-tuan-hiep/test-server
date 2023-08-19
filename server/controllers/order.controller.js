@@ -105,77 +105,68 @@ async function deleteByOrderId(req, res) {
 async function updateOrderById(req, res) {
   try {
     const { id } = req.params;
-    let {
-      customer_id,
+    const {
       phone,
+      customer_id,
       order_date,
       order_time,
       order_status,
       total_price,
-      has_children,
+      used_point,
+      dishes,
     } = req.body;
-
-    const order1 = await pool.query(
-      'SELECT * FROM orders WHERE order_id = $1',
-      [id],
-    );
-    if (!order1.rows.length) {
-      return res.status(404).json({ message: 'Order not found' });
+    console.log(req.body);
+    if (!phone || !order_date || !order_time || !order_status) {
+      return res.status(400).json({ message: 'All fields are required' });
     }
-    if (
-      customer_id == null &&
-      phone == null &&
-      order_date == null &&
-      order_time == null &&
-      order_status == null &&
-      total_price == null &&
-      has_children == null
-    ) {
-      return res.status(400).json({ message: 'At least 1 field is required' });
-    }
-    if (customer_id == null) {
-      customer_id = order1.rows[0].customer_id;
-    }
-    if (phone == null) {
-      phone = order1.rows[0].phone;
-    }
-    if (order_date == null) {
-      order_date = order1.rows[0].order_date;
-    }
-    if (order_time == null) {
-      order_time = order1.rows[0].order_time;
-    }
-    if (order_status == null) {
-      order_status = order1.rows[0].order_status;
-    }
-    if (total_price == null) {
-      total_price = order1.rows[0].total_price;
-    }
-    if (has_children == null) {
-      has_children = order1.rows[0].has_children;
-    }
-    const order2 = await pool.query(
-      'UPDATE orders SET customer_id = $1, phone = $2, order_date = $3, order_time = $4, order_status = $5, total_price = $6, has_children = $7 WHERE order_id = $8 RETURNING *',
+    console.log([
+      phone,
+      customer_id || null,
+      order_date,
+      order_time,
+      order_status,
+      total_price,
+      used_point || 0,
+      id,
+    ]);
+    const order = await pool.query(
+      'UPDATE orders SET phone = $1, customer_id = $2, order_date = $3, order_time = $4, order_status = $5, total_price = $6, used_point = $7 WHERE order_id = $8 RETURNING *',
       [
-        customer_id,
         phone,
+        customer_id || null,
         order_date,
         order_time,
         order_status,
         total_price,
-        has_children,
+        used_point || 0,
         id,
       ],
     );
+
+    // Delete order_dishes
+    await pool.query('DELETE FROM order_dishes WHERE order_id = $1', [id]);
+
+    if (dishes.length > 0) {
+      const values = dishes
+        .map(
+          (dish) =>
+            `(${order.rows[0].order_id}, ${dish.dish_id}, ${dish.quantity})`,
+        )
+        .join(', ');
+      console.log(values);
+      const results = await pool.query(
+        `INSERT INTO order_dishes (order_id, dish_id, quantity) VALUES ${values} RETURNING *;`,
+      );
+    }
+
     return res
       .status(200)
-      .json({ message: 'Order was updated!', data: order2.rows[0] });
+      .json({ message: 'Order was updated!', data: order.rows[0] });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: error.message });
   }
 }
-// async function updateCost
 
 async function getOrderByOrderId(req, res) {
   try {
@@ -188,7 +179,7 @@ async function getOrderByOrderId(req, res) {
     }
     return res
       .status(200)
-      .json({ message: 'Order found!' }, { data: order.rows[0] });
+      .json({ message: 'Order was found!', data: order.rows[0] });
   } catch (error) {
     console.error(error.message);
     return res.status(500).json({ message: error.message });
@@ -226,11 +217,26 @@ async function search(req, res) {
   }
 }
 
+async function getDishesByOrderId(req, res) {
+  try {
+    const { id } = req.params;
+    const order = await pool.query(
+      'SELECT * FROM order_dishes JOIN dishes ON order_dishes.dish_id = dishes.dish_id WHERE order_id = $1',
+      [id],
+    );
+    return res.status(200).json({ message: 'Orders found!', data: order.rows });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ message: error.message });
+  }
+}
+
 export default {
   createOrder,
   deleteByOrderId,
   getOrderByOrderId,
   updateOrderById,
   search,
+  getDishesByOrderId,
   // getOrdersBetweenDate,
 };

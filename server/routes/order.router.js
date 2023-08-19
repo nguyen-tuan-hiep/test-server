@@ -13,6 +13,9 @@ router.put('/:id', orderController.updateOrderById);
 
 router.get('/:id', orderController.getOrderByOrderId);
 
+// Get dishes by order id
+router.get('/:id/dishes', orderController.getDishesByOrderId);
+
 // router.patch('/cost/:id', orderController.updateCostByOrderId);
 // router.get('/orderBetweenDate', orderController.getOrdersBetweenDate);
 

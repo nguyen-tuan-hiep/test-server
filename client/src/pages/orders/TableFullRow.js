@@ -29,7 +29,7 @@ export default function TableFullRow({ data, setLoading, fetchData }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const openMore = Boolean(anchorEl);
 
-  const order_date = moment.utc(data.order_date).format("DD/MM/YYYY");
+  const order_date = new Date(data.order_date).toLocaleDateString("en-GB");
 
   const handleMoreClick = (e) => {
     setAnchorEl(e.currentTarget);

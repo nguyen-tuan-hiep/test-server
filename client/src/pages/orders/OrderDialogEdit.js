@@ -33,17 +33,17 @@ import { useDebounce } from "../../hooks";
 export default function OrderDialogEdit(props) {
   const { id, open, setOpen, setLoading, fetchData } = props;
   const [customer, setCustomer] = useState(null);
-  const [usedPoints, setUsedPoints] = useState(0);
+  const [customerId, setCustomerId] = useState(null);
+  const [usedPoint, setUsedPoint] = useState(0);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [orderStatus, setOrderStatus] = useState("");
   const [table, setTable] = useState(0);
   const [event, setEvent] = useState(null);
-  const [events, setEvents] = useState([]);
-  const [eventSearchProgress, setEventProgress] = useState(false);
   const [reservedTime, setReservedTime] = useState("2002-11-29 00:00:00");
+  const [order, setOrder] = useState(null);
 
   const [dishList, setDishList] = useState([]);
+  const [prevDishList, setPrevDishList] = useState([]);
   const [selectedDishes, setSelectedDishes] = useState([]);
   const [dishSearch, setDishSearch] = useState("");
   const [dishSearchProgress, setDishProgress] = useState(false);
@@ -55,28 +55,59 @@ export default function OrderDialogEdit(props) {
   const { enqueueSnackbar } = useSnackbar();
 
   let beforeCost = 0;
-  beforeCost += selectedDishes.reduce((s, i) => s + i.price * i.quantity, 0);
-  let afterCost = beforeCost - usedPoints || 0;
+  beforeCost += selectedDishes?.reduce((s, i) => s + +i.price * +i.quantity, 0);
+  let afterCost = beforeCost - usedPoint || 0;
 
   useEffect(() => {
-    // Get user by phone
     const fetch = async () => {
-      if (!debounceValue) {
-        setCustomer(null);
-        return;
-      }
       try {
-        const response = await customerApi.searchByPhone(debounceValue);
+        const response = await orderApi.getOrderById(id);
         if (response.status === 200) {
-          const customer = response.data;
-          setCustomer(customer);
+          const order = response.data.data;
+          console.log("order", order);
+          setOrder(order);
+          setCustomerId(order.customer_id);
+          setUsedPoint(order.used_point);
+          setTable(order.table);
+          setEvent(order.event);
+          const newTime = new Date(
+            `${order.order_date.slice(0, 10)}T${order.order_time.slice(0, 5)}`
+          );
+          newTime.setHours(newTime.getHours() + 31);
+          setReservedTime(newTime.toISOString().slice(0, 16));
+        }
+
+        const newRes = await orderApi.getDishesByOrderId(id);
+        if (newRes.status === 200) {
+          const dishes = newRes.data.data.map((item) => ({
+            id: item.dish_id,
+            name: item.dish_name,
+            price: +item.price,
+            quantity: +item.quantity,
+          }));
+          setSelectedDishes([...selectedDishes, ...dishes]);
         }
       } catch (err) {
-        setCustomer(null);
+        console.log(err);
       }
     };
+
     fetch();
-  }, [debounceValue]);
+  }, [id]);
+
+  useEffect(() => {
+    // Get user by customer_id
+    const fetch = async () => {
+      try {
+        const response = await customerApi.getCustomerById(customerId);
+        console.log("by cus id", response);
+        if (response.status === 200) {
+          setCustomer(response.data);
+        }
+      } catch (err) {}
+    };
+    fetch();
+  }, [customerId]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -97,50 +128,7 @@ export default function OrderDialogEdit(props) {
       setDishProgress(false);
     };
     fetch();
-  }, [dishSearch]);
-
-  useEffect(() => {
-    const fetch = async () => {
-      setEventProgress(true);
-      try {
-        const response = await eventApi.searchEvent("");
-        if (response.status === 200) {
-          setEvents(response.data);
-        }
-      } catch (err) {
-        setEvents([]);
-      }
-      setEventProgress(false);
-    };
-    fetch();
-  }, [beforeCost]);
-
-  useEffect(() => {
-    // Add free dishes from event
-    const fetch = async () => {
-      if (!event) {
-        setSelectedDishes(selectedDishes.filter((item) => !item.isFree));
-        return;
-      }
-      try {
-        const response = await eventApi.getFreeDishes(event.event_id);
-        if (response.status === 200) {
-          const dishes = response.data.map((item) => ({
-            id: item.dish_id,
-            name: item.dish_name,
-            price: 0,
-            quantity: +item.quantity,
-            isFree: true,
-          }));
-          setSelectedDishes((prev) => [...prev, ...dishes]);
-        }
-      } catch (err) {
-        setSelectedDishes([]);
-      }
-    };
-
-    fetch();
-  }, [event]);
+  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -148,7 +136,58 @@ export default function OrderDialogEdit(props) {
 
   const handleSave = (e) => {
     e.preventDefault();
-    const save = async () => {};
+    const save = async () => {
+      setLoadingEdit(true);
+      try {
+        // Fix time delayed 7 hours
+        const newTime = new Date(reservedTime);
+        newTime.setHours(newTime.getHours() + 7);
+        const response = await orderApi.update(id, {
+          phone: order.phone,
+          customer_id: order.customer_id,
+          event_id: event ? event.id : null,
+          order_date: newTime.toISOString().slice(0, 10),
+          order_time: newTime.toISOString().slice(11, 19),
+          order_status: 1, // success
+          total_price: afterCost,
+          dishes: selectedDishes.map((item) => ({
+            dish_id: item.id,
+            quantity: item.quantity,
+          })),
+          used_point: usedPoint,
+        });
+        console.log("update", response);
+        if (response.status === 200) {
+          enqueueSnackbar("Update order successfully", { variant: "success" });
+          fetchData();
+        }
+      } catch (err) {
+        console.log(err);
+        enqueueSnackbar("Update order failed", { variant: "error" });
+      }
+      setLoadingEdit(false);
+
+      // Update customer point
+      if (customer && usedPoint > 0) {
+        try {
+          const response = await customerApi.updateCustomerById(customerId, {
+            ...customer,
+            point: customer.point - usedPoint + afterCost * 0.1,
+          });
+          if (response.status === 200) {
+            enqueueSnackbar("Update customer point successfully", {
+              variant: "success",
+            });
+          }
+        } catch (err) {
+          console.log(err);
+          enqueueSnackbar("Update customer point failed", {
+            variant: "error",
+          });
+        }
+      }
+    };
+
     save();
     setOpen(() => false);
   };
@@ -201,48 +240,46 @@ export default function OrderDialogEdit(props) {
                   <FormControl required>
                     <FormLabel>Phone</FormLabel>
                     <Input
+                      disabled
                       name="phone"
                       placeholder="Phone"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.trimStart())}
                     />
                   </FormControl>
-                  <FormControl required>
-                    <FormLabel>Table</FormLabel>
-                    <Input
-                      type="number"
-                      name="table"
-                      placeholder="Table"
-                      value={table}
-                      onChange={(e) => setTable(e.target.value)}
-                    />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel>Status</FormLabel>
-                    <Input
-                      name="status"
-                      placeholder="Status"
-                      value={orderStatus}
-                      onChange={(e) => setOrderStatus(e.target.value)}
-                    />
-                  </FormControl>
+                  {customer ? (
+                    <>
+                      <Typography level="h3" fontSize="1em">
+                        {customer.name}: {customer.point}
+                      </Typography>
+                      <FormControl>
+                        <FormLabel>Points to Use</FormLabel>
+                        <Input
+                          name="point"
+                          placeholder="Points to use"
+                          value={usedPoint}
+                          onChange={(e) => {
+                            setUsedPoint(e.target.value);
+                          }}
+                        />
+                      </FormControl>
+                    </>
+                  ) : (
+                    <Typography level="p" fontSize="0.85em">
+                      Is currently not a member!
+                    </Typography>
+                  )}
                   <TextField
                     required
                     label="Reserved At"
                     type="datetime-local"
                     value={reservedTime}
-                    onChange={(e) => setReservedTime(e.target.value)}
+                    onChange={(e) => {
+                      console.log("reservedTime", e.target.value);
+                      console.log("e.target.value", e.target.value);
+                      return setReservedTime(e.target.value);
+                    }}
                   />
-                  <FormControl>
-                    <FormLabel>Event</FormLabel>
-                    <SelectEvent
-                      event={event}
-                      setEvent={setEvent}
-                      events={events}
-                      loading={eventSearchProgress}
-                    />
-                  </FormControl>
-
                   <FormControl
                     sx={{
                       display: {

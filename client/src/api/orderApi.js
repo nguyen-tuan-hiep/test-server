@@ -13,7 +13,7 @@ const orderApi = {
   },
   update(id, data) {
     const url = `${PREFIX}/${id}`;
-    return httpRequest.patch(url, data);
+    return httpRequest.put(url, data);
   },
   updateCost(id, data) {
     const url = `${PREFIX}/cost/${id}`;
@@ -30,6 +30,10 @@ const orderApi = {
   searchByPhone(phone) {
     const url = `${PREFIX}/search`;
     return httpRequest.get(url, { params: { phone } });
+  },
+  getDishesByOrderId(id) {
+    const url = `${PREFIX}/${id}/dishes`;
+    return httpRequest.get(url);
   },
   getStatistic(data) {
     const url = `/statistic`;
